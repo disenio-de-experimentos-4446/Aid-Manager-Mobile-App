@@ -1,14 +1,14 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
-import 'package:aidmanager_mobile/features/auth/presentation/widgets/checkbox_remember.dart';
-import 'package:aidmanager_mobile/features/auth/presentation/widgets/login_facebook_button.dart';
-import 'package:aidmanager_mobile/features/auth/presentation/widgets/login_goggle_button.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/checkbox_remember.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/email_field.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/login_banner.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/password_field.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/text_divider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatelessWidget {
-
   static const String name = "login_screen";
 
   const LoginScreen({super.key});
@@ -16,7 +16,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double containerHeight = MediaQuery.of(context).size.height * 0.25;
-    final double deviceWitdh = MediaQuery.of(context).size.width;
+    final double deviceWidth = MediaQuery.of(context).size.width;
     final Image logo = Image.asset(
       'assets/images/aidmanager_logo.png',
       fit: BoxFit.contain,
@@ -29,45 +29,14 @@ class LoginScreen extends StatelessWidget {
         backgroundColor: CustomColors.lightGrey, // Usando el color lightGreen
         body: Column(
           children: [
-            Stack(
-              children: [
-                Container(
-                  height: containerHeight,
-                  decoration: const BoxDecoration(
-                    color: CustomColors.darkGreen,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(999),
-                      bottomRight: Radius.circular(999),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: (deviceWitdh / 2) - 70,
-                  child: Transform.translate(
-                    offset: const Offset(0, 70),
-                    child: Container(
-                      width: 140,
-                      height: 140,
-                      decoration: BoxDecoration(
-                        color: CustomColors.white,
-                        shape: BoxShape.circle,
-                        border:
-                            Border.all(width: 0.5, color: CustomColors.grey),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(25),
-                        child: logo,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            LoginBanner(
+                containerHeight: containerHeight,
+                deviceWidth: deviceWidth,
+                logoImage: logo),
             const SizedBox(height: 90),
             Expanded(
               child: SizedBox(
-                width: deviceWitdh * 0.85,
+                width: deviceWidth * 0.85,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -80,61 +49,9 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    TextField(
-                      style: const TextStyle(fontSize: 18.0),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: CustomColors.fieldGrey,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: const BorderSide(
-                            color: CustomColors.grey,
-                          ),
-                        ),
-                        hintText: 'Email Address',
-                        hintStyle: const TextStyle(fontSize: 18.0),
-                        suffixIcon: const Padding(
-                          padding: EdgeInsets.only(
-                              right:
-                                  18.0), // Ajusta el padding según sea necesario
-                          child: Icon(Icons.email_rounded, size: 28),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 20.0, horizontal: 18.0),
-                      ),
-                    ),
+                    const EmailField(), // widget for email field
                     const SizedBox(height: 25),
-                    TextField(
-                      style: const TextStyle(fontSize: 18.0),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: CustomColors.fieldGrey,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: const BorderSide(
-                            color: CustomColors.grey,
-                          ),
-                        ),
-                        hintText: 'Password',
-                        hintStyle: const TextStyle(fontSize: 18.0),
-                        suffixIcon: const Padding(
-                          padding: EdgeInsets.only(
-                              right:
-                                  18.0), // Ajusta el padding según sea necesario
-                          child: Icon(Icons.remove_red_eye_rounded, size: 28),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 20.0, horizontal: 18.0),
-                      ),
-                    ),
+                    const PasswordField(), // widget for password field
                     const SizedBox(height: 10),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -173,18 +90,60 @@ class LoginScreen extends StatelessWidget {
                     const SizedBox(height: 25),
                     const TextDivider(text: 'or continue with'),
                     const SizedBox(height: 20),
-                    const Row(
+                    Row(
                       children: [
-                        LoginFacebookButton(),
-                        SizedBox(
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              // Acción a realizar cuando se presiona el botón de Facebook
+                            },
+                            icon:
+                                const Icon(Icons.facebook, color: Colors.blue),
+                            label: const Text(
+                              'Facebook',
+                              style:
+                                  TextStyle(color: Colors.blue, fontSize: 18),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Colors.blue),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12.0, horizontal: 16.0),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
                             width: 16.0), // Espaciado entre los botones
-                        LoginGoggleButton()   
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              // Acción a realizar cuando se presiona el botón de Google
+                            },
+                            icon: Image.asset(
+                              'assets/images/google-icon.webp', // Ruta de la imagen del logo de Google
+                              height:
+                                  24.0, // Ajusta el tamaño según sea necesario
+                            ),
+                            label: const Text(
+                              'Google',
+                              style: TextStyle(color: Colors.red, fontSize: 18),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Colors.red),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12.0, horizontal: 16.0),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     Expanded(
-                      child: Container(
-                        color: Colors.transparent
-                      ),
+                      child: Container(color: Colors.transparent),
                     ),
                     const _NotAccountText(),
                     const SizedBox(height: 15)
@@ -200,7 +159,6 @@ class LoginScreen extends StatelessWidget {
 }
 
 class _NotAccountText extends StatelessWidget {
-
   const _NotAccountText();
 
   @override
@@ -222,8 +180,7 @@ class _NotAccountText extends StatelessWidget {
             text: 'Sign up',
             style: const TextStyle(
               fontWeight: FontWeight.bold,
-              color: CustomColors
-                  .teal,
+              color: CustomColors.teal,
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
