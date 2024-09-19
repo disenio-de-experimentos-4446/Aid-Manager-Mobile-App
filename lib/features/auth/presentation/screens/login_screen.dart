@@ -1,42 +1,11 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/widgets/checkbox_remember.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/widgets/login_facebook_button.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/widgets/login_goggle_button.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/widgets/text_divider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-class RememberCheckbox extends StatefulWidget {
-  const RememberCheckbox({super.key});
-
-  @override
-  RemeberCheckboxState createState() => RemeberCheckboxState();
-}
-
-class RemeberCheckboxState extends State<RememberCheckbox> {
-  bool _isChecked = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Transform.translate(
-      offset: const Offset(-10, 0),
-      child: Row(
-        children: [
-          Checkbox(
-            activeColor: Colors.green[700],
-            value: _isChecked,
-            onChanged: (bool? value) {
-              setState(() {
-                _isChecked = value ?? false;
-              });
-            },
-          ),
-          const Text(
-            'Remenber me',
-            style: TextStyle(fontSize: 17),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class LoginScreen extends StatelessWidget {
 
@@ -202,83 +171,14 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 25),
+                    const TextDivider(text: 'or continue with'),
+                    const SizedBox(height: 20),
                     const Row(
                       children: [
-                        Expanded(
-                          child: Divider(
-                            color: Colors.grey,
-                            thickness: 1,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Text(
-                            'or continue with',
-                            style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(
-                            color: Colors.grey,
-                            thickness: 1,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () {
-                              // Acción a realizar cuando se presiona el botón de Facebook
-                            },
-                            icon:
-                                const Icon(Icons.facebook, color: Colors.blue),
-                            label: const Text(
-                              'Facebook',
-                              style:
-                                  TextStyle(color: Colors.blue, fontSize: 18),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Colors.blue),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 12.0, horizontal: 16.0),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
+                        LoginFacebookButton(),
+                        SizedBox(
                             width: 16.0), // Espaciado entre los botones
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () {
-                              // Acción a realizar cuando se presiona el botón de Google
-                            },
-                            icon: Image.asset(
-                              'assets/images/google-icon.webp', // Ruta de la imagen del logo de Google
-                              height:
-                                  24.0, // Ajusta el tamaño según sea necesario
-                            ),
-                            label: const Text(
-                              'Google',
-                              style: TextStyle(color: Colors.red, fontSize: 18),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Colors.red),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 12.0, horizontal: 16.0),
-                            ),
-                          ),
-                        ),
+                        LoginGoggleButton()   
                       ],
                     ),
                     Expanded(
@@ -286,34 +186,7 @@ class LoginScreen extends StatelessWidget {
                         color: Colors.transparent
                       ),
                     ),
-                    RichText(
-                      textAlign: TextAlign.start,
-                      text: TextSpan(
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontStyle: FontStyle.normal,
-                          letterSpacing: 0.8,
-                          color: Colors.black,
-                        ),
-                        children: [
-                          const TextSpan(
-                            text: "Don't have an account? ",
-                          ),
-                          TextSpan(
-                            text: 'Sign up',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: CustomColors
-                                  .teal,
-                            ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                context.push('/register');
-                              },
-                          ),
-                        ],
-                      ),
-                    ),
+                    const _NotAccountText(),
                     const SizedBox(height: 15)
                   ],
                 ),
@@ -321,6 +194,43 @@ class LoginScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _NotAccountText extends StatelessWidget {
+
+  const _NotAccountText();
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      textAlign: TextAlign.start,
+      text: TextSpan(
+        style: const TextStyle(
+          fontSize: 18,
+          fontStyle: FontStyle.normal,
+          letterSpacing: 0.8,
+          color: Colors.black,
+        ),
+        children: [
+          const TextSpan(
+            text: "Don't have an account? ",
+          ),
+          TextSpan(
+            text: 'Sign up',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: CustomColors
+                  .teal,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                context.push('/register');
+              },
+          ),
+        ],
       ),
     );
   }
