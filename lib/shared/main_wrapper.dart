@@ -1,4 +1,5 @@
 import 'package:aidmanager_mobile/features/home/presentation/screens/home_screen.dart';
+import 'package:aidmanager_mobile/shared/widgets/side_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/calendar/presentation/screens/calendar_screen.dart';
@@ -40,13 +41,42 @@ class _MainWrapperState extends State<MainWrapper> {
       case 4:
         context.go('/social');
         break;
+      case 5:
+        context.go('/profile');
+        break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+
+    final scaffoldKey = GlobalKey<ScaffoldState>();
+
     return Scaffold(
-      backgroundColor: Colors.white, // Color de fondo del Scaffold
+      key: scaffoldKey,
+      appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 129, 212, 150),
+        leading: Builder(
+          builder: (context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
+        ),
+        title: const Text('AidManager'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              // Acción al presionar el icono de usuario
+            },
+          ),
+        ],
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -68,6 +98,7 @@ class _MainWrapperState extends State<MainWrapper> {
           ),
         ],
       ),
+      drawer: SideMenu(scaffoldKey: scaffoldKey,),
     );
   }
 }
@@ -88,8 +119,7 @@ class _AidNavigationBar extends StatelessWidget {
             color: Colors.black.withOpacity(0.12),
             spreadRadius: 2,
             blurRadius: 5,
-            offset: const Offset(
-                0, -3),
+            offset: const Offset(0, -3),
           ),
         ],
       ),
@@ -121,8 +151,7 @@ class _AidNavigationBar extends StatelessWidget {
             color: isSelected ? CustomColors.darkGreen : CustomColors.grey,
             size: 30.0,
           ),
-          const SizedBox(
-              height: 5.0),
+          const SizedBox(height: 5.0),
           Text(
             label,
             style: TextStyle(
