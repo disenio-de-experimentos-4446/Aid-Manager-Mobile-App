@@ -324,7 +324,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 const SizedBox(height: 25),
                                 ElevatedButton(
                                   onPressed: () {
-                                    context.push('/');
+                                    context.push('/tutorial');
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: CustomColors

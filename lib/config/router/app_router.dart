@@ -1,5 +1,6 @@
 import 'package:aidmanager_mobile/features/auth/presentation/screens/login_screen.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/screens/register_screen.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/screens/tutorial_screen.dart';
 import 'package:aidmanager_mobile/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:aidmanager_mobile/features/home/presentation/screens/home_screen.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/screens/posts_screen.dart';
@@ -20,6 +21,11 @@ final appRouter = GoRouter(
       path: '/register',
       name: RegisterScreen.name,
       builder: (context, state) => const RegisterScreen(),
+    ),
+    GoRoute(
+      path: '/tutorial',
+      name: TutorialScreen.name,
+      builder: (context, state) => const TutorialScreen(),
     ),
     ShellRoute(
       builder: (context, state, child) {
