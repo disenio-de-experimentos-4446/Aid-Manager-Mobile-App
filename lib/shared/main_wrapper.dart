@@ -1,4 +1,5 @@
 import 'package:aidmanager_mobile/features/home/presentation/screens/home_screen.dart';
+import 'package:aidmanager_mobile/features/profile/presentation/screens/profile_screen.dart';
 import 'package:aidmanager_mobile/shared/widgets/side_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
@@ -49,33 +50,48 @@ class _MainWrapperState extends State<MainWrapper> {
 
   @override
   Widget build(BuildContext context) {
-
     final scaffoldKey = GlobalKey<ScaffoldState>();
 
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 129, 212, 150),
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
+        toolbarHeight: 70,
+        backgroundColor: CustomColors.darkGreen,
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Builder(
+              builder: (context) {
+                return IconButton(
+                  icon: const Icon(
+                    Icons.menu,
+                    color: Colors.white,
+                    size: 32.0,
+                  ),
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                );
               },
-            );
-          },
+            ),
+            const Text(
+              'AidManager',
+              style:
+                  TextStyle(fontSize: 24.0, color: CustomColors.lightGrey),
+            ),
+            IconButton(
+              icon: const Icon(
+                Icons.account_circle_sharp,
+                size: 32,
+                color: CustomColors.lightGrey,
+              ),
+              onPressed: () => _onIndexSelected(5),
+            ),
+          ],
         ),
-        title: const Text('AidManager'),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              // Acción al presionar el icono de usuario
-            },
-          ),
-        ],
+        automaticallyImplyLeading: false,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -88,7 +104,8 @@ class _MainWrapperState extends State<MainWrapper> {
                 ProjectsScreen(),
                 PostsScreen(),
                 CalendarScreen(),
-                SocialScreen()
+                SocialScreen(),
+                ProfileScreen()
               ],
             ),
           ),
@@ -98,7 +115,9 @@ class _MainWrapperState extends State<MainWrapper> {
           ),
         ],
       ),
-      drawer: SideMenu(scaffoldKey: scaffoldKey,),
+      drawer: SideMenu(
+        scaffoldKey: scaffoldKey,
+      ),
     );
   }
 }
@@ -141,6 +160,7 @@ class _AidNavigationBar extends StatelessWidget {
 
   Widget _buildNavItem(IconData icon, String label, int itemIndex) {
     final isSelected = index == itemIndex;
+
     return GestureDetector(
       onTap: () => onIndexSelected(itemIndex),
       child: Column(

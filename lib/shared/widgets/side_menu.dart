@@ -42,7 +42,7 @@ class _SideMenuState extends State<SideMenu> {
                   padding: const EdgeInsets.only(
                       bottom: 20.0, top: 35.0, left: 20),
                   decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 216, 233, 211), // Color de fondo del Container
+                    color: Color.fromARGB(255, 202, 218, 198),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -84,7 +84,7 @@ class _SideMenuState extends State<SideMenu> {
                   padding: EdgeInsets.only(
                       left: 20.0,
                       top: 20.0,
-                      bottom: 20.0), // Ajusta el padding según sea necesario
+                      bottom: 20.0),
                   child: Row(
                     children: [
                       CircleAvatar(
