@@ -1,12 +1,12 @@
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/checkbox_remember.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/email_field.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/login_banner.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/password_field.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/text_divider.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String name = "login_screen";
@@ -25,17 +25,17 @@ class LoginScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: CustomColors.lightGrey, // Usando el color lightGreen
-        body: Column(
-          children: [
-            LoginBanner(
+        backgroundColor: CustomColors.lightGrey,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              LoginBanner(
                 containerHeight: containerHeight,
                 deviceWidth: deviceWidth,
-                logoImage: logo),
-            const SizedBox(height: 90),
-            Expanded(
-              child: SizedBox(
+                logoImage: logo,
+              ),
+              const SizedBox(height: 30),
+              SizedBox(
                 width: deviceWidth * 0.85,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -70,8 +70,7 @@ class LoginScreen extends StatelessWidget {
                         context.push('/home');
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            CustomColors.darkGreen, // Color de fondo
+                        backgroundColor: CustomColors.darkGreen,
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         minimumSize: const Size(double.infinity, 0),
                         shape: RoundedRectangleBorder(
@@ -81,10 +80,11 @@ class LoginScreen extends StatelessWidget {
                       child: const Text(
                         'Sign In',
                         style: TextStyle(
-                            fontSize: 22.0,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.8),
+                          fontSize: 22.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.8,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 25),
@@ -94,15 +94,11 @@ class LoginScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () {
-                              // Acción a realizar cuando se presiona el botón de Facebook
-                            },
-                            icon:
-                                const Icon(Icons.facebook, color: Colors.blue),
+                            onPressed: () {},
+                            icon: const Icon(Icons.facebook, color: Colors.blue),
                             label: const Text(
                               'Facebook',
-                              style:
-                                  TextStyle(color: Colors.blue, fontSize: 18),
+                              style: TextStyle(color: Colors.blue, fontSize: 18),
                             ),
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: Colors.blue),
@@ -110,21 +106,18 @@ class LoginScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 12.0, horizontal: 16.0),
+                                vertical: 12.0, horizontal: 16.0,
+                              ),
                             ),
                           ),
                         ),
-                        const SizedBox(
-                            width: 16.0), // Espaciado entre los botones
+                        const SizedBox(width: 16.0),
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () {
-                              // Acción a realizar cuando se presiona el botón de Google
-                            },
+                            onPressed: () {},
                             icon: Image.asset(
-                              'assets/images/google-icon.webp', // Ruta de la imagen del logo de Google
-                              height:
-                                  24.0, // Ajusta el tamaño según sea necesario
+                              'assets/images/google-icon.webp',
+                              height: 24.0,
                             ),
                             label: const Text(
                               'Google',
@@ -136,22 +129,20 @@ class LoginScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 12.0, horizontal: 16.0),
+                                vertical: 12.0, horizontal: 16.0,
+                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    Expanded(
-                      child: Container(color: Colors.transparent),
-                    ),
+                    const SizedBox(height: 20),
                     const _NotAccountText(),
-                    const SizedBox(height: 15)
                   ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
