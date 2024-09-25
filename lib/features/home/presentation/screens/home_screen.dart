@@ -57,7 +57,7 @@ class HomeContent extends StatelessWidget {
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment
-                        .spaceBetween, // Espacio entre los elementos
+                        .spaceBetween,
                     children: [
                       Text(
                         ' Recent members',
@@ -76,7 +76,7 @@ class HomeContent extends StatelessWidget {
                                 fontWeight: FontWeight.w600),
                           ),
                           SizedBox(
-                              width: 5.0), // Espacio entre el texto y el icono
+                              width: 5.0),
                           Icon(
                             Icons.arrow_forward_rounded,
                             color: CustomColors.darkGreen,
@@ -173,7 +173,7 @@ class HomeContent extends StatelessWidget {
                                 fontWeight: FontWeight.w600),
                           ),
                           SizedBox(
-                              width: 5.0), // Espacio entre el texto y el icono
+                              width: 5.0),
                           Icon(
                             Icons.arrow_forward_rounded,
                             color: CustomColors.darkGreen,
@@ -252,7 +252,7 @@ class _MemberShape extends StatelessWidget {
           ),
           const SizedBox(height: 10.0),
           const Text(
-            'Hotman', // Reemplaza con el texto deseado
+            'Hotman',
             style: TextStyle(
               fontSize: 14.0,
               fontWeight: FontWeight.normal,

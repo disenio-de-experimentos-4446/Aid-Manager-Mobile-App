@@ -45,7 +45,7 @@ class ProjectCard extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.05),
                     ),
-                    SizedBox(height: 5.0), // Espacio entre los textos
+                    SizedBox(height: 5.0),
                     Row(
                       children: [
                         Icon(
@@ -53,8 +53,7 @@ class ProjectCard extends StatelessWidget {
                           color: Colors.white,
                           size: 24.0,
                         ),
-                        SizedBox(
-                            width: 8.0), // Espacio entre el ícono y el texto
+                        SizedBox(width: 8.0),
                         Text(
                           '25 members',
                           style: TextStyle(
