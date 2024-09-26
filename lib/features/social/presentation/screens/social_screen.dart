@@ -40,7 +40,20 @@ class _SocialContentState extends State<SocialContent> {
   //get del API
   Future<void> fetchTeamMembers() async {
     final response = await http.get(Uri.parse('https://randomuser.me/api/?results=15'));
-    
+    //try
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        teamMembers = data['results'];
+        isLoading = false;
+      });
+      //catch
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      throw Exception('Error al cargar los datos de la API');
+    }
   }
 
   @override
