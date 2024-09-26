@@ -168,4 +168,26 @@ class PostsContent extends StatelessWidget {
       ),
     );
   }
+
+   Widget _buildPostFooter() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: const [
+            Icon(Icons.star_border, color: Colors.green),
+            SizedBox(width: 5),
+            Text('20'),
+          ],
+        ),
+        Row(
+          children: const [
+            Icon(Icons.comment, color: Colors.green),
+            SizedBox(width: 5),
+            Text('12 Comments'),
+          ],
+        ),
+      ],
+    );
+  }
 }
