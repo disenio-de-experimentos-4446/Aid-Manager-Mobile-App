@@ -78,6 +78,19 @@ class _SocialContentState extends State<SocialContent> {
             title: Text('${member['name']['first']} ${member['name']['last']}'),
             //Telefono
             subtitle: Text(member['phone']),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(member['cell']),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const FaIcon(FontAwesomeIcons.whatsapp), // Icono de FontAwesome WhatsApp
+                  onPressed: () {
+                    // Implementar acciones para WhatsApp
+                  },
+                ),
+              ],
+            ),
           );
         },
       ),
