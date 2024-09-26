@@ -35,6 +35,12 @@ class _SocialContentState extends State<SocialContent> {
   @override
   void initState() {
     super.initState();
+    fetchTeamMembers();
+  }
+  //get del API
+  Future<void> fetchTeamMembers() async {
+    final response = await http.get(Uri.parse('https://randomuser.me/api/?results=15'));
+    
   }
 
   @override
@@ -48,3 +54,4 @@ class _SocialContentState extends State<SocialContent> {
       ),
     );
   }
+}
