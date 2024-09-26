@@ -58,13 +58,26 @@ class _SocialContentState extends State<SocialContent> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          'Team',
-          style: TextStyle(color: Colors.black, fontSize: 24.0),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Team'),
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+        itemCount: teamMembers.length,
+        itemBuilder: (context, index) {
+          //Muestra todos los miembros del equipo dentro del arreglo teamMembers
+          final member = teamMembers[index];
+          return ListTile(
+            //Nombre
+            title: Text('${member['name']['first']} ${member['name']['last']}'),
+            //Telefono
+            subtitle: Text(member['phone']),
+          );
+        },
       ),
     );
   }
+
 }
