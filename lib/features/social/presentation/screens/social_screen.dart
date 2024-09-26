@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart'; //font awesome
 import 'dart:convert'; //JSON
+import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
 class SocialScreen extends StatelessWidget {
@@ -77,16 +78,14 @@ class _SocialContentState extends State<SocialContent> {
             //Nombre
             title: Text('${member['name']['first']} ${member['name']['last']}'),
             //Telefono
-            subtitle: Text(member['phone']),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(member['cell']),
+                Text(member['phone']),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const FaIcon(FontAwesomeIcons.whatsapp), // Icono de FontAwesome WhatsApp
                   onPressed: () {
-                    // Implementar acciones para WhatsApp
                   },
                 ),
               ],
