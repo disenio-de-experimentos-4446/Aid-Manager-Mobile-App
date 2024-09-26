@@ -143,4 +143,29 @@ class PostsContent extends StatelessWidget {
       ],
     );
   }
+
+  Widget _buildPostImages() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _buildImagePost('https://www.example.com/image1.jpg'),
+        _buildImagePost('https://www.example.com/image2.jpg'),
+        _buildImagePost('https://www.example.com/image3.jpg'),
+      ],
+    );
+  }
+
+  Widget _buildImagePost(String imageUrl) {
+    return Container(
+      height: 80,
+      width: 80,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        image: DecorationImage(
+          image: NetworkImage(imageUrl), // Placeholder image
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
 }
