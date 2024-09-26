@@ -25,7 +25,7 @@ class SocialContent extends StatelessWidget {
     return const Scaffold(
       body: Center(
         child: Text(
-          'Social Content',
+          'Team',
           style: TextStyle(color: Colors.black, fontSize: 24.0),
         ),
       ),
