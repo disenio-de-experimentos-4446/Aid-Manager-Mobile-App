@@ -56,6 +56,18 @@ class _SocialContentState extends State<SocialContent> {
       throw Exception('Error al cargar los datos de la API');
     }
   }
+  
+  void launchWhatsApp(String phoneNumber) async {
+    // Limpiamos el numero
+    String cleanedNumber = phoneNumber.replaceAll(RegExp(r'\D'), '');
+    //abrimos la url a whatsapp
+    final url = 'https://wa.me/$cleanedNumber';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +98,7 @@ class _SocialContentState extends State<SocialContent> {
                 IconButton(
                   icon: const FaIcon(FontAwesomeIcons.whatsapp), // Icono de FontAwesome WhatsApp
                   onPressed: () {
+                    launchWhatsApp(member['cell']);
                   },
                 ),
               ],
