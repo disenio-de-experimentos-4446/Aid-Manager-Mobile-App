@@ -70,6 +70,10 @@ class _SocialContentState extends State<SocialContent> {
           //Muestra todos los miembros del equipo dentro del arreglo teamMembers
           final member = teamMembers[index];
           return ListTile(
+            //Foto del miembro del equipo
+            leading: CircleAvatar(
+              backgroundImage: NetworkImage(member['picture']['thumbnail']),
+            ),
             //Nombre
             title: Text('${member['name']['first']} ${member['name']['last']}'),
             //Telefono
