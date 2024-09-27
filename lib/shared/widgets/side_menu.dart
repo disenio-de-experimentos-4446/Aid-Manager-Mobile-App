@@ -59,7 +59,7 @@ class _SideMenuState extends State<SideMenu> {
                               ),
                             ),
                             const TextSpan(
-                              text: " Los Makungos  ",
+                              text: " Los Makungos ",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
