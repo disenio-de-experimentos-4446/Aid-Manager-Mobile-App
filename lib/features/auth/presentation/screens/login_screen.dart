@@ -1,6 +1,3 @@
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/invalid_email_dialog.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/is_empty_dialog.dart';
@@ -9,6 +6,9 @@ import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/email
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/login_banner.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/password_field.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/text_divider.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String name = "login_screen";
@@ -48,6 +48,12 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    // de ahi se agrega era pa testear esta wea
+    /* if(email == "macum@sexo.com" && password =="necum") {
+      context.go('/home');      
+      return;
+    } */
+    
     context.go('/home');
   }
 
@@ -68,17 +74,17 @@ class _LoginScreenState extends State<LoginScreen> {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
-        backgroundColor: CustomColors.lightGrey,
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              LoginBanner(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: CustomColors.lightGrey, // Usando el color lightGreen
+        body: Column(
+          children: [
+            LoginBanner(
                 containerHeight: containerHeight,
                 deviceWidth: deviceWidth,
-                logoImage: logo,
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
+                logoImage: logo),
+            const SizedBox(height: 90),
+            Expanded(
+              child: SizedBox(
                 width: deviceWidth * 0.85,
                 child: Form(
                   key: _formKey,
@@ -159,7 +165,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 16.0), // Espaciado entre los botones
+                          const SizedBox(
+                              width: 16.0), // Espaciado entre los botones
                           Expanded(
                             child: OutlinedButton.icon(
                               onPressed: () {
@@ -167,7 +174,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                               icon: Image.asset(
                                 'assets/images/google-icon.webp', // Ruta de la imagen del logo de Google
-                                height: 24.0, // Ajusta el tamaño según sea necesario
+                                height:
+                                    24.0, // Ajusta el tamaño según sea necesario
                               ),
                               label: const Text(
                                 'Google',
@@ -195,8 +203,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -20,6 +20,7 @@ class SocialScreen extends StatelessWidget {
     );
   }
 }
+
 //cambiamos a StatefulWidget para actualizar el estado
 //debido a que el API maneja datos dinamicos
 class SocialContent extends StatefulWidget {
@@ -29,6 +30,7 @@ class SocialContent extends StatefulWidget {
   @override
   _SocialContentState createState() => _SocialContentState();
 }
+
 class _SocialContentState extends State<SocialContent> {
   List<dynamic> teamMembers = []; //se almacenan los teamMembers
   bool isLoading = true;
@@ -38,31 +40,42 @@ class _SocialContentState extends State<SocialContent> {
     super.initState();
     fetchTeamMembers();
   }
-  //get del API
+
+  @override
+  void dispose() {
+    // evitar llamar a setState luego de que el widget haya sido desmontado.
+    super.dispose();
+  }
+
   Future<void> fetchTeamMembers() async {
-    final response = await http.get(Uri.parse('https://randomuser.me/api/?results=15'));
-    //try
+    final response =
+        await http.get(Uri.parse('https://randomuser.me/api/?results=15'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      setState(() {
-        teamMembers = data['results'];
-        isLoading = false;
-      });
-      //catch
+      if (mounted) {
+        setState(() {
+          teamMembers = data['results'];
+          isLoading = false;
+        });
+      }
     } else {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
       throw Exception('Error al cargar los datos de la API');
     }
   }
-  
+
   void launchWhatsApp(String phoneNumber) async {
     // Limpiamos el numero
     String cleanedNumber = phoneNumber.replaceAll(RegExp(r'\D'), '');
     //abrimos la url a whatsapp
     final url = 'https://wa.me/$cleanedNumber';
+    // ignore: deprecated_member_use
     if (await canLaunch(url)) {
+      // ignore: deprecated_member_use
       await launch(url);
     } else {
       throw 'Could not launch $url';
@@ -78,35 +91,37 @@ class _SocialContentState extends State<SocialContent> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
-        itemCount: teamMembers.length,
-        itemBuilder: (context, index) {
-          //Muestra todos los miembros del equipo dentro del arreglo teamMembers
-          final member = teamMembers[index];
-          return ListTile(
-            //Foto del miembro del equipo
-            leading: CircleAvatar(
-              backgroundImage: NetworkImage(member['picture']['thumbnail']),
+              itemCount: teamMembers.length,
+              itemBuilder: (context, index) {
+                //Muestra todos los miembros del equipo dentro del arreglo teamMembers
+                final member = teamMembers[index];
+                return ListTile(
+                  //Foto del miembro del equipo
+                  leading: CircleAvatar(
+                    backgroundImage:
+                        NetworkImage(member['picture']['thumbnail']),
+                  ),
+                  //Nombre
+                  title: Text(
+                      '${member['name']['first']} ${member['name']['last']}'),
+                  //Telefono
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(member['phone']),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        icon: const FaIcon(FontAwesomeIcons
+                            .whatsapp), // Icono de FontAwesome WhatsApp
+                        onPressed: () {
+                          launchWhatsApp(member['cell']);
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
-            //Nombre
-            title: Text('${member['name']['first']} ${member['name']['last']}'),
-            //Telefono
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(member['phone']),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const FaIcon(FontAwesomeIcons.whatsapp), // Icono de FontAwesome WhatsApp
-                  onPressed: () {
-                    launchWhatsApp(member['cell']);
-                  },
-                ),
-              ],
-            ),
-          );
-        },
-      ),
     );
   }
-
 }
