@@ -2,11 +2,16 @@ import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class EmailField extends StatelessWidget {
-  const EmailField({super.key});
+
+  final TextEditingController emailController;
+
+  const EmailField({super.key, required this.emailController});
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: emailController,
+      keyboardType: TextInputType.emailAddress,
       style: const TextStyle(fontSize: 18.0),
       decoration: InputDecoration(
         filled: true,

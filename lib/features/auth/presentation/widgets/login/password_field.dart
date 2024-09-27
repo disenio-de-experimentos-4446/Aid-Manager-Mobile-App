@@ -2,7 +2,9 @@ import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class PasswordField extends StatefulWidget {
-  const PasswordField({super.key});
+  final TextEditingController passwordController;
+
+  const PasswordField({super.key, required this.passwordController});
 
   @override
   State<PasswordField> createState() => _PasswordFieldState();
@@ -13,7 +15,9 @@ class _PasswordFieldState extends State<PasswordField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return TextField(
+      controller: widget.passwordController,
+      keyboardType: TextInputType.visiblePassword,
       style: const TextStyle(fontSize: 18.0),
       obscureText: !_isPasswordVisible,
       decoration: InputDecoration(
