@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatelessWidget {
-  static const String name = "profile_screen";
+class ManagerProfileScreen extends StatelessWidget {
+  static const String name = "manager_profile_screen";
 
-  const ProfileScreen({super.key});
+  const ManagerProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,8 +11,8 @@ class ProfileScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
             const CircleAvatar(
               radius: 50,
               backgroundImage: AssetImage('assets/images/profile.png'),
@@ -46,17 +46,34 @@ class ProfileScreen extends StatelessWidget {
               onPressed: () {},
             ),
 
-
             const SizedBox(height: 20),
+
+            // Security Section
             const ProfileSectionTitle(title: "Security"),
             ProfileDetailRow(
               icon: Icons.lock,
               label: '********',
               onPressed: () {},
             ),
-
+            ProfileDetailRow(
+              icon: Icons.key,
+              label: 'Organization Key',
+              onPressed: () {},
+            ),
+            const Text(
+              'This key provides sign-in access to your team members in the organization.\nBe careful',
+              style: TextStyle(color: Colors.grey, fontSize: 12),
+            ),
+            const SizedBox(height: 5),
+            ProfileDetailRow(
+              icon: Icons.remove_red_eye_outlined,
+              label: '********',
+              onPressed: () {},
+            ),
 
             const SizedBox(height: 20),
+
+            // Recent Projects Section
             const ProfileSectionTitle(title: "Recent Projects"),
             const RecentProject(
               projectName: 'Clean Carpayo Beach',
@@ -72,7 +89,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 }
-
 
 class ProfileSectionTitle extends StatelessWidget {
   final String title;
@@ -94,7 +110,6 @@ class ProfileSectionTitle extends StatelessWidget {
     );
   }
 }
-
 
 class ProfileDetailRow extends StatelessWidget {
   final IconData icon;
@@ -131,7 +146,6 @@ class ProfileDetailRow extends StatelessWidget {
   }
 }
 
-
 class RecentProject extends StatelessWidget {
   final String projectName;
   final String imagePath;
@@ -152,7 +166,6 @@ class RecentProject extends StatelessWidget {
           image: DecorationImage(
             image: AssetImage(imagePath),
             fit: BoxFit.cover,
-
           ),
         ),
         child: Center(
