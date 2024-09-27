@@ -23,7 +23,6 @@ class PostsContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,10 +38,11 @@ class PostsContent extends StatelessWidget {
 
   Widget _buildPostSomethingSection() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 15,),
           const Text(
             'Post Something NEW',
             style: TextStyle(
@@ -51,9 +51,9 @@ class PostsContent extends StatelessWidget {
               color: Colors.black,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Container(
-            height: 60,
+            height: 50,
             decoration: BoxDecoration(
               color: const Color(0xFFB3C6C7), // Greenish background
               borderRadius: BorderRadius.circular(10),
@@ -123,7 +123,7 @@ class PostsContent extends StatelessWidget {
       children: [
         const CircleAvatar(
           backgroundImage: NetworkImage(
-              'https://www.example.com/avatar.jpg'), // Placeholder avatar
+              'https://randomuser.me/api/portraits/men/4.jpg'), // Placeholder avatar
           radius: 20,
         ),
         const SizedBox(width: 10),
@@ -148,28 +148,41 @@ class PostsContent extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildImagePost('https://www.example.com/image1.jpg'),
-        _buildImagePost('https://www.example.com/image2.jpg'),
-        _buildImagePost('https://www.example.com/image3.jpg'),
+        Expanded(
+          child: _buildImagePost(
+            'https://media.gettyimages.com/id/1199706321/es/foto/organizador-de-eventos-ben%C3%A9ficos-saluda-al-voluntario-durante-el-evento-de-limpieza-comunitaria.jpg?s=612x612&w=gi&k=20&c=4Lr54UHi9T8twbhxH7aJyFJUtriXlZBKWTD2yQUNpvk=',
+          ),
+        ),
+        const SizedBox(width: 15,),
+        Expanded(
+          child: _buildImagePost(
+            'https://img.freepik.com/fotos-premium/trabajador-masculino-ong-entrega-caja-alimentos-basicos-articulos-tocador-familia-tres-personas-frontera-que-huye-conflicto-ucrania_341862-14800.jpg',
+          ),
+        ),
+        const SizedBox(width: 15,),
+        Expanded(
+          child: _buildImagePost(
+            'https://media.istockphoto.com/id/1367146074/es/foto/grupo-de-personas-que-trabajan-en-fundaciones-ben%C3%A9ficas.jpg?s=612x612&w=0&k=20&c=08eLUgDgeNivZZRptcs9Ronq2qFJ5rfWfEO7eDTsmTs=',
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildImagePost(String imageUrl) {
     return Container(
-      height: 80,
-      width: 80,
+      height: 150,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         image: DecorationImage(
-          image: NetworkImage(imageUrl), // Placeholder image
+          image: NetworkImage(imageUrl),
           fit: BoxFit.cover,
         ),
       ),
     );
   }
 
-   Widget _buildPostFooter() {
+  Widget _buildPostFooter() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

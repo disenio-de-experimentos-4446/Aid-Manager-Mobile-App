@@ -68,7 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             builder: (BuildContext context) {
               return const AccessCodeTeamDialog();
             })
-        : context.go('/payment');
+        : context.go('/tutorial');
   }
 
   @override
