@@ -45,7 +45,7 @@ class RegisterSuccessfullyDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () {
-            context.go('/tutorial');
+            context.go('/');
           },
           child: const Text(
             'OK',
