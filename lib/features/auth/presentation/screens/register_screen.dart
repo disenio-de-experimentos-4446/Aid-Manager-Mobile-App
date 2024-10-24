@@ -1,10 +1,19 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
-import 'package:aidmanager_mobile/features/auth/presentation/widgets/is_empty_dialog.dart';
-import 'package:aidmanager_mobile/features/auth/presentation/widgets/register/access_code_team_dialog.dart';
-import 'package:aidmanager_mobile/features/auth/presentation/widgets/register/passwords_not_same_dialog.dart';
+import 'package:aidmanager_mobile/features/auth/domain/entities/login_response.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
+import 'package:aidmanager_mobile/features/auth/shared/widgets/custom_dialog_error.dart';
+import 'package:aidmanager_mobile/features/auth/shared/widgets/invalid_email_dialog.dart';
+import 'package:aidmanager_mobile/features/auth/shared/widgets/is_empty_dialog.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/widgets/register/dialog/access_code_team_dialog.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/widgets/register/dialog/passwords_not_same_dialog.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/widgets/register/dialog/register_sucessfully_dialog.dart';
+import 'package:aidmanager_mobile/features/auth/shared/helpers/regex_helper.dart';
+import 'package:aidmanager_mobile/shared/helpers/show_customize_dialog.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const String name = "register_screen";
@@ -28,69 +37,113 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool isDirectorSelected = true;
   bool isTeamSelected = false;
 
-  void onSubmitRegister() {
+  void onSubmitRegister() async {
     final firstName = _firstNameController.text;
     final lastName = _lastNameController.text;
     final email = _emailController.text;
     final password = _passwordController.text;
     final passwordConfirm = _passwordConfirmController.text;
 
+    // asigamos el rol basado en la selección del usuario (se manda como int)
+    final role = isDirectorSelected
+        ? 0
+        : isTeamSelected
+            ? 1
+            : 0;
+
+    // validaciones petes :p
     if (firstName.isEmpty ||
         lastName.isEmpty ||
         email.isEmpty ||
         password.isEmpty ||
         passwordConfirm.isEmpty ||
         (!isDirectorSelected && !isTeamSelected)) {
-      // mostrar dialogo cuando no se cumpletaron todos los inputs
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const IsEmptyDialog();
-          });
-
+      showCustomizeDialog(context, const IsEmptyDialog());
       return;
     }
 
-    if (!(password == passwordConfirm)) {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const PasswordsNotSameDialog();
-          });
-
+    if (password != passwordConfirm) {
+      showCustomizeDialog(context, const PasswordsNotSameDialog());
       return;
     }
 
-    // navegar a la pantalla de tutorial si se ha completado los filtros :p
-    isTeamSelected
-        ? showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return const AccessCodeTeamDialog();
-            })
-        : context.go('/tutorial');
+    if (!RegexHelper.isValidEmail(email)) {
+      showCustomizeDialog(context, const InvalidEmailDialog());
+      return;
+    }
+
+    // acceso al provider para llamar a la función de registro
+    final authProvider = context.read<AuthProvider>();
+
+    try {
+      
+      if (role == 0) {
+        // si el rol es director, navegamos a la pantalla de organizacion
+        // mandamos el objeto que contiene la informacion de los campos completados hasta ahora
+        final directorInfo = DirectorData(firstName, lastName, email, password);
+        context.go('/organization', extra: directorInfo);
+      } 
+      else if (role == 1) {
+        // si el rol es miembro del equipo, solicitar el codigo de acceso al equipo
+        final teamRegisterCode = await showDialog<String>(
+          context: context,
+          builder: (BuildContext context) {
+            return const AccessCodeTeamDialog();
+          },
+        );
+
+        if (teamRegisterCode == null || teamRegisterCode.isEmpty) return;
+
+        await authProvider.submitRegisterUser(
+          firstName,
+          lastName,
+          email,
+          password,
+          role,
+          teamRegisterCode,
+        );
+
+        if (!mounted) return;
+
+        showCustomizeDialog(context, const RegisterSuccessfullyDialog());
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      final dialog = getErrorDialog(context, e as Exception);
+      showErrorDialog(context, dialog);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    //final double containerHeight = MediaQuery.of(context).size.height * 0.25;
-    final double deviceWidth = MediaQuery.of(context).size.width;
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.black.withOpacity(0.8),
+    ));
 
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: CustomColors.darkGreen,
-        body: SafeArea(
-          child: Stack(
-            children: [
-              Column(
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: CustomColors.darkGreen,
+          resizeToAvoidBottomInset: false,
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              final availableHeight = constraints.maxHeight;
+              final containerHeight = availableHeight * 0.25 + 10;
+              final initialChildSize =
+                  (availableHeight - containerHeight) / availableHeight;
+
+              return Stack(
                 children: [
-                  SizedBox(
-                    height: 210,
-                    child: Center(
-                      child: SizedBox(
-                        width: deviceWidth * 0.85,
+                  Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height:
+                            containerHeight, // Altura dinámica para el contenedor
+                        padding: const EdgeInsets.only(
+                            left: 30.0, right: 30, top: 10.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -123,344 +176,367 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ],
                         ),
                       ),
+                    ],
+                  ),
+                  Positioned(
+                    top: 15.0,
+                    left: 5.0,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.arrow_back_rounded,
+                        size: 30,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        context.go('/');
+                      },
                     ),
                   ),
-                  Expanded(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: CustomColors.lightGrey,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(40.0),
-                          topRight: Radius.circular(40.0),
-                        ),
-                      ),
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: SizedBox(
-                          width: deviceWidth * 0.85,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 40.0),
-                            child: Form(
-                              key: _formKey,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    "Transform your idea with us",
-                                    style: TextStyle(
-                                      fontSize: 28.0,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1.0,
-                                      height: 1.75,
-                                      color: Colors.black,
-                                      fontFamily: 'Roboto',
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 25,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextField(
-                                          controller: _firstNameController,
-                                          keyboardType: TextInputType.name,
-                                          style:
-                                              const TextStyle(fontSize: 18.0),
-                                          decoration: InputDecoration(
-                                            filled: true,
-                                            fillColor: CustomColors.fieldGrey,
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(15.0),
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(15.0),
-                                              borderSide: const BorderSide(
-                                                color: CustomColors.grey,
-                                              ),
-                                            ),
-                                            hintText: 'First Name',
-                                            hintStyle:
-                                                const TextStyle(fontSize: 18.0),
-                                            suffixIcon: const Padding(
-                                              padding:
-                                                  EdgeInsets.only(right: 18.0),
-                                              child:
-                                                  Icon(Icons.person, size: 28),
-                                            ),
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                    vertical: 20.0,
-                                                    horizontal: 18.0),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 15),
-                                      Expanded(
-                                        child: TextField(
-                                          controller: _lastNameController,
-                                          keyboardType: TextInputType.name,
-                                          style:
-                                              const TextStyle(fontSize: 18.0),
-                                          decoration: InputDecoration(
-                                            filled: true,
-                                            fillColor: CustomColors.fieldGrey,
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(15.0),
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(15.0),
-                                              borderSide: const BorderSide(
-                                                color: CustomColors.grey,
-                                              ),
-                                            ),
-                                            hintText: 'Last Name',
-                                            hintStyle:
-                                                const TextStyle(fontSize: 18.0),
-                                            suffixIcon: const Padding(
-                                              padding:
-                                                  EdgeInsets.only(right: 18.0),
-                                              child: Icon(Icons.person_add,
-                                                  size: 28),
-                                            ),
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                    vertical: 20.0,
-                                                    horizontal: 18.0),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 25,
-                                  ),
-                                  TextField(
-                                    controller: _emailController,
-                                    keyboardType: TextInputType.emailAddress,
-                                    style: const TextStyle(fontSize: 18.0),
-                                    decoration: InputDecoration(
-                                      filled: true,
-                                      fillColor: CustomColors.fieldGrey,
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                        borderSide: const BorderSide(
-                                          color: CustomColors.grey,
-                                        ),
-                                      ),
-                                      hintText: 'Institution Email',
-                                      hintStyle:
-                                          const TextStyle(fontSize: 18.0),
-                                      suffixIcon: const Padding(
-                                        padding: EdgeInsets.only(right: 18.0),
-                                        child:
-                                            Icon(Icons.email_rounded, size: 28),
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              vertical: 20.0, horizontal: 18.0),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 25,
-                                  ),
-                                  TextField(
-                                    keyboardType: TextInputType.visiblePassword,
-                                    controller: _passwordController,
-                                    style: const TextStyle(fontSize: 18.0),
-                                    decoration: InputDecoration(
-                                      filled: true,
-                                      fillColor: CustomColors.fieldGrey,
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                        borderSide: const BorderSide(
-                                          color: CustomColors.grey,
-                                        ),
-                                      ),
-                                      hintText: 'Password',
-                                      hintStyle:
-                                          const TextStyle(fontSize: 18.0),
-                                      suffixIcon: const Padding(
-                                        padding: EdgeInsets.only(right: 18.0),
-                                        child: Icon(Icons.remove_red_eye,
-                                            size: 28),
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              vertical: 20.0, horizontal: 18.0),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 25,
-                                  ),
-                                  TextField(
-                                    controller: _passwordConfirmController,
-                                    style: const TextStyle(fontSize: 18.0),
-                                    decoration: InputDecoration(
-                                      filled: true,
-                                      fillColor: CustomColors.fieldGrey,
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                        borderSide: const BorderSide(
-                                          color: CustomColors.grey,
-                                        ),
-                                      ),
-                                      hintText: 'Confirm Password',
-                                      hintStyle:
-                                          const TextStyle(fontSize: 18.0),
-                                      suffixIcon: const Padding(
-                                        padding: EdgeInsets.only(right: 18.0),
-                                        child: Icon(Icons.lock, size: 28),
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              vertical: 20.0, horizontal: 18.0),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 25,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Transform.scale(
-                                            scale: 1.25,
-                                            child: Checkbox(
-                                              value: isDirectorSelected,
-                                              onChanged: (value) =>
-                                                  setState(() {
-                                                isDirectorSelected =
-                                                    value ?? false;
-                                                if (isDirectorSelected) {
-                                                  isTeamSelected = false;
-                                                }
-                                              }),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(50),
-                                              ),
-                                              activeColor: Colors.green,
-                                            ),
-                                          ),
-                                          const Text(
-                                            'Director',
-                                            style: TextStyle(fontSize: 18.0),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(width: 35),
-                                      Row(
-                                        children: [
-                                          Transform.scale(
-                                            scale: 1.25,
-                                            child: Checkbox(
-                                              value: isTeamSelected,
-                                              onChanged: (value) =>
-                                                  setState(() {
-                                                isTeamSelected = value ?? false;
-                                                if (isTeamSelected) {
-                                                  isDirectorSelected = false;
-                                                }
-                                              }),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(50),
-                                              ),
-                                              activeColor: Colors.green,
-                                            ),
-                                          ),
-                                          const Text(
-                                            'Team',
-                                            style: TextStyle(fontSize: 18.0),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 25),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      onSubmitRegister();
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: CustomColors
-                                          .darkGreen, // Color de fondo
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 15),
-                                      minimumSize:
-                                          const Size(double.infinity, 0),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(12.0),
-                                      ),
-                                    ),
-                                    child: const Text(
-                                      'Create account',
-                                      style: TextStyle(
-                                          fontSize: 22.0,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1.8),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Container(color: Colors.transparent),
-                                  ),
-                                  const Center(
-                                    child: _HaveAccountText(),
-                                  ),
-                                  const SizedBox(height: 15)
-                                ],
-                              ),
-                            ),
+                  DraggableScrollableSheet(
+                    initialChildSize: initialChildSize,
+                    maxChildSize: 1.0,
+                    minChildSize: initialChildSize,
+                    builder: (context, scrollController) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        clipBehavior: Clip.hardEdge,
+                        decoration: BoxDecoration(
+                          color: CustomColors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(25),
+                            topRight: Radius.circular(25),
                           ),
                         ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-              Positioned(
-                top: 10.0,
-                left: 0.0,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back_rounded,
-                    size: 30,
-                    color: Colors.white,
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 15, bottom: 25),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      height: 5,
+                                      width: 45,
+                                      color: CustomColors.grey,
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Form(
+                                key: _formKey,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "Transform your idea with us",
+                                      style: TextStyle(
+                                        fontSize: 28.0,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.0,
+                                        height: 1.75,
+                                        color: Colors.black,
+                                        fontFamily: 'Roboto',
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 25,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextField(
+                                            controller: _firstNameController,
+                                            keyboardType: TextInputType.name,
+                                            style:
+                                                const TextStyle(fontSize: 18.0),
+                                            decoration: InputDecoration(
+                                              filled: true,
+                                              fillColor: CustomColors.fieldGrey,
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(15.0),
+                                                borderSide: BorderSide.none,
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(15.0),
+                                                borderSide: const BorderSide(
+                                                  color: CustomColors.grey,
+                                                ),
+                                              ),
+                                              hintText: 'First Name',
+                                              hintStyle: const TextStyle(
+                                                  fontSize: 18.0),
+                                              suffixIcon: const Padding(
+                                                padding: EdgeInsets.only(
+                                                    right: 18.0),
+                                                child: Icon(Icons.person,
+                                                    size: 28),
+                                              ),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 20.0,
+                                                      horizontal: 18.0),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 15),
+                                        Expanded(
+                                          child: TextField(
+                                            controller: _lastNameController,
+                                            keyboardType: TextInputType.name,
+                                            style:
+                                                const TextStyle(fontSize: 18.0),
+                                            decoration: InputDecoration(
+                                              filled: true,
+                                              fillColor: CustomColors.fieldGrey,
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(15.0),
+                                                borderSide: BorderSide.none,
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(15.0),
+                                                borderSide: const BorderSide(
+                                                  color: CustomColors.grey,
+                                                ),
+                                              ),
+                                              hintText: 'Last Name',
+                                              hintStyle: const TextStyle(
+                                                  fontSize: 18.0),
+                                              suffixIcon: const Padding(
+                                                padding: EdgeInsets.only(
+                                                    right: 18.0),
+                                                child: Icon(Icons.person_add,
+                                                    size: 28),
+                                              ),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 20.0,
+                                                      horizontal: 18.0),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 25,
+                                    ),
+                                    TextField(
+                                      controller: _emailController,
+                                      keyboardType: TextInputType.emailAddress,
+                                      style: const TextStyle(fontSize: 18.0),
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: CustomColors.fieldGrey,
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                          borderSide: const BorderSide(
+                                            color: CustomColors.grey,
+                                          ),
+                                        ),
+                                        hintText: 'Institution Email',
+                                        hintStyle:
+                                            const TextStyle(fontSize: 18.0),
+                                        suffixIcon: const Padding(
+                                          padding: EdgeInsets.only(right: 18.0),
+                                          child: Icon(Icons.email_rounded,
+                                              size: 28),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 20.0,
+                                                horizontal: 18.0),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 25,
+                                    ),
+                                    TextField(
+                                      keyboardType:
+                                          TextInputType.visiblePassword,
+                                      controller: _passwordController,
+                                      style: const TextStyle(fontSize: 18.0),
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: CustomColors.fieldGrey,
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                          borderSide: const BorderSide(
+                                            color: CustomColors.grey,
+                                          ),
+                                        ),
+                                        hintText: 'Password',
+                                        hintStyle:
+                                            const TextStyle(fontSize: 18.0),
+                                        suffixIcon: const Padding(
+                                          padding: EdgeInsets.only(right: 18.0),
+                                          child: Icon(Icons.remove_red_eye,
+                                              size: 28),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 20.0,
+                                                horizontal: 18.0),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 25,
+                                    ),
+                                    TextField(
+                                      controller: _passwordConfirmController,
+                                      style: const TextStyle(fontSize: 18.0),
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: CustomColors.fieldGrey,
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                          borderSide: const BorderSide(
+                                            color: CustomColors.grey,
+                                          ),
+                                        ),
+                                        hintText: 'Confirm Password',
+                                        hintStyle:
+                                            const TextStyle(fontSize: 18.0),
+                                        suffixIcon: const Padding(
+                                          padding: EdgeInsets.only(right: 18.0),
+                                          child: Icon(Icons.lock, size: 28),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 20.0,
+                                                horizontal: 18.0),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Transform.scale(
+                                              scale: 1.25,
+                                              child: Checkbox(
+                                                value: isDirectorSelected,
+                                                onChanged: (value) =>
+                                                    setState(() {
+                                                  isDirectorSelected =
+                                                      value ?? false;
+                                                  if (isDirectorSelected) {
+                                                    isTeamSelected = false;
+                                                  }
+                                                }),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                ),
+                                                activeColor: Colors.green,
+                                              ),
+                                            ),
+                                            const Text(
+                                              'Director',
+                                              style: TextStyle(fontSize: 18.0),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(width: 35),
+                                        Row(
+                                          children: [
+                                            Transform.scale(
+                                              scale: 1.25,
+                                              child: Checkbox(
+                                                value: isTeamSelected,
+                                                onChanged: (value) =>
+                                                    setState(() {
+                                                  isTeamSelected =
+                                                      value ?? false;
+                                                  if (isTeamSelected) {
+                                                    isDirectorSelected = false;
+                                                  }
+                                                }),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                ),
+                                                activeColor: Colors.green,
+                                              ),
+                                            ),
+                                            const Text(
+                                              'Team',
+                                              style: TextStyle(fontSize: 18.0),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 25),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        onSubmitRegister();
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: CustomColors
+                                            .darkGreen, // Color de fondo
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 15),
+                                        minimumSize:
+                                            const Size(double.infinity, 0),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Create account',
+                                        style: TextStyle(
+                                            fontSize: 22.0,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 1.8),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    const Center(
+                                      child: _HaveAccountText(),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                  onPressed: () {
-                    context.go('/');
-                  },
-                ),
-              ),
-            ],
+                ],
+              );
+            },
           ),
         ),
       ),

@@ -1,6 +1,8 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class MenuItem {
   final IconData icon;
@@ -30,6 +32,9 @@ class SideMenu extends StatefulWidget {
 class _SideMenuState extends State<SideMenu> {
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.user;
+
     return Drawer(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.75,
@@ -39,8 +44,8 @@ class _SideMenuState extends State<SideMenu> {
             Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.only(
-                      bottom: 20.0, top: 35.0, left: 20),
+                  padding:
+                      const EdgeInsets.only(bottom: 20.0, top: 35.0, left: 20),
                   decoration: const BoxDecoration(
                     color: Color.fromARGB(255, 202, 218, 198),
                   ),
@@ -58,20 +63,12 @@ class _SideMenuState extends State<SideMenu> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const TextSpan(
-                              text: " Los Makungos ",
+                            TextSpan(
+                              text: user?.companyName ?? 'No Company Name',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
                                 fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                            WidgetSpan(
-                              alignment: PlaceholderAlignment.middle,
-                              child: Transform.translate(
-                                offset: const Offset(0, -1.5),
-                                child: const Icon(Icons.airline_seat_recline_extra_sharp,
-                                    size: 26, color: Colors.blueGrey),
                               ),
                             ),
                           ],
@@ -80,17 +77,17 @@ class _SideMenuState extends State<SideMenu> {
                     ],
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(
-                      left: 20.0,
-                      top: 20.0,
-                      bottom: 20.0),
+                Padding(
+                  padding: EdgeInsets.only(left: 20.0, top: 20.0, bottom: 20.0),
                   child: Row(
                     children: [
                       CircleAvatar(
                         radius: 30,
-                        backgroundImage: AssetImage(
-                            'assets/images/hotman-placeholder.jpg'),
+                        backgroundImage: NetworkImage(
+                          user?.profileImg?.isNotEmpty == true
+                              ? user!.profileImg!
+                              : 'https://st3.depositphotos.com/4111759/13425/v/600/depositphotos_134255710-stock-illustration-avatar-vector-male-profile-gray.jpg',
+                        ),
                       ),
                       SizedBox(width: 16),
                       Column(
@@ -98,7 +95,7 @@ class _SideMenuState extends State<SideMenu> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Sebastian Hotman",
+                            user?.name ?? 'No Name',
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 18,
@@ -107,7 +104,7 @@ class _SideMenuState extends State<SideMenu> {
                           ),
                           SizedBox(height: 5),
                           Text(
-                            "rompe@codigo.com",
+                            user?.email ?? 'No email',
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 15,
@@ -168,8 +165,26 @@ class _SideMenuState extends State<SideMenu> {
               contentPadding: const EdgeInsets.only(left: 20.0, bottom: 8),
               leading: const Icon(Icons.logout),
               title: const Text('Logout'),
-              onTap: () {
-                context.go('/');
+              onTap: () async {
+                Navigator.of(context).pop();
+                  
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  },
+                );
+
+                await authProvider.signOut();
+                if (!mounted) return;
+
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.of(context).pop();
+                  context.go('/');
+                });
               },
             ),
           ],

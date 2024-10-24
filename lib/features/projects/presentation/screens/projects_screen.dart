@@ -1,5 +1,9 @@
+import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/providers/project_provider.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/widgets/project/project_card_list.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class ProjectsScreen extends StatelessWidget {
   static const String name = "projects_screen";
@@ -18,132 +22,118 @@ class ProjectsScreen extends StatelessWidget {
   }
 }
 
-class ProjectsContent extends StatelessWidget {
+class ProjectsContent extends StatefulWidget {
   const ProjectsContent({super.key});
+
+  @override
+  State<ProjectsContent> createState() => _ProjectsContentState();
+}
+
+class _ProjectsContentState extends State<ProjectsContent> {
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProjects();
+  }
+
+  Future<void> _loadProjects() async {
+    final projectProvider = Provider.of<ProjectProvider>(context, listen: false);
+
+    await projectProvider.loadInitialProjects();
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: <Widget>[
-            const SizedBox(height: 13),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(62),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                backgroundColor: const Color(0xFF98CFD7),
-                shadowColor: const Color(0xFF000000),
-                elevation: 10,
-              ),
-              child: Text(
-                'Hope Heaven',
-                style: GoogleFonts.lora(
-                    fontSize: 36, color: const Color(0xFFFFFFFF)),
-              ),
-            ),
-            const SizedBox(height: 13),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  'Projects',
-                  style: GoogleFonts.poppins(fontSize: 27),
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(32),
+    final projectProvider = context.watch<ProjectProvider>();
+
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 25.0),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  spreadRadius: 1,
+                                  blurRadius: 5,
+                                  offset: Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: TextField(
+                              controller: searchController,
+                              decoration: InputDecoration(
+                                hintText: 'Search',
+                                prefixIcon: Icon(Icons.search),
+                                border: InputBorder.none,
+                                contentPadding:
+                                    EdgeInsets.symmetric(vertical: 15.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 16.0),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: CustomColors.darkGreen,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.add,
+                              color: Colors.white,
+                              size: 32.0,
+                            ),
+                            onPressed: () {
+                              context.go('/projects/new');
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                    backgroundColor: const Color(0xFF02513D),
-                  ),
-                  child: Text(
-                    'A-Z',
-                    style: GoogleFonts.poppins(
-                        fontSize: 17, color: const Color(0xFFFFFFFF)),
+                    const SizedBox(height: 25.0),
+                    ProjectCardList(projects: projectProvider.projects)
+                  ],
+                ),
+              ),
+            ),
+            if (projectProvider.initialLoading)
+              Container(
+                color: Colors.black.withOpacity(0.5),
+                child: const Center(
+                  child: SizedBox(
+                    width: 80,
+                    height: 80,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 8,
+                      color: CustomColors.darkGreen, // Puedes cambiar el color aquí
+                    ),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 13),
-            Expanded(
-              child: ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    if (index == 9) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        decoration: BoxDecoration(
-                          image: const DecorationImage(
-                            image: NetworkImage(
-                                'https://www.8inspain.com/wp-content/uploads/2023/09/beach-cleanup_orig.jpg'),
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(120),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            backgroundColor: const Color(0xFF9ABAB1),
-                            shadowColor: const Color(0xFF000000),
-                            elevation: 5,
-                          ),
-                          child: const Icon(
-                            Icons.add,
-                            color: Color(0xFF02513D),
-                            size: 36,
-                          ),
-                        ),
-                      );
-                    }
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 13),
-                      decoration: BoxDecoration(
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                              "https://www.8inspain.com/wp-content/uploads/2023/09/beach-cleanup_orig.jpg"),
-                          fit: BoxFit.cover,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Stack(children: [
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(120),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            backgroundColor: Colors.transparent,
-                            shadowColor: const Color(0xFF000000),
-                            elevation: 5,
-                          ),
-                          child: Container(),
-                        ),
-                        Positioned(
-                          bottom: 8,
-                          left: 8,
-                          child: Text(
-                            'Project ${index + 1}',
-                            style: GoogleFonts.poppins(
-                              fontSize: 30,
-                              color: const Color(0xFFFFFFFF),
-                            ),
-                          ),
-                        ),
-                        ]
-                      ),
-                    );
-                  }),
-            ),
+              ),
           ],
         ),
       ),
