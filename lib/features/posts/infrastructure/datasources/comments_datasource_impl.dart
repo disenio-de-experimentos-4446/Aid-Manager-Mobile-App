@@ -32,7 +32,14 @@ class CommentsDatasourceImpl extends HttpService implements CommentDatasource {
 
   @override
   Future<void> deleteCommentByPostIdAndCommentId(int postId, int commentId) async {
-
+    try {
+      final deleteResponse = await dio.delete('/posts/$postId/comments/$commentId');
+      if (deleteResponse.statusCode != HttpStatus.accepted) {
+        throw Exception('Failed to delete comment: ${deleteResponse.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to delete comment by post id: $postId and comment id: $commentId');
+    }
   }
 
   @override
