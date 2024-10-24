@@ -11,4 +11,10 @@ class CommentRepositoryImpl implements CommentRepository {
   Future<void> createCommentByPostId(int postId, Comment comment) {
     return datasource.createCommentByPostId(postId, comment);
   }
+
+  @override
+  Future<void> deleteCommentByPostIdAndCommentId(int postId, int commentId) {
+    return datasource.deleteCommentByPostIdAndCommentId(postId, commentId);
+  }
+
 }
