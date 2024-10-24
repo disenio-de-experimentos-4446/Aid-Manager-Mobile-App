@@ -17,4 +17,8 @@ class CommentRepositoryImpl implements CommentRepository {
     return datasource.deleteCommentByPostIdAndCommentId(postId, commentId);
   }
 
+  @override
+  Future<List<Comment>> getAllCommentsFromPost(int postId) {
+    return datasource.getAllCommentsFromPost(postId);
+  }
 }
