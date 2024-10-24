@@ -13,4 +13,17 @@ class CommentMapper {
       commentTime: json['commentTime'],
     );
   }
+
+  static Map<String, dynamic> toJson(Comment comment) {
+    return {
+      'id': comment.id,
+      'postId': comment.postId, // Ensure this is an int
+      'userId': comment.userId,
+      'comment': comment.comment,
+      'userName': comment.userName,
+      'userEmail': comment.userEmail,
+      'userImage': comment.userImage,
+      'commentTime': comment.commentTime,
+    };
+  }
 }
