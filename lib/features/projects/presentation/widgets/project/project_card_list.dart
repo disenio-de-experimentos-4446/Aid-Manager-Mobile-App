@@ -23,7 +23,7 @@ class ProjectCardList extends StatelessWidget {
               imagesUrl: project.imageUrl,
               userList: project.userList!,
               onPressedCard: () {
-                context.go('/projects/$index');
+                context.go('/projects/${project.id}');
               },
             ),
             if (index < projects.length - 1) SizedBox(height: 20.0),

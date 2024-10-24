@@ -7,14 +7,15 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-
 class ProjectDashboardScreen extends StatefulWidget {
   static const String name = "project_dashboard_screen";
   final String projectId;
+  final String projectName;
 
   const ProjectDashboardScreen({
     super.key,
     required this.projectId,
+    required this.projectName,
   });
 
   @override
@@ -63,7 +64,7 @@ class _ProjectDashboardScreenState extends State<ProjectDashboardScreen> {
         backgroundColor: CustomColors.darkGreen,
         centerTitle: false,
         title: Text(
-          'Clean Beach Lonely ${widget.projectId}',
+          widget.projectName,
           style: TextStyle(
             fontSize: 22.0,
             color: Colors.white,
@@ -154,7 +155,9 @@ class _ProjectDashboardScreenState extends State<ProjectDashboardScreen> {
               SizedBox(
                 height: 25,
               ),
-              LineChartCard(projectId: widget.projectId,),
+              LineChartCard(
+                projectId: widget.projectId,
+              ),
               SizedBox(
                 height: 25,
               ),

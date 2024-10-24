@@ -6,4 +6,5 @@ abstract class TasksDatasource {
   Future<Task> getTaskById(int id);
   Future<void> updateTaskById(int id, Task task);
   Future<void> deleteTaskById(int id);
+  Future<void> updateStatusFieldByTask(int projectId, int taskId, String newStatus);
 }

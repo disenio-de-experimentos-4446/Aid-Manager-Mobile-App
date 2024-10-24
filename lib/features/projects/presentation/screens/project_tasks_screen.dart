@@ -1,14 +1,17 @@
-import 'package:aidmanager_mobile/config/mocks/tasks_data.dart';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/providers/task_provider.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/widgets/tasks/task_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class ProjectTasksScreen extends StatefulWidget {
   static const String name = "project_tasks_screen";
   final String projectId;
+  final String projectName;
 
-  const ProjectTasksScreen({super.key, required this.projectId});
+  const ProjectTasksScreen(
+      {super.key, required this.projectId, required this.projectName});
 
   @override
   State<ProjectTasksScreen> createState() => _ProjectTasksScreenState();
@@ -28,13 +31,35 @@ class _ProjectTasksScreenState extends State<ProjectTasksScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _loadTasks();
+  }
+
+  Future<void> _loadTasks() async {
+    final projectId = int.parse(widget.projectId);
+    final tasksProvider = Provider.of<TaskProvider>(context, listen: false);
+
+    await tasksProvider.loadInitialTasksByProjectId(projectId);
+  }
+
+  Future<void> updateTaskStatus(
+      int projectId, int taskId, String newStatus) async {
+    final tasksProvider = Provider.of<TaskProvider>(context, listen: false);
+
+    await tasksProvider.updateStatusFieldByTask(projectId, taskId, newStatus);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final taskProvider = context.watch<TaskProvider>();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: CustomColors.darkGreen,
         centerTitle: false,
         title: Text(
-          'Lonely Beach Pacific',
+          widget.projectName,
           style: TextStyle(
             fontSize: 22.0,
             color: const Color.fromARGB(255, 255, 255, 255),
@@ -82,8 +107,8 @@ class _ProjectTasksScreenState extends State<ProjectTasksScreen> {
                     children: [
                       CustomButton(
                         text: 'To do',
-                        number: tasksData
-                            .where((task) => task.status == 'To do')
+                        number: taskProvider.tasks
+                            .where((task) => task.state == 'ToDo')
                             .length,
                         color: const Color.fromARGB(255, 255, 141, 132),
                         isSelected: selectedButton == 'To do',
@@ -94,8 +119,8 @@ class _ProjectTasksScreenState extends State<ProjectTasksScreen> {
                       SizedBox(width: 20), // Espacio entre botones
                       CustomButton(
                         text: 'Progress',
-                        number: tasksData
-                            .where((task) => task.status == 'Progress')
+                        number: taskProvider.tasks
+                            .where((task) => task.state == 'Progress')
                             .length,
                         color: const Color.fromARGB(255, 229, 255, 0),
                         isSelected: selectedButton == 'Progress',
@@ -106,8 +131,8 @@ class _ProjectTasksScreenState extends State<ProjectTasksScreen> {
                       SizedBox(width: 20), // Espacio entre botones
                       CustomButton(
                         text: 'Complete',
-                        number: tasksData
-                            .where((task) => task.status == 'Done')
+                        number: taskProvider.tasks
+                            .where((task) => task.state == 'Done')
                             .length,
                         color: const Color.fromARGB(255, 92, 212, 96),
                         isSelected: selectedButton == 'Complete',
@@ -142,18 +167,22 @@ class _ProjectTasksScreenState extends State<ProjectTasksScreen> {
               },
               children: [
                 TaskPageView(
-                  tasks: tasksData
-                      .where((task) => task.status == 'To do')
+                  tasks: taskProvider.tasks
+                      .where((task) => task.state == 'ToDo')
                       .toList(),
+                  onUpdateStatus: updateTaskStatus,
                 ),
                 TaskPageView(
-                  tasks: tasksData
-                      .where((task) => task.status == 'Progress')
+                  tasks: taskProvider.tasks
+                      .where((task) => task.state == 'Progress')
                       .toList(),
+                  onUpdateStatus: updateTaskStatus,
                 ),
                 TaskPageView(
-                  tasks:
-                      tasksData.where((task) => task.status == 'Done').toList(),
+                  tasks: taskProvider.tasks
+                      .where((task) => task.state == 'Done')
+                      .toList(),
+                  onUpdateStatus: updateTaskStatus,
                 ),
               ],
             ),
@@ -162,7 +191,7 @@ class _ProjectTasksScreenState extends State<ProjectTasksScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-            context.go('/projects/${widget.projectId}/tasks/new');
+          context.go('/projects/${widget.projectId}/tasks/new');
         },
         backgroundColor: CustomColors.darkGreen,
         child: Icon(

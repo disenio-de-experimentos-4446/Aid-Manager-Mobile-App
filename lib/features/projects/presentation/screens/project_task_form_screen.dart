@@ -1,6 +1,13 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/profile/presentation/providers/profile_provider.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/providers/task_provider.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/widgets/tasks/dialog/error_task_creation_dialog.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/widgets/tasks/dialog/no_members_available_dialog.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/widgets/tasks/dialog/successfully_create_task_dialog.dart';
+import 'package:aidmanager_mobile/shared/helpers/show_customize_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 class ProjectTaskFormScreen extends StatefulWidget {
@@ -14,9 +21,63 @@ class ProjectTaskFormScreen extends StatefulWidget {
 }
 
 class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
+  final TextEditingController _subjectController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _dueDateController = TextEditingController();
-  String _status = 'To do';
-  String _selectedPerson = 'Person 1';
+
+  String _status = 'ToDo'; // status inicial del dropdown
+  String? _selectedPerson;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMembers();
+  }
+
+  Future<void> _loadMembers() async {
+    await context.read<ProfileProvider>().getMembersByCompany();
+    if (!mounted) return;
+    final users = context.read<ProfileProvider>().users;
+
+    if (users.isEmpty) {
+      showCustomizeDialog(context, NoMembersAvailableDialog());
+      return;
+    }
+
+    setState(() {
+      _selectedPerson = users[0].id.toString();
+    });
+  }
+
+  Future<void> onSubmitNewTask() async {
+    final subject = _subjectController.text;
+    final description = _descriptionController.text;
+    final dueDate =
+        DateTime.tryParse(_dueDateController.text) ?? DateTime.now();
+    final status = _status;
+    final selectedPerson = _selectedPerson;
+
+    final tasksProvider = context.read<TaskProvider>();
+
+    try {
+      await tasksProvider.createNewTask(
+        subject,
+        description,
+        dueDate,
+        status,
+        int.parse(selectedPerson!),
+        int.parse(widget.projectId),
+      );
+
+      if(!mounted) return;
+      
+      showCustomizeDialog(context, SuccessfullyCreateTaskDialog(projectId: widget.projectId,));
+    } catch (e) {
+      if(!mounted) return;
+      showCustomizeDialog(context, ErrorTaskCreationDialog());
+      return;
+    }
+  }
 
   @override
   void dispose() {
@@ -26,6 +87,9 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final usersProvider = context.watch<ProfileProvider>();
+    final users = usersProvider.users;
+
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
@@ -83,7 +147,6 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
                     child: IconButton(
                       icon: Icon(Icons.replay, color: Colors.white, size: 30.0),
                       onPressed: () {
-                        // Acción al presionar el ícono de limpiar
                       },
                     ),
                   ),
@@ -107,6 +170,7 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
                   ),
                   SizedBox(height: 8.0), // Espacio entre el texto y el input
                   TextFormField(
+                    controller: _subjectController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -138,6 +202,7 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
                   ),
                   SizedBox(height: 8.0), // Espacio entre el texto y el input
                   TextFormField(
+                    controller: _descriptionController,
                     maxLines: 4, // Campo de descripción
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -187,43 +252,46 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
                       fillColor: Colors.white,
                     ),
                     iconSize: 35.0, // Aumenta el tamaño del ícono del dropdown
-                    items: [
-                      {
-                        'value': 'Person 1',
-                        'image': 'https://randomuser.me/api/portraits/men/1.jpg'
-                      },
-                      {
-                        'value': 'Person 2',
-                        'image':
-                            'https://randomuser.me/api/portraits/women/2.jpg'
-                      },
-                      {
-                        'value': 'Person 3',
-                        'image': 'https://randomuser.me/api/portraits/men/3.jpg'
-                      },
-                      {
-                        'value': 'Person 4',
-                        'image':
-                            'https://randomuser.me/api/portraits/women/4.jpg'
-                      },
-                    ].map((item) {
+                    items: users.map((user) {
                       return DropdownMenuItem<String>(
-                        value: item['value'] as String,
+                        value: user.id.toString(),
                         child: Row(
                           children: [
-                            Container(
+                            SizedBox(
                               width: 35, // Aumenta el ancho de la imagen
                               height: 35, // Aumenta la altura de la imagen
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                  image: NetworkImage(item['image'] as String),
-                                  fit: BoxFit.contain,
-                                ),
+                              child: ClipOval(
+                                child: user.profileImg != null
+                                    ? FadeInImage.assetNetwork(
+                                        placeholder:
+                                            'assets/images/profile-placeholder.jpg',
+                                        image: user.profileImg!,
+                                        fit: BoxFit.cover,
+                                        width: 35,
+                                        height: 35,
+                                        imageErrorBuilder:
+                                            (context, error, stackTrace) {
+                                          return Image.asset(
+                                            'assets/images/profile-placeholder.jpg',
+                                            fit: BoxFit.cover,
+                                            width: 35,
+                                            height: 35,
+                                          );
+                                        },
+                                      )
+                                    : Image.asset(
+                                        'assets/images/profile-placeholder.jpg',
+                                        fit: BoxFit.cover,
+                                        width: 35,
+                                        height: 35,
+                                      ),
                               ),
                             ),
                             SizedBox(width: 10),
-                            Text(item['value'] as String),
+                            Text(
+                              user.name,
+                              style: TextStyle(fontSize: 18.0),
+                            ),
                           ],
                         ),
                       );
@@ -346,7 +414,7 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
                                 fillColor: Colors.white,
                               ),
                               items: [
-                                {'value': 'To do', 'color': Colors.red},
+                                {'value': 'ToDo', 'color': Colors.red},
                                 {
                                   'value': 'Progress',
                                   'color':
@@ -403,7 +471,7 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
                               BorderRadius.all(Radius.circular(15.0))),
                       child: TextButton(
                         onPressed: () {
-                          // Lógica para crear una nueva tarea
+                          onSubmitNewTask();
                         },
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white, // Color del texto

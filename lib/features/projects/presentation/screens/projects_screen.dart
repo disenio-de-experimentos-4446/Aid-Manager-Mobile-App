@@ -1,7 +1,6 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
-import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/providers/project_provider.dart';
-import 'package:aidmanager_mobile/features/projects/presentation/widgets/project_card_list.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/widgets/project/project_card_list.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -40,11 +39,9 @@ class _ProjectsContentState extends State<ProjectsContent> {
   }
 
   Future<void> _loadProjects() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final projectProvider = Provider.of<ProjectProvider>(context, listen: false);
-    final companyId = authProvider.user?.companyId;
 
-    await projectProvider.loadInitialProjects(companyId!);
+    await projectProvider.loadInitialProjects();
   }
 
   @override

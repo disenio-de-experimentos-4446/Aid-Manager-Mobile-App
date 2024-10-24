@@ -10,11 +10,12 @@ class ProjectsDatasourceImpl extends HttpService implements ProjectsDatasource {
   @override
   Future<void> createProject(Project project) async {
     final requestBody = ProjectMapper.toJson(project);
+    print(requestBody);
 
     try {
       final response = await dio.post(
         '/projects',
-        data: jsonEncode(requestBody),  
+        data  : jsonEncode(requestBody),  
       );
 
       if(response.statusCode != HttpStatus.ok) {

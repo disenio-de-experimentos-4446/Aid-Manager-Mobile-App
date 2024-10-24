@@ -21,3 +21,19 @@ class ProjectDetailFetchException implements Exception {
   @override
   String toString() => 'ProjectDetailFetchException: $message';
 }
+
+class InvalidNumberOfImagesException implements Exception {
+  final String message;
+  InvalidNumberOfImagesException(this.message);
+
+  @override
+  String toString() => 'InvalidNumberOfImagesException: $message';
+}
+
+class InvalidDescriptionLengthException implements Exception {
+  final String message;
+  InvalidDescriptionLengthException(this.message);
+
+  @override
+  String toString() => 'InvalidDescriptionLengthException: $message';
+}

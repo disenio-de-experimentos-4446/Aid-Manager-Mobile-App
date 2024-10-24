@@ -1,7 +1,13 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/auth/shared/widgets/is_empty_dialog.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/providers/project_provider.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/widgets/project/successfully_create_project.dart';
+import 'package:aidmanager_mobile/features/projects/shared/widgets/custom_error_project_dialog.dart';
+import 'package:aidmanager_mobile/shared/helpers/show_customize_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class ProjectCreateFormScreen extends StatefulWidget {
   static const String name = "project_create_form_screen";
@@ -14,14 +20,55 @@ class ProjectCreateFormScreen extends StatefulWidget {
 }
 
 class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
+  final TextEditingController _projectNameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _numberImagesController = TextEditingController();
   final TextEditingController _projectDateController = TextEditingController();
   final TextEditingController _projectTimeController = TextEditingController();
+  final TextEditingController _projectLocation = TextEditingController();
 
-  @override
-  void dispose() {
-    _projectDateController.dispose();
-    _projectTimeController.dispose();
-    super.dispose();
+  Future<void> onSubmitNewProject() async {
+
+    if (_projectNameController.text.trim().isEmpty ||
+        _descriptionController.text.trim().isEmpty ||
+        _numberImagesController.text.isEmpty ||
+        _projectDateController.text.trim().isEmpty ||
+        _projectTimeController.text.trim().isEmpty ||
+        _projectLocation.text.trim().isEmpty) {
+      showErrorDialog(context, const IsEmptyDialog());
+      return; // Ensure the function exits after showing the dialog
+    }
+
+    final name = _projectNameController.text.trim();
+    final description = _descriptionController.text.trim();
+    final numImages = int.tryParse(_numberImagesController.text) ?? 0;
+    final projectDate =
+        DateTime.tryParse(_projectDateController.text) ?? DateTime.now();
+    final timeParts = _projectTimeController.text.split(":");
+    final projectTime = timeParts.length == 2
+        ? TimeOfDay(
+            hour: int.tryParse(timeParts[0]) ?? 0,
+            minute: int.tryParse(timeParts[1]) ?? 0,
+          )
+        : TimeOfDay(hour: 0, minute: 0);
+    final projectLocation = _projectLocation.text.trim();
+
+    // llamamos al provider para acceder almetodo submit
+    final projectProvider = context.read<ProjectProvider>();
+
+    try {
+      await projectProvider.submitNewProject(name, description, numImages,
+          projectDate, projectTime, projectLocation);
+
+      if (!mounted) return;
+
+      showCustomizeDialog(context, const SuccessfullyCreateProject());
+    } catch (e) {
+      if (!mounted) return;
+      // mostrar un dialog perzonalizado para cada exception
+      final dialog = getProjectErrorDialog(context, e as Exception);
+      showErrorDialog(context, dialog);
+    }
   }
 
   @override
@@ -82,6 +129,7 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
                     ),
                     SizedBox(height: 8.0), // Espacio entre el texto y el input
                     TextFormField(
+                      controller: _projectNameController,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
@@ -95,8 +143,7 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
                         ),
                         filled: true,
                         fillColor: Colors.white,
-                        suffixIcon: Icon(Icons
-                            .text_fields), // Ícono a la derecha del campo de texto
+                        suffixIcon: Icon(Icons.title),
                       ),
                     ),
                     SizedBox(height: 20.0), // Espacio entre inputs
@@ -113,6 +160,7 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
                     ),
                     SizedBox(height: 8.0), // Espacio entre el texto y el input
                     TextFormField(
+                      controller: _descriptionController,
                       maxLines: 4, // Campo de descripción
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
@@ -143,6 +191,7 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
                     ),
                     SizedBox(height: 8.0), // Espacio entre el texto y el input
                     TextFormField(
+                      controller: _numberImagesController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
@@ -175,6 +224,7 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
                     ),
                     SizedBox(height: 8.0), // Espacio entre el texto y el input
                     TextFormField(
+                      controller: _projectLocation,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
@@ -250,19 +300,17 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
                                     lastDate: DateTime(2101),
                                   );
                                   if (pickedDate != null) {
-                                    // Formatea la fecha y actualiza el campo de texto
                                     String formattedDate =
                                         DateFormat('yyyy-MM-dd')
                                             .format(pickedDate);
                                     setState(() {
-                                      // Actualiza el controlador del campo de texto con la fecha seleccionada
+                                      // actualiza el controlador del campo de texto con la fecha seleccionada
                                       _projectDateController.text =
                                           formattedDate;
                                     });
                                   }
                                 },
-                                controller:
-                                    _projectDateController, // Controlador para el campo de fecha
+                                controller: _projectDateController,
                               ),
                             ],
                           ),
@@ -323,7 +371,6 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
                                     initialTime: TimeOfDay.now(),
                                   );
                                   if (pickedTime != null) {
-                                    // Formatea la hora y actualiza el campo de texto
                                     String formattedTime =
                                         pickedTime.format(context);
                                     setState(() {
@@ -356,7 +403,7 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
                         ),
                         child: TextButton(
                           onPressed: () {
-                            // Lógica para crear un nuevo proyecto
+                            onSubmitNewProject();
                           },
                           style: TextButton.styleFrom(
                             foregroundColor: Colors.white, // Color del texto

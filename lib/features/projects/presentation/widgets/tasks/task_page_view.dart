@@ -1,12 +1,16 @@
-import 'package:aidmanager_mobile/config/mocks/tasks_data.dart';
+import 'package:aidmanager_mobile/features/projects/domain/entities/task.dart';
+import 'package:aidmanager_mobile/features/projects/shared/helpers/get_random_priority.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class TaskPageView extends StatelessWidget {
   final List<Task> tasks;
+  final Function(int projectId, int taskId, String newStatus) onUpdateStatus;
 
   const TaskPageView({
     super.key,
     required this.tasks,
+    required this.onUpdateStatus,
   });
 
   @override
@@ -19,6 +23,10 @@ class TaskPageView extends StatelessWidget {
           itemCount: tasks.length,
           itemBuilder: (context, index) {
             final task = tasks[index];
+            final assignImage = task.assignImage ?? '';
+            final priority = getPriorityFromDueDate(task.dueDate);
+            final color = getPriorityColor(priority);
+
             return Column(
               children: [
                 SizedBox(height: 20),
@@ -28,8 +36,7 @@ class TaskPageView extends StatelessWidget {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20.0),
                     border: Border.all(
-                        color: Colors.black54,
-                        width: 1), // Borde negro
+                        color: Colors.black54, width: 1), // Borde negro
                   ),
                   child: Container(
                     padding: EdgeInsets.all(16),
@@ -54,24 +61,37 @@ class TaskPageView extends StatelessWidget {
                                 size: 34.0,
                               ),
                               onSelected: (String newStatus) {
-                                // actualizar el estado de la tarea
-                                task.status = newStatus;
-                                // Notificar a la interfaz de usuario que se ha actualizado el estado
-                                (context as Element).markNeedsBuild();
+                                onUpdateStatus(
+                                    task.projectId!, task.id!, newStatus);
                               },
                               itemBuilder: (BuildContext context) =>
                                   <PopupMenuEntry<String>>[
                                 const PopupMenuItem<String>(
-                                  value: 'To do',
-                                  child: Text('To do', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),),
+                                  value: 'ToDo',
+                                  child: Text(
+                                    'To do',
+                                    style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                                 const PopupMenuItem<String>(
                                   value: 'Progress',
-                                  child: Text('Progress', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),),
+                                  child: Text(
+                                    'Progress',
+                                    style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                                 const PopupMenuItem<String>(
                                   value: 'Done',
-                                  child: Text('Done', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),),
+                                  child: Text(
+                                    'Done',
+                                    style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                               ],
                             ),
@@ -97,7 +117,8 @@ class TaskPageView extends StatelessWidget {
                                   offset: Offset(0,
                                       1), // Desplazamiento en el eje Y negativo
                                   child: Text(
-                                    '${task.date.day}/${task.date.month}/${task.date.year}', // Fecha de la tarea
+                                    DateFormat('yyyy-MM-dd')
+                                        .format(task.dueDate),
                                     style: TextStyle(
                                         fontSize: 18,
                                         letterSpacing: 1,
@@ -133,15 +154,13 @@ class TaskPageView extends StatelessWidget {
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 15, vertical: 6),
                                   decoration: BoxDecoration(
-                                    color: const Color.fromARGB(255, 224, 64,
-                                        64), // Color de fondo del contenedor
-                                    borderRadius: BorderRadius.circular(
-                                        20), // Bordes redondeados
+                                    color: color,
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
-                                    task.priority, // Prioridad de la tarea
+                                    priority,
                                     style: TextStyle(
-                                      color: Colors.white, // Color del texto
+                                      color: Colors.white,
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -149,19 +168,42 @@ class TaskPageView extends StatelessWidget {
                                 ),
                                 SizedBox(width: 10),
                                 Container(
-                                  padding: EdgeInsets.all(
-                                      1.5), // Espacio entre el borde y el avatar
+                                  padding: EdgeInsets.all(1.5),
                                   decoration: BoxDecoration(
                                     color: const Color.fromARGB(
-                                        255, 219, 219, 219), // Color del borde
-                                    shape: BoxShape.circle, // Forma circular
+                                        255, 219, 219, 219),
+                                    shape: BoxShape.circle,
                                   ),
                                   child: CircleAvatar(
-                                    radius: 20, // Tamaño del avatar
-                                    backgroundImage:
-                                        NetworkImage(task.imageUrl),
-                                    backgroundColor: Colors
-                                        .green, // Color de fondo si la imagen no se carga
+                                    radius: 20,
+                                    backgroundColor: Colors.green,
+                                    child: ClipOval(
+                                      child: assignImage.isNotEmpty
+                                          ? FadeInImage.assetNetwork(
+                                              placeholder:
+                                                  'assets/images/placeholder-image.webp',
+                                              image: task.assignImage ??
+                                                  'assets/images/profile-placeholder.jpg',
+                                              fit: BoxFit.cover,
+                                              width: 40,
+                                              height: 40,
+                                              imageErrorBuilder:
+                                                  (context, error, stackTrace) {
+                                                return Image.asset(
+                                                  'assets/images/profile-placeholder.jpg',
+                                                  fit: BoxFit.cover,
+                                                  width: 40,
+                                                  height: 40,
+                                                );
+                                              },
+                                            )
+                                          : Image.asset(
+                                              'assets/images/profile-placeholder.jpg',
+                                              fit: BoxFit.cover,
+                                              width: 40,
+                                              height: 40,
+                                            ),
+                                    ),
                                   ),
                                 ),
                               ],

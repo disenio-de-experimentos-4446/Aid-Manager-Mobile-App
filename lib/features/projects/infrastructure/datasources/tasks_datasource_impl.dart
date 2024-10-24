@@ -5,6 +5,7 @@ import 'package:aidmanager_mobile/features/projects/domain/datasources/tasks_dat
 import 'package:aidmanager_mobile/features/projects/domain/entities/task.dart';
 import 'package:aidmanager_mobile/features/projects/infrastructure/mappers/task_mapper.dart';
 import 'package:aidmanager_mobile/shared/service/http_service.dart';
+import 'package:dio/dio.dart';
 
 class TasksDatasourceImpl extends HttpService implements TasksDatasource {
   @override
@@ -17,16 +18,46 @@ class TasksDatasourceImpl extends HttpService implements TasksDatasource {
         data: jsonEncode(requestBody),
       );
 
-      if(response.statusCode != HttpStatus.ok) {
+      print(response.data);
+
+        if(response.statusCode != HttpStatus.created) {
         throw Exception('Failed to create a new task: ${response.statusCode}');
       }
+
 
       if (response.data == null || response.data.isEmpty) {
         throw Exception('Failed to create a new task: Response body is empty');
       }
 
+
     } catch (e) {
       throw Exception('Failed to create a new task by project id: $projectId');
+    }
+  }
+
+  @override
+  Future<void> updateStatusFieldByTask(int projectId, int taskId, String newStatus) async {
+
+    final requestBody = jsonEncode({
+      'status': newStatus
+    });
+
+    try {
+      final response = await dio.patch(
+        '/projects/$projectId/task-items/$taskId',
+        data: requestBody,
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        throw Exception('Failed to update task status: ${response.statusCode}');
+      }
+
+      if (response.data == null || response.data.isEmpty) {
+        throw Exception('Failed to update task status: Response body is empty');
+      }
+      
+    } catch (e) {
+      throw Exception('Failed to update task status for task id: $taskId in project id: $projectId. Original error: $e');
     }
   }
 
