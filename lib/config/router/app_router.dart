@@ -1,5 +1,4 @@
-import 'package:aidmanager_mobile/features/auth/domain/entities/user.dart';
-import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
+import 'package:aidmanager_mobile/features/auth/domain/entities/login_response.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/screens/login_screen.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/screens/organization_screen.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/screens/register_screen.dart';
@@ -100,9 +99,10 @@ final appRouter = GoRouter(
           name: ProjectDashboardScreen.name,
           pageBuilder: (context, state) {
             final projectId = state.pathParameters['projectId']!;
+            final projectName = state.uri.queryParameters['name']!;
             return NoTransitionPage(
               key: state.pageKey,
-              child: ProjectDashboardScreen(projectId: projectId),
+              child: ProjectDashboardScreen(projectId: projectId, projectName: projectName),
             );
           },
         ),
@@ -133,9 +133,10 @@ final appRouter = GoRouter(
           name: ProjectTasksScreen.name,
           pageBuilder: (context, state) {
             final projectId = state.pathParameters['projectId']!;
+            final projectName = state.uri.queryParameters['name']!;
             return NoTransitionPage(
               key: state.pageKey,
-              child: ProjectTasksScreen(projectId: projectId),
+              child: ProjectTasksScreen(projectId: projectId, projectName: projectName,),
             );
           },
         ),
