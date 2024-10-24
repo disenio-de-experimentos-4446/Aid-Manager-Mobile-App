@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:aidmanager_mobile/features/auth/infrastructure/mappers/user_mapper.dart';
+import 'package:aidmanager_mobile/features/profile/infrastructure/mappers/user_mapper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:aidmanager_mobile/features/auth/domain/entities/user.dart';
+import 'package:aidmanager_mobile/features/profile/domain/entities/user.dart';
 
 class StorageHelper {
   static const String _tokenKey = 'token';

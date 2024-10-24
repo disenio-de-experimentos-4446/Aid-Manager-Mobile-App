@@ -1,11 +1,11 @@
-import 'package:aidmanager_mobile/features/auth/domain/entities/user.dart';
+import 'package:aidmanager_mobile/features/profile/domain/entities/user.dart';
 import 'package:aidmanager_mobile/features/auth/domain/repositories/auth_repository.dart';
-import 'package:aidmanager_mobile/features/auth/domain/repositories/user_repository.dart';
+import 'package:aidmanager_mobile/features/profile/domain/repositories/user_repository.dart';
 import 'package:aidmanager_mobile/features/auth/shared/exceptions/login_exceptions.dart';
 import 'package:aidmanager_mobile/features/auth/shared/exceptions/register_exceptions.dart';
 import 'package:aidmanager_mobile/features/auth/shared/helpers/regex_helper.dart';
 import 'package:aidmanager_mobile/shared/helpers/storage_helper.dart';
-import 'package:aidmanager_mobile/features/auth/infrastructure/mappers/user_mapper.dart';
+import 'package:aidmanager_mobile/features/profile/infrastructure/mappers/user_mapper.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 

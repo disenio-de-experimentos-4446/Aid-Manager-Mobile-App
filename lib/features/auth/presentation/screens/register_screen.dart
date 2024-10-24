@@ -1,5 +1,5 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
-import 'package:aidmanager_mobile/features/auth/domain/entities/user.dart';
+import 'package:aidmanager_mobile/features/auth/domain/entities/login_response.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
 import 'package:aidmanager_mobile/features/auth/shared/widgets/custom_dialog_error.dart';
 import 'package:aidmanager_mobile/features/auth/shared/widgets/invalid_email_dialog.dart';

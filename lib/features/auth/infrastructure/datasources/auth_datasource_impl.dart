@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:aidmanager_mobile/features/auth/domain/datasources/auth_datasource.dart';
-import 'package:aidmanager_mobile/features/auth/domain/entities/user.dart';
-import 'package:aidmanager_mobile/features/auth/infrastructure/mappers/user_mapper.dart';
+import 'package:aidmanager_mobile/features/auth/domain/entities/login_response.dart';
+import 'package:aidmanager_mobile/features/profile/domain/entities/user.dart';
+import 'package:aidmanager_mobile/features/profile/infrastructure/mappers/user_mapper.dart';
 import 'package:aidmanager_mobile/features/auth/shared/exceptions/login_exceptions.dart';
 import 'package:aidmanager_mobile/features/auth/shared/exceptions/register_exceptions.dart';
 import 'package:aidmanager_mobile/shared/service/http_service.dart';
@@ -10,7 +11,7 @@ import 'package:dio/dio.dart';
 
 class AuthDatasourceImpl extends HttpService implements AuthDatasource {
   @override
-  Future<AuthResponse> signIn(String email, String password) async {
+  Future<LoginResponse> signIn(String email, String password) async {
     final requestBody = jsonEncode({
       'email': email,
       'password': password,
@@ -35,7 +36,7 @@ class AuthDatasourceImpl extends HttpService implements AuthDatasource {
 
       if (id == null) throw Exception('Invalid response data: id is null');
 
-      return AuthResponse(id: id, token: token);
+      return LoginResponse(id: id, token: token);
     } catch (e) {
       throw SignInFailedException('Failed to sign in: $e');
     }
