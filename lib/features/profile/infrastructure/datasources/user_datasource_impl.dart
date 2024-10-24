@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:aidmanager_mobile/features/auth/domain/datasources/user_datasource.dart';
-import 'package:aidmanager_mobile/features/auth/domain/entities/user.dart';
-import 'package:aidmanager_mobile/features/auth/infrastructure/mappers/user_mapper.dart';
+import 'package:aidmanager_mobile/features/profile/domain/datasources/user_datasource.dart';
+import 'package:aidmanager_mobile/features/profile/domain/entities/user.dart';
+import 'package:aidmanager_mobile/features/profile/infrastructure/mappers/user_mapper.dart';
 import 'package:aidmanager_mobile/shared/service/http_service.dart';
 
 class UserDatasourceImpl extends HttpService implements UserDatasource {
@@ -22,9 +22,9 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
   }
 
   @override
-  Future<List<User>> getAllUsersByCompanyName(String companyName) async {
+  Future<List<User>> getAllUsersByCompanyId(int companyId) async {
     try {
-      final response = await dio.get('/users/company/$companyName');
+      final response = await dio.get('/users/$companyId');
 
       if (response.statusCode == HttpStatus.ok) {
         final List<dynamic> usersJson = response.data;
@@ -33,7 +33,7 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
         throw Exception('Failed to fetch users: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Failed to fetch user by company $companyName: $e');
+      throw Exception('Failed to fetch user by company $companyId: $e');
     }
   }
 

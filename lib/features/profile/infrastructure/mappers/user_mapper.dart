@@ -1,4 +1,4 @@
-import 'package:aidmanager_mobile/features/auth/domain/entities/user.dart';
+import 'package:aidmanager_mobile/features/profile/domain/entities/user.dart';
 
 // para el casteo de role a int y vicebersa
 const Map<String, int> roleToInt = {
