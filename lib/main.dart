@@ -1,25 +1,31 @@
 import 'package:aidmanager_mobile/config/router/app_router.dart';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/auth/domain/repositories/auth_repository.dart';
-import 'package:aidmanager_mobile/features/auth/domain/repositories/user_repository.dart';
+import 'package:aidmanager_mobile/features/profile/domain/repositories/user_repository.dart';
 import 'package:aidmanager_mobile/features/auth/infrastructure/datasources/auth_datasource_impl.dart';
-import 'package:aidmanager_mobile/features/auth/infrastructure/datasources/user_datasource_impl.dart';
+import 'package:aidmanager_mobile/features/profile/infrastructure/datasources/user_datasource_impl.dart';
 import 'package:aidmanager_mobile/features/auth/infrastructure/repositories/auth_repository_impl.dart';
-import 'package:aidmanager_mobile/features/auth/infrastructure/repositories/user_repository_impl.dart';
+import 'package:aidmanager_mobile/features/profile/infrastructure/repositories/user_repository_impl.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
+import 'package:aidmanager_mobile/features/profile/presentation/providers/profile_provider.dart';
 import 'package:aidmanager_mobile/features/projects/domain/repositories/projects_repository.dart';
+import 'package:aidmanager_mobile/features/projects/domain/repositories/tasks_repository.dart';
 import 'package:aidmanager_mobile/features/projects/infrastructure/datasources/projects_datasource_impl.dart';
+import 'package:aidmanager_mobile/features/projects/infrastructure/datasources/tasks_datasource_impl.dart';
 import 'package:aidmanager_mobile/features/projects/infrastructure/repositories/projects_repository_impl.dart';
+import 'package:aidmanager_mobile/features/projects/infrastructure/repositories/tasks_repository_impl.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/providers/project_provider.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/providers/task_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+void main() {
   // creamos las instancias de los repositorios con sus datasources
   final userRepository = UserRepositoryImpl(datasource: UserDatasourceImpl());
   final authRepository = AuthRepositoryImpl(datasource: AuthDatasourceImpl());
-  final projectRepository = ProjectsRepositoryImpl(datasource: ProjectsDatasourceImpl());
+  final projectRepository =
+      ProjectsRepositoryImpl(datasource: ProjectsDatasourceImpl());
+  final tasksRepository = TasksRepositoryImpl(datasource: TasksDatasourceImpl());
 
   runApp(
     MultiProvider(
@@ -29,6 +35,7 @@ void main() async {
         Provider<UserRepository>.value(value: userRepository),
         Provider<AuthRepository>.value(value: authRepository),
         Provider<ProjectsRepository>.value(value: projectRepository),
+        Provider<TasksRepository>.value(value: tasksRepository),
 
         // hay que proveer una instancia de AuthProvider
         // AuthProvider necesita instancias de UserRepository y AuthRepository
@@ -40,12 +47,31 @@ void main() async {
             authRepository: context.read<AuthRepository>(),
           ),
         ),
-        ChangeNotifierProvider(
-          lazy: false,
+        ChangeNotifierProxyProvider<AuthProvider, ProjectProvider>(
           create: (context) => ProjectProvider(
-            projectsRepository: context.read<ProjectsRepository>(),
+            projectsRepository: projectRepository,
+            authProvider: Provider.of<AuthProvider>(context, listen: false),
           ),
-        )
+          update: (_, authProvider, projectProvider) =>
+              projectProvider!..authProvider = authProvider,
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, TaskProvider>(
+          create: (context) => TaskProvider(
+            userRepository: userRepository,
+            tasksRepository: tasksRepository,
+            authProvider: Provider.of<AuthProvider>(context, listen: false),
+          ),
+          update: (_, authProvider, taskProvider) =>
+              taskProvider!..authProvider = authProvider,
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, ProfileProvider>(
+          create: (context) => ProfileProvider(
+            userRepository: userRepository,
+            authProvider: Provider.of<AuthProvider>(context, listen: false),
+          ),
+          update: (_, authProvider, userProvider) =>
+              userProvider!..authProvider = authProvider,
+        ),
       ],
       child: const MyApp(),
     ),
