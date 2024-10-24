@@ -1,5 +1,6 @@
+import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/social/presentation/widgets/contact_card.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; //font awesome
 import 'dart:convert'; //JSON
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
@@ -14,25 +15,23 @@ class SocialScreen extends StatelessWidget {
     return Navigator(
       onGenerateRoute: (settings) {
         return MaterialPageRoute(
-          builder: (context) => const SocialContent(),
+          builder: (context) => const SocialContentState(),
         );
       },
     );
   }
 }
 
-//cambiamos a StatefulWidget para actualizar el estado
-//debido a que el API maneja datos dinamicos
-class SocialContent extends StatefulWidget {
-  const SocialContent({super.key});
+class SocialContentState extends StatefulWidget {
+  const SocialContentState({super.key});
 
-  //maneja los cambnios del widget
   @override
-  _SocialContentState createState() => _SocialContentState();
+  State<SocialContentState> createState() => _SocialContentStateState();
 }
 
-class _SocialContentState extends State<SocialContent> {
-  List<dynamic> teamMembers = []; //se almacenan los teamMembers
+class _SocialContentStateState extends State<SocialContentState> {
+  List<dynamic> teamMembers = [];
+  //se almacenan los teamMembers
   bool isLoading = true;
 
   @override
@@ -54,7 +53,7 @@ class _SocialContentState extends State<SocialContent> {
       final data = json.decode(response.body);
       if (mounted) {
         setState(() {
-          teamMembers = data['results'];
+          teamMembers = data["results"];
           isLoading = false;
         });
       }
@@ -84,44 +83,103 @@ class _SocialContentState extends State<SocialContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Team'),
-      ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: teamMembers.length,
-              itemBuilder: (context, index) {
-                //Muestra todos los miembros del equipo dentro del arreglo teamMembers
-                final member = teamMembers[index];
-                return ListTile(
-                  //Foto del miembro del equipo
-                  leading: CircleAvatar(
-                    backgroundImage:
-                        NetworkImage(member['picture']['thumbnail']),
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Colors.grey, // Color del borde
+                    width: 1.0, // Ancho del borde
                   ),
-                  //Nombre
-                  title: Text(
-                      '${member['name']['first']} ${member['name']['last']}'),
-                  //Telefono
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(member['phone']),
-                      const SizedBox(width: 8),
-                      IconButton(
-                        icon: const FaIcon(FontAwesomeIcons
-                            .whatsapp), // Icono de FontAwesome WhatsApp
-                        onPressed: () {
-                          launchWhatsApp(member['cell']);
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 25.0),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors
+                                  .white, // Fondo blanco para el TextField
+                              borderRadius: BorderRadius.circular(30.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  spreadRadius: 1,
+                                  blurRadius: 5,
+                                  offset: Offset(
+                                      0, 3), // Cambia la posición de la sombra
+                                ),
+                              ],
+                            ),
+                            child: TextField(
+                              decoration: InputDecoration(
+                                hintText: 'Search a contact',
+                                prefixIcon: Icon(Icons.search),
+                                border: InputBorder.none,
+                                contentPadding:
+                                    EdgeInsets.symmetric(vertical: 12.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 16.0),
+                        TextButton(
+                          onPressed: () {
+                            // Acción del botón
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor:
+                                CustomColors.darkGreen, // Color de fondo
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 18.0, vertical: 8.0),
+                          ),
+                          child: Text(
+                            'A - Z',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
+            isLoading
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30.0),
+                    child: Center(child: CircularProgressIndicator()))
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: teamMembers.length,
+                      itemBuilder: (context, index) {
+                        final member = teamMembers[index];
+                        return ContactCard(
+                          firstName: member["name"]["first"],
+                          lastName: member["name"]["last"],
+                          imageUrl: member["picture"]["thumbnail"],
+                          email: member["email"],
+                          phone: member["phone"],
+                        );
+                      },
+                    ),
+                  ),
+          ],
+        ),
+      ),
     );
   }
 }

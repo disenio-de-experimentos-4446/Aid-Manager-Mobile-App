@@ -1,12 +1,6 @@
-import 'package:aidmanager_mobile/features/home/presentation/screens/home_screen.dart';
-import 'package:aidmanager_mobile/features/profile/presentation/screens/profile_screen.dart';
 import 'package:aidmanager_mobile/shared/widgets/side_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
-import 'package:aidmanager_mobile/features/calendar/presentation/screens/calendar_screen.dart';
-import 'package:aidmanager_mobile/features/posts/presentation/screens/posts_screen.dart';
-import 'package:aidmanager_mobile/features/projects/presentation/screens/projects_screen.dart';
-import 'package:aidmanager_mobile/features/social/presentation/screens/social_screen.dart';
 import 'package:go_router/go_router.dart';
 
 class MainWrapper extends StatefulWidget {
@@ -19,13 +13,7 @@ class MainWrapper extends StatefulWidget {
 }
 
 class _MainWrapperState extends State<MainWrapper> {
-  int currentIndex = 0;
-
   void _onIndexSelected(int index) {
-    setState(() {
-      currentIndex = index;
-    });
-
     switch (index) {
       case 0:
         context.go('/home');
@@ -51,72 +39,80 @@ class _MainWrapperState extends State<MainWrapper> {
   @override
   Widget build(BuildContext context) {
     final scaffoldKey = GlobalKey<ScaffoldState>();
+    final currentRoute =
+        GoRouter.of(context).routeInformationProvider.value.uri.path;
+
+    final routeIndexMap = {
+      '/home': 0,
+      '/projects': 1,
+      '/posts': 2,
+      '/calendar': 3,
+      '/social': 4,
+      '/profile': 5,
+    };
+
+    int currentIndex = routeIndexMap.entries
+        .firstWhere((entry) => currentRoute.startsWith(entry.key),
+            orElse: () => MapEntry('', 0))
+        .value;
+
+    // lista de rutas donde no se debe mostrar el AppBar
+    final noAppBarRoutes = ['/projects/', '/posts/'];
+
+    // determinar si se debe mostrar el AppBar
+    bool showTopbar = !noAppBarRoutes.any((route) => currentRoute.startsWith(route));
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       key: scaffoldKey,
-      appBar: AppBar(
-        toolbarHeight: 70,
-        backgroundColor: CustomColors.darkGreen,
-        title: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Builder(
-              builder: (context) {
-                return IconButton(
-                  icon: const Icon(
-                    Icons.menu,
-                    color: Colors.white,
-                    size: 32.0,
+      appBar: showTopbar
+          ? AppBar(
+              toolbarHeight: 70,
+              backgroundColor: CustomColors.darkGreen,
+              title: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Builder(
+                    builder: (context) {
+                      return IconButton(
+                        icon: const Icon(
+                          Icons.menu,
+                          color: Colors.white,
+                          size: 32.0,
+                        ),
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                      );
+                    },
                   ),
-                  onPressed: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                );
-              },
-            ),
-            const Text(
-              'AidManager',
-              style:
-                  TextStyle(fontSize: 24.0, color: CustomColors.lightGrey),
-            ),
-            IconButton(
-              icon: const Icon(
-                Icons.account_circle_sharp,
-                size: 32,
-                color: CustomColors.lightGrey,
+                  const Text(
+                    'AidManager',
+                    style: TextStyle(
+                        fontSize: 24.0, color: CustomColors.lightGrey),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.account_circle_sharp,
+                      size: 32,
+                      color: CustomColors.lightGrey,
+                    ),
+                    onPressed: () => _onIndexSelected(5),
+                  ),
+                ],
               ),
-              onPressed: () => _onIndexSelected(5),
-            ),
-          ],
-        ),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: IndexedStack(
-              index: currentIndex,
-              children: const <Widget>[
-                HomeScreen(),
-                ProjectsScreen(),
-                PostsScreen(),
-                CalendarScreen(),
-                SocialScreen(),
-                ProfileScreen()
-              ],
-            ),
-          ),
-          _AidNavigationBar(
-            index: currentIndex,
-            onIndexSelected: _onIndexSelected,
-          ),
-        ],
-      ),
+              centerTitle: true,
+              automaticallyImplyLeading: false,
+            )
+          : null,
+      body: widget.child,
       drawer: SideMenu(
         scaffoldKey: scaffoldKey,
+      ),
+      bottomNavigationBar: _AidNavigationBar(
+        index: currentIndex,
+        onIndexSelected: _onIndexSelected,
       ),
     );
   }

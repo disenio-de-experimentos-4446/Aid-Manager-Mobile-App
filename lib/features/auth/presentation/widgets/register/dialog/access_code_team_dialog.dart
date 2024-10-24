@@ -9,20 +9,16 @@ class AccessCodeTeamDialog extends StatefulWidget {
 }
 
 class _AccessCodeTeamDialogState extends State<AccessCodeTeamDialog> {
-
   final TextEditingController accessCodeController = TextEditingController();
 
-  void onConfirmCode(accessCode) {
-
-    if(accessCode == "macum") {
-      context.go('/tutorial');
-    }
-
+  // utiliza context.pop(accessCode) para cerrar el diálogo
+  // y devolver el código de acceso ingresado.
+  void onConfirmCode(String accessCode) {
+    context.pop(accessCode);
   }
 
   @override
   Widget build(BuildContext context) {
-
     return AlertDialog(
       title: const Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -34,7 +30,8 @@ class _AccessCodeTeamDialogState extends State<AccessCodeTeamDialog> {
           Text(
             textAlign: TextAlign.center,
             'Access code is required for team member register',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, height: 1.5),
+            style: TextStyle(
+                fontSize: 24, fontWeight: FontWeight.bold, height: 1.5),
           ),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/home/presentation/widgets/metric_card.dart';
 import 'package:aidmanager_mobile/features/home/presentation/widgets/project_card.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class MetricItem {
   final IconData icon;
@@ -52,37 +53,40 @@ class HomeContent extends StatelessWidget {
             children: [
               const _BannerHome(),
               const SizedBox(height: 25),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment
-                        .spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        ' Recent members',
+                        'Recent members',
                         style: TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Row(
-                        children: [
-                          Text(
-                            'See All',
-                            style: TextStyle(
-                                fontSize: 20.0,
-                                color: CustomColors.darkGreen,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          SizedBox(
-                              width: 5.0),
-                          Icon(
-                            Icons.arrow_forward_rounded,
-                            color: CustomColors.darkGreen,
-                            size: 24.0,
-                          ),
-                        ],
+                      GestureDetector(
+                        onTap: () {
+                          context.go('/social');
+                        },
+                        child: Row(
+                          children: [
+                            Text(
+                              'See All',
+                              style: TextStyle(
+                                  fontSize: 20.0,
+                                  color: CustomColors.darkGreen,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(width: 5.0),
+                            Icon(
+                              Icons.arrow_forward_rounded,
+                              color: CustomColors.darkGreen,
+                              size: 24.0,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -107,7 +111,7 @@ class HomeContent extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
@@ -117,23 +121,28 @@ class HomeContent extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Row(
-                        children: [
-                          Text(
-                            'See All',
-                            style: TextStyle(
-                                fontSize: 20.0,
-                                color: CustomColors.darkGreen,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          SizedBox(
-                              width: 5.0), // Espacio entre el texto y el icono
-                          Icon(
-                            Icons.arrow_forward_rounded,
-                            color: CustomColors.darkGreen,
-                            size: 24.0,
-                          ),
-                        ],
+                      GestureDetector(
+                        onTap: () {
+                          context.go('/projects');
+                        },
+                        child: Row(
+                          children: [
+                            Text(
+                              'See All',
+                              style: TextStyle(
+                                  fontSize: 20.0,
+                                  color: CustomColors.darkGreen,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(
+                                width: 5.0), // Espacio entre el texto y el icono
+                            Icon(
+                              Icons.arrow_forward_rounded,
+                              color: CustomColors.darkGreen,
+                              size: 24.0,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -172,8 +181,7 @@ class HomeContent extends StatelessWidget {
                                 color: CustomColors.darkGreen,
                                 fontWeight: FontWeight.w600),
                           ),
-                          SizedBox(
-                              width: 5.0),
+                          SizedBox(width: 5.0),
                           Icon(
                             Icons.arrow_forward_rounded,
                             color: CustomColors.darkGreen,
@@ -224,7 +232,7 @@ class _MemberShape extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10.0),
+      margin: const EdgeInsets.only(right: 12.0),
       child: Column(
         children: [
           Container(
@@ -271,8 +279,7 @@ class _BannerHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 250.0,
-      padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 0),
+      height: 270.0,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
@@ -293,63 +300,90 @@ class _BannerHome extends StatelessWidget {
             offset: const Offset(0, 3), // changes position of shadow
           ),
         ],
+        image: const DecorationImage(
+          image: AssetImage('assets/images/home-banner.jpeg'),
+          fit: BoxFit.cover,
+        ),
       ),
-      child: Row(
+      child: Stack(
         children: [
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withOpacity(0.6),
+                    Colors.transparent,
+                  ],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(15),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Row(
                 children: [
-                  const Text(
-                    'Experience the thrill of Risk-free trading',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 26.0,
-                        fontWeight: FontWeight.bold,
-                        height: 1.65),
-                  ),
-                  const SizedBox(
-                    height: 15.0,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Acción del botón
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 59, 153, 62),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Get Started',
-                          style: TextStyle(color: Colors.white, fontSize: 20.0),
+                        const Text(
+                          'Experience the thrill of Risk-free trading',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 26.0,
+                              fontWeight: FontWeight.bold,
+                              height: 1.65),
                         ),
-                        SizedBox(width: 8.0),
-                        Icon(
-                          Icons.arrow_forward,
-                          color: Colors.white,
+                        const SizedBox(
+                          height: 20.0,
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            context.go('/posts');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 59, 153, 62),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Get Started',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20.0),
+                              ),
+                              SizedBox(width: 8.0),
+                              Icon(
+                                Icons.arrow_forward,
+                                color: Colors.white,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(width: 10.0),
+                  Expanded(
+                    child: Center(
+                      child:
+                          Container(), // Contenedor vacío para mantener el espacio
+                    ),
+                  ),
                 ],
-              ),
-            ),
-          ),
-          const SizedBox(width: 10.0),
-          Expanded(
-            child: Center(
-              child: Image.asset(
-                'assets/images/home-image.png',
-                fit: BoxFit.cover,
               ),
             ),
           ),

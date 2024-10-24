@@ -6,7 +6,7 @@ class LoginBanner extends StatelessWidget {
   final double deviceWidth;
   final Image logoImage;
 
-  const LoginBanner(
+  const   LoginBanner(
       {super.key,
       required this.containerHeight,
       required this.deviceWidth,
