@@ -37,6 +37,17 @@ class CommentsDatasourceImpl extends HttpService implements CommentDatasource {
 
   @override
   Future<List<Comment>> getAllCommentsFromPost(int postId) async {
+    try {
+      final response = await dio.get('/posts/$postId/comments');
 
+      if (response.statusCode == HttpStatus.ok) {
+        final List<dynamic> commentsJson = response.data;
+        return commentsJson.map((json) => CommentMapper.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to fetch comments data for post ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch comments by post id $postId: $e');
+    }
   }
 }
