@@ -1,34 +1,21 @@
 class Comment {
-  int id;
-  int userId;
-  String authorImage;
-  String authorEmail;
-  String authorName;
-  String comment;
-  int postId;
-  DateTime timeOfComment;
+  final int? id;
+  final String comment;
+  final int? userId;
+  final String? userName;
+  final String? userEmail;
+  final String? userImage;
+  final int postId;
+  final String? commentTime;
 
   Comment({
-    required this.id,
-    required this.userId,
-    required this.authorImage,
-    required this.authorEmail,
-    required this.authorName,
+    this.id,
     required this.comment,
+    required this.userId,
+    this.userName,
+    this.userEmail,
+    this.userImage,
     required this.postId,
-    required this.timeOfComment,
+    this.commentTime
   });
-
-  factory Comment.fromJson(Map<String, dynamic> json) {
-    return Comment(
-      id: json['id'],
-      userId: json['userId'],
-      authorImage: json['authorImage'],
-      authorEmail: json['authorEmail'],
-      authorName: json['authorName'],
-      comment: json['comment'],
-      postId: json['postId'],
-      timeOfComment: DateTime.parse(json['timeOfComment']),
-    );
-  }
 }
