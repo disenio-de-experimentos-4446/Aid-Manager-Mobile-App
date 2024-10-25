@@ -174,7 +174,7 @@ final appRouter = GoRouter(
             final postId = state.pathParameters['postId']!;
             return NoTransitionPage(
               key: state.pageKey,
-              child: PostDetailScreen(postId: postId),
+              child: PostDetailScreen(postId: int.parse(postId)),
             );
           },
         ),

@@ -10,7 +10,6 @@ class PostDatasourceImpl extends HttpService implements PostsDatasource{
   @override
   Future<void> createPost(Post post) async {
     final requestBody = PostMapper.toJson(post);
-
     try
     {
       final response = await dio.post(
@@ -94,7 +93,7 @@ class PostDatasourceImpl extends HttpService implements PostsDatasource{
   }
 
   @override //This updates the rating of a post
-  Future<void> updatePostById(int id, Post post) async{
+  Future<void> updatePostById(int id) async{
     try
     {
       final response = await dio.patch('/posts/$id/rating');

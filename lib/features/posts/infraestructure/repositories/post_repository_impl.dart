@@ -28,8 +28,8 @@ class PostRepositoryImpl implements PostsRepository {
     }
 
     @override
-    Future<void> updatePostById(int id, Post post) {
-        return datasource.updatePostById(id, post);
+    Future<void> updatePostById(int id) {
+        return datasource.updatePostById(id);
     }
     
 

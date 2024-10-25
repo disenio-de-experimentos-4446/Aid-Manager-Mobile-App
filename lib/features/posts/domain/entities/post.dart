@@ -5,7 +5,7 @@ class Post {
   String title;
   String subject;
   String description;
-  DateTime postTime;
+  DateTime? postTime;
   int companyId;
   int userId;
   String userName;
@@ -20,7 +20,7 @@ class Post {
     required this.title,
     required this.subject,
     required this.description,
-    required this.postTime,
+    this.postTime,
     required this.companyId,
     required this.userId,
     required this.userName,
@@ -30,4 +30,5 @@ class Post {
     required this.images,
     required this.commentsList,
   });
+
 }
