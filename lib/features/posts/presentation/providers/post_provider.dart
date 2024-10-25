@@ -4,7 +4,6 @@ import 'package:aidmanager_mobile/features/posts/domain/repositories/post_reposi
 import 'package:flutter/foundation.dart';
 
 class PostProvider extends ChangeNotifier {
-
  final PostsRepository postsRepository;
  AuthProvider authProvider;
 
@@ -34,7 +33,6 @@ class PostProvider extends ChangeNotifier {
 
    Future<void> getPostById(int postId) async {
     isLoading = true;
-    notifyListeners();
 
     try {
       _selectedPost = await postsRepository.getPostById(postId);
