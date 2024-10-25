@@ -1,6 +1,10 @@
 import 'package:aidmanager_mobile/config/router/app_router.dart';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/auth/domain/repositories/auth_repository.dart';
+import 'package:aidmanager_mobile/features/posts/domain/repositories/post_repositories.dart';
+import 'package:aidmanager_mobile/features/posts/infraestructure/datasources/post_datasource_impl.dart';
+import 'package:aidmanager_mobile/features/posts/infraestructure/repositories/post_repository_impl.dart';
+import 'package:aidmanager_mobile/features/posts/presentation/providers/post_provider.dart';
 import 'package:aidmanager_mobile/features/profile/domain/repositories/user_repository.dart';
 import 'package:aidmanager_mobile/features/auth/infrastructure/datasources/auth_datasource_impl.dart';
 import 'package:aidmanager_mobile/features/profile/infrastructure/datasources/user_datasource_impl.dart';
@@ -26,6 +30,7 @@ void main() {
   final projectRepository =
       ProjectsRepositoryImpl(datasource: ProjectsDatasourceImpl());
   final tasksRepository = TasksRepositoryImpl(datasource: TasksDatasourceImpl());
+  final postsRepository = PostRepositoryImpl(datasource: PostDatasourceImpl());
 
   runApp(
     MultiProvider(
@@ -36,6 +41,7 @@ void main() {
         Provider<AuthRepository>.value(value: authRepository),
         Provider<ProjectsRepository>.value(value: projectRepository),
         Provider<TasksRepository>.value(value: tasksRepository),
+        Provider<PostsRepository>.value(value: postsRepository),
 
         // hay que proveer una instancia de AuthProvider
         // AuthProvider necesita instancias de UserRepository y AuthRepository
@@ -71,6 +77,14 @@ void main() {
           ),
           update: (_, authProvider, userProvider) =>
               userProvider!..authProvider = authProvider,
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, PostProvider>(
+          create: (context) => PostProvider(
+            postsRepository: postsRepository,
+            authProvider: Provider.of<AuthProvider>(context, listen: false),
+          ),
+          update: (context, authProvider, postProvider) =>
+              postProvider!..authProvider = authProvider,
         ),
       ],
       child: const MyApp(),

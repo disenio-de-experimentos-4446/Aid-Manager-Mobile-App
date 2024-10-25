@@ -7,6 +7,7 @@ class Comment {
   final String? userImage;
   final int postId;
   final String? commentTime;
+
   Comment({
     this.id,
     required this.comment,
@@ -17,5 +18,4 @@ class Comment {
     required this.postId,
     this.commentTime
   });
-
 }

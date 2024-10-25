@@ -299,17 +299,15 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
                                     firstDate: DateTime(2000),
                                     lastDate: DateTime(2101),
                                   );
-                                  if (pickedDate != null) {
-                                    String formattedDate =
-                                        DateFormat('yyyy-MM-dd')
-                                            .format(pickedDate);
-                                    setState(() {
-                                      // actualiza el controlador del campo de texto con la fecha seleccionada
-                                      _projectDateController.text =
-                                          formattedDate;
-                                    });
-                                  }
-                                },
+                                  String formattedDate =
+                                      DateFormat('yyyy-MM-dd')
+                                          .format(pickedDate!);
+                                  setState(() {
+                                    // actualiza el controlador del campo de texto con la fecha seleccionada
+                                    _projectDateController.text =
+                                        formattedDate;
+                                  });
+                                                                },
                                 controller: _projectDateController,
                               ),
                             ],
