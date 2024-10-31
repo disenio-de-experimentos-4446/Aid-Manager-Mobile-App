@@ -33,5 +33,10 @@ class UserRepositoryImpl implements UserRepository {
     return datasource.getUserById(id);
   }
 
+  @override
+  Future<void> deleteUserById(int userId) {
+    return datasource.deleteUserById(userId);
+  }
+
   
 }
