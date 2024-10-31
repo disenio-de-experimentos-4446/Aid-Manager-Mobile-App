@@ -5,6 +5,7 @@ import 'package:aidmanager_mobile/features/profile/infrastructure/mappers/user_m
 import 'package:aidmanager_mobile/shared/service/http_service.dart';
 
 class UserDatasourceImpl extends HttpService implements UserDatasource {
+
   @override
   Future<List<User>> getAllUsers() async {
     try {
@@ -83,6 +84,18 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
       }
     } catch (e) {
       throw Exception('Failed to fetch user by $id ID: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteUserById(int userId) async {
+    try {
+      final response = await dio.delete('users/kick-member/$userId');
+      if (response.statusCode != HttpStatus.noContent) {
+        throw Exception('Failed to delete user');
+      }
+    } catch (e) {
+      throw Exception('Failed to delete user: $e');
     }
   }
 }
