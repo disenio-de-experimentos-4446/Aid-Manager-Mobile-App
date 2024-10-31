@@ -20,6 +20,7 @@ import 'package:aidmanager_mobile/features/projects/infrastructure/repositories/
 import 'package:aidmanager_mobile/features/projects/infrastructure/repositories/tasks_repository_impl.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/providers/project_provider.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/providers/task_provider.dart';
+import 'package:aidmanager_mobile/features/social/presentation/screens/social_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -85,6 +86,14 @@ void main() {
           ),
           update: (context, authProvider, postProvider) =>
               postProvider!..authProvider = authProvider,
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, SocialProvider>(
+          create: (context) => SocialProvider(
+            userRepository: userRepository,
+            authProvider: Provider.of<AuthProvider>(context, listen: false),
+          ),
+          update: (context, authProvider, socialProvider) =>
+              socialProvider!..authProvider = authProvider,
         ),
       ],
       child: const MyApp(),
