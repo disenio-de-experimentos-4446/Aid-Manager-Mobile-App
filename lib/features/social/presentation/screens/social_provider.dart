@@ -18,15 +18,29 @@ class SocialProvider extends ChangeNotifier {
 
   Future<void> getMembersByCompany() async {
     isLoading = true;
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
 
     try {
-      users = await userRepository.getMembersByCompanyName(authProvider.user!.companyName!);
+      // Fetch the logged-in user
+      final loggedInUser = await userRepository.getUserById(authProvider.user!.id!);
+      print('Logged-in user: $loggedInUser');
+
+      // Fetch all users by company ID
+      final allUsers = await userRepository.getAllUsersByCompanyId(loggedInUser.companyId!);
+      print('All users in company: $allUsers');
+
+      // Filter out the logged-in user from the list
+      users = allUsers.where((user) => user.id != loggedInUser.id).toList();
+      print('Filtered users: $users');
     } catch (e) {
-      // Handle error
+      print('Error fetching members: $e');
     } finally {
       isLoading = false;
-      notifyListeners();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        notifyListeners();
+      });
     }
   }
 
@@ -34,9 +48,11 @@ class SocialProvider extends ChangeNotifier {
     try {
       await userRepository.deleteUserById(userId);
       users.removeWhere((user) => user.id == userId);
-      notifyListeners();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        notifyListeners();
+      });
     } catch (e) {
-      // Handle error
+      print('Error kicking member: $e');
     }
   }
 }
