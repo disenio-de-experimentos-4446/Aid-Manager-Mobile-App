@@ -1,10 +1,11 @@
-import 'package:aidmanager_mobile/config/theme/app_theme.dart';
-import 'package:aidmanager_mobile/features/social/presentation/widgets/contact_card.dart';
 import 'package:flutter/material.dart';
+import 'package:aidmanager_mobile/features/profile/domain/repositories/user_repository.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:aidmanager_mobile/features/social/presentation/widgets/contact_card.dart';
 import 'package:aidmanager_mobile/features/social/presentation/screens/social_provider.dart';
 
-import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../../config/theme/app_theme.dart';
 
 class SocialScreen extends StatelessWidget {
   static const String name = "social_screen";
@@ -135,7 +136,10 @@ class _SocialContentStateState extends State<SocialContentState> {
                     phone: member.phone ?? '',
                     isDirector: member.role == 'Manager',
                     onDelete: isDirector
-                        ? () => socialProvider.kickMemberFromCompany(member.id!)
+                        ? () async {
+                      await socialProvider.kickMemberFromCompany(member.id!);
+                      setState(() {}); // Refresh the view
+                    }
                         : null,
                   );
                 },
