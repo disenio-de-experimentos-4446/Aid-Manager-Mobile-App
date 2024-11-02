@@ -242,8 +242,7 @@ void _showCreateCommentDialog(BuildContext context, int postId) {
                 userName: 'string', // Replace with actual user name
                 comment: _commentController.text,
                 postId: postId,
-                commentTime: DateTime.now(),
-              );
+                commentTime: DateTime.now().toIso8601String(),              );
               int userId = 3;
               Provider.of<CommentProvider>(context, listen: false).createNewComment(postId, "osi", userId);
               Navigator.of(context).pop();

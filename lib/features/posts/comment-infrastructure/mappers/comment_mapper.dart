@@ -10,8 +10,7 @@ class CommentMapper {
       userEmail: json['userEmail'],
       userImage: json['userImage'],
       postId: json['postId'],
-      commentTime: DateTime.parse(json['commentTime']),
-    );
+      commentTime: json['commentTime'],);
   }
 
   static Map<String, dynamic> toJson(Comment comment) {
