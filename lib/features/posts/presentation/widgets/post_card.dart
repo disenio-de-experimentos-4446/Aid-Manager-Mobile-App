@@ -1,158 +1,161 @@
+import 'package:aidmanager_mobile/features/posts/domain/entities/post.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class PostCard extends StatelessWidget {
-  const PostCard({super.key});
+class PostCard extends StatefulWidget {
+  final Post post;
+
+  const PostCard({super.key, required this.post});
+
+
+
+  @override
+  _PostCardState createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard> {
+  bool isExpanded = false;
+
+  bool _isValidUrl(String url) {
+    print("Is valid image? " + url);
+    return Uri.tryParse(url)?.hasAbsolutePath ?? false;
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey, // Color del borde
-            width: 1.0, // Ancho del borde
-          ),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 25.0, right: 20.0, left: 20.0, bottom: 30.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 50.0,
-                      height: 50.0,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: AssetImage(
-                              'assets/images/hotman-placeholder.jpg'), // Usa AssetImage en lugar de Image.asset
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 15.0),
-                    Column(
+    final double screenWidth = MediaQuery.of(context).size.width;
+    return Center(
+      child: Card(
+        elevation: 20,
+        color: Color(0xFFE6EEEC),
+        child: Container(
+          width: screenWidth * 0.9,
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 25.0,
+                    backgroundImage: _isValidUrl(widget.post.userImage)
+                        ? NetworkImage(widget.post.userImage)
+                        : AssetImage('assets/images/hotman-placeholder.jpg') as ImageProvider,
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'Nombre del Usuario',
-                          style: TextStyle(
-                            fontSize: 17.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 2.5),
-                        Text(
-                          'correo@ejemplo.com',
-                          style: TextStyle(
-                            fontSize: 15.0,
-                            color: Colors.grey,
-                          ),
-                        ),
+                        //Aqui va el nombre del usuario y el TITULO del post
+                        Text(widget.post.title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(widget.post.userName, style: TextStyle(fontSize: 14, color: Colors.grey)),
                       ],
                     ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        context.go('/posts/1');
-                      },
-                      child: Icon(Icons.open_in_new_rounded, size: 32),
-                    ),
-                    SizedBox(width: 12.0),
-                    GestureDetector(
-                      onTap: () {
-                        // Acción del botón de editar
-                      },
-                      child: Icon(Icons.more_vert_sharp, size: 34),
-                    ),
-                  ],
-                )
-              ],
-            ),
-            SizedBox(height: 20),
-            Text(
-              'lorem ipsum sexo lorem ipsum sexo lorem ipsum sexo lorem ipsum sexo lorem ipsum sexo lorem ipsum sexo',
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.w500,
-                height: 1.65,
-              ),
-            ),
-            SizedBox(height: 20),
-            SizedBox(
-              height: 225,
-              child: CarouselView(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                      20.0), // Ajusta el radio del borde según sea necesario
-                ),
-                itemExtent: MediaQuery.sizeOf(context).width - 96,
-                padding: const EdgeInsets.only(right: 10),
-                itemSnapping: true,
-                elevation: 4.0,
-                children: List.generate(
-                  10,
-                  (int index) => Image.network(
-                    'https://img.freepik.com/premium-photo/woman-with-backpack-stands-mountain-top-looking-beautiful-sunset_188544-54443.jpg',
-                    fit: BoxFit.cover,
                   ),
-                ),
-              ),
-            ),
-            SizedBox(height: 18),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.favorite,
-                        color: Colors.red,
-                        size: 26.0,
+                  PopupMenuButton<String>(
+                    onSelected: (String result) {
+                      if (result == 'delete') {
+                        // Acción de borrar
+                      }
+                    },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                      const PopupMenuItem<String>(
+                        value: 'delete',
+                        child: Text('Delete Post'),
                       ),
-                      SizedBox(width: 8.0),
-                      Text('123', style: TextStyle(fontSize: 16.0)),
-                      SizedBox(width: 16.0),
-                      Icon(
-                        Icons.comment,
-                        color: Colors.grey,
-                        size: 26.0,
-                      ),
-                      SizedBox(width: 8.0),
-                      Text('222', style: TextStyle(fontSize: 16.0)),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today,
-                        color: Colors.grey,
-                        size: 24.0,
-                      ),
-                      SizedBox(width: 8.0),
-                      Text(
-                        '12/10/2023',
-                        style: TextStyle(fontSize: 16.0, letterSpacing: 1.05),
-                      ), // Fecha
                     ],
                   ),
                 ],
               ),
-            ),
-          ],
+
+              SizedBox(height: 8),
+
+              Row(
+                children: [
+
+                  //Aqui va el asunto del post
+                  Text(widget.post.subject ,style: TextStyle(fontSize: 13, fontWeight: FontWeight.w200, )),
+                ],
+              ),
+              //TEXTO DEL POST
+              Text(
+                widget.post.description,
+                maxLines: isExpanded ? null : 2,
+                overflow: isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+              ),
+              TextButton(
+
+                style: ButtonStyle(
+                  foregroundColor: WidgetStateProperty.all(Color(0xFF008A66)),
+
+                ),
+
+                onPressed: () {
+                  setState(() {
+                    isExpanded = !isExpanded;
+                  });
+                },
+                child: Text(isExpanded ? 'See Less' : 'See More'),
+              ),
+
+            SizedBox(
+                height: 225,
+                child: CarouselView(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        20.0), // Ajusta el radio del borde según sea necesario
+                  ),
+                  itemExtent: MediaQuery.sizeOf(context).width - 96,
+                  padding: const EdgeInsets.only(right: 10),
+                  itemSnapping: true,
+                  elevation: 4.0,
+                  //Aqui va la lista de imagenes del post
+                  children: widget.post.images.map((image) {
+                    return _isValidUrl(image)
+                        ? Image.network(image, fit: BoxFit.cover)
+                        : Image.asset('assets/images/hotman-placeholder.jpg', fit: BoxFit.cover);
+                  }).toList(),
+                ),
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.favorite),
+                        onPressed: () {
+                          // Acción del botón
+                        },
+                      ),
+                      Text(widget.post.rating.toString()),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text(widget.post.commentsList.length.toString()),
+                      IconButton(
+                        icon: Icon(Icons.comment),
+                        onPressed: () {
+                          GoRouter.of(context).go('/posts/${widget.post.id}');
+                        },
+                      ),
+
+                    ],
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  //Aqui va la fecha y la hora del post
+                  Text('${widget.post.postTime?.toLocal().toString().split(' ')[0]} - ${widget.post.postTime?.toLocal().toString().split(' ')[1]}'),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
