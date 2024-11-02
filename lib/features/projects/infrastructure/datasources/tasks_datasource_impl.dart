@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:aidmanager_mobile/features/projects/domain/datasources/tasks_datasource.dart';
 import 'package:aidmanager_mobile/features/projects/domain/entities/task.dart';
 import 'package:aidmanager_mobile/features/projects/infrastructure/mappers/task_mapper.dart';
 import 'package:aidmanager_mobile/shared/service/http_service.dart';
-import 'package:dio/dio.dart';
 
 class TasksDatasourceImpl extends HttpService implements TasksDatasource {
   @override
@@ -102,7 +100,7 @@ class TasksDatasourceImpl extends HttpService implements TasksDatasource {
   @override
   Future<List<Task>> getTasksByProjectId(int projectId) async {
     try {
-      final response = await dio.get('/projects/$projectId/task-items');
+      final response = await dio.get('/projects/$projectId/task-items/all');
 
       if(response.statusCode == HttpStatus.ok) {
         final List<dynamic> tasksJson = response.data;
@@ -115,6 +113,27 @@ class TasksDatasourceImpl extends HttpService implements TasksDatasource {
     } catch (e) {
       throw Exception('Failed to get Tasks by Project with id $projectId: $projectId');
     }
+  }
+  
+  @override
+  Future<List<Task>> getAllTasksByCompanyId(int companyId) async {
+
+    print('Llegaste a qui toma: $companyId');
+    try {
+      final response = await dio.get('/company-tasks/$companyId');
+
+      if(response.statusCode == HttpStatus.ok) {
+        final List<dynamic> tasksJson = response.data;
+        return tasksJson.map((json) => TaskMapper.fromJson(json)).toList();
+      }
+      else {
+        throw Exception('Failed to get Tasks by company id: $companyId');
+      }
+
+    } catch (e) {
+      throw Exception('Failed to get Tasks by Project with id: $companyId');
+    }
+
   }
 
   @override
