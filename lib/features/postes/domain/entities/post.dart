@@ -12,7 +12,7 @@ class Post {
   String email;
   String userImage;
   int rating;
-  List<String> images;
+  List<dynamic> images;
   List<dynamic> commentsList;
 
   Post({

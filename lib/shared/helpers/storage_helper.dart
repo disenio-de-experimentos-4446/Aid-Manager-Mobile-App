@@ -7,6 +7,8 @@ class StorageHelper {
   static const String _tokenKey = 'token';
   static const String _userKey = 'user';
 
+
+
   static Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, token);
@@ -15,6 +17,8 @@ class StorageHelper {
   static Future<void> saveUser(User user) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userKey, jsonEncode(UserMapper.toJson(user)));
+    print("SAVE: ${prefs.getString(_userKey)}");
+
   }
 
   static Future<String?> getToken() async {
@@ -26,6 +30,7 @@ class StorageHelper {
     final prefs = await SharedPreferences.getInstance();
     final userString = prefs.getString(_userKey);
     if (userString != null) {
+      print("GET USERS: ${jsonDecode(userString)}");
       return UserMapper.fromJson(jsonDecode(userString));
     }
     return null;
