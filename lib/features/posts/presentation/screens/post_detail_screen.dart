@@ -1,14 +1,10 @@
-import 'package:aidmanager_mobile/config/theme/app_theme.dart';
-import 'package:aidmanager_mobile/features/posts/presentation/widgets/post_card.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/widgets/comment_card.dart';
-import 'package:aidmanager_mobile/shared/helpers/storage_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../domain/entities/comment.dart';
 import '../providers/comment_provider.dart';
-import '../providers/post_provider.dart';
 
 class PostDetailScreen extends StatefulWidget {
   final String postId;
@@ -113,7 +109,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   ),
                   TextButton(
                     style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.all(Color(0xFF008A66)),
+                      foregroundColor: WidgetStateProperty.all(Color(0xFF008A66)),
                     ),
                     onPressed: () {
                       setState(() {

@@ -16,11 +16,11 @@ class UserMapper {
   static User fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
-      name: json['firstName'] + ' ' + json['lastName'],
+      name: json['name'],
       age: json['age'],
       email: json['email'],
       password: json['password'], 
-      role: intToRole[json['role']],
+      role: intToRole[json['role']], // convertir entero a rol
       teamRegisterCode: json['teamRegisterCode'] ?? '',
       phone: json['phone'],
       profileImg: json['profileImg'] ?? 'https://st3.depositphotos.com/4111759/13425/v/600/depositphotos_134255710-stock-illustration-avatar-vector-male-profile-gray.jpg',
