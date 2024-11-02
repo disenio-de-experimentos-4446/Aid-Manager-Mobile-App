@@ -1,6 +1,8 @@
 import 'package:aidmanager_mobile/features/posts/domain/entities/post.dart';
+import 'package:aidmanager_mobile/features/posts/presentation/providers/post_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
@@ -24,7 +26,8 @@ class _PostCardState extends State<PostCard> {
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
+    final postProvider = Provider.of<PostProvider>(context, listen: false);
+  final double screenWidth = MediaQuery.of(context).size.width;
     return Center(
       child: Card(
         elevation: 20,
@@ -39,9 +42,10 @@ class _PostCardState extends State<PostCard> {
                 children: [
                   CircleAvatar(
                     radius: 25.0,
-                    backgroundImage: _isValidUrl(widget.post.userImage)
+                    backgroundImage:
+                    widget.post.userImage.isNotEmpty == true
                         ? NetworkImage(widget.post.userImage)
-                        : AssetImage('assets/images/hotman-placeholder.jpg') as ImageProvider,
+                        : AssetImage('assets/images/defaultavatar.jpg'),
                   ),
                   SizedBox(width: 10),
                   Expanded(
@@ -55,9 +59,9 @@ class _PostCardState extends State<PostCard> {
                     ),
                   ),
                   PopupMenuButton<String>(
-                    onSelected: (String result) {
+                    onSelected: (String result) async {
                       if (result == 'delete') {
-                        // Acción de borrar
+                        await postProvider.deletePostById(widget.post.id!);
                       }
                     },
                     itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -114,8 +118,10 @@ class _PostCardState extends State<PostCard> {
                   //Aqui va la lista de imagenes del post
                   children: widget.post.images.map((image) {
                     return _isValidUrl(image)
-                        ? Image.network(image, fit: BoxFit.cover)
-                        : Image.asset('assets/images/hotman-placeholder.jpg', fit: BoxFit.cover);
+                        ? Image.network(image, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
+                      return Image.asset('assets/images/defaultavatar.jpg', fit: BoxFit.cover);
+                    })
+                        : Image.asset('assets/images/defaultavatar.jpg', fit: BoxFit.cover);
                   }).toList(),
                 ),
               ),

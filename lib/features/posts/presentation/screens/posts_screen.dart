@@ -1,9 +1,11 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/providers/post_provider.dart';
+import 'package:aidmanager_mobile/features/posts/presentation/widgets/SuccessfullyCreatePost.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/widgets/post_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../shared/helpers/show_customize_dialog.dart';
 import '../../../../shared/helpers/storage_helper.dart';
 import '../../../profile/domain/entities/user.dart';
 
@@ -44,7 +46,6 @@ class _PostScreenState extends State<PostsContent> {
 
   Future<void>  _loadUserData() async {
     user = await StorageHelper.getUser();
-    print("UserImageLoaded: ${user?.profileImg}");
     setState(() {});
   }
 
@@ -56,7 +57,11 @@ class _PostScreenState extends State<PostsContent> {
   @override
   Widget build(BuildContext context) {
     final postProvider = Provider.of<PostProvider>(context);
-
+    
+    bool _isValidUrl(String url) {
+      print("Is valid image? " + url);
+      return Uri.tryParse(url)?.hasAbsolutePath ?? false;
+    }
 
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -82,10 +87,11 @@ class _PostScreenState extends State<PostsContent> {
                   children: [
                     CircleAvatar(
                       radius: 25.0,
-                      backgroundImage: user?.profileImg != null ?
-                      NetworkImage(user!.profileImg!) :
-                      AssetImage('assets/images/hotman-placeholder.jpg') as ImageProvider,
-                    ),
+                      backgroundImage:
+                        user?.profileImg?.isNotEmpty == true
+                            ? NetworkImage(user!.profileImg!)
+                            : AssetImage('assets/images/defaultavatar.jpg'),
+                      ),
                     SizedBox(width: 12.0),
                     Expanded(
                         child: TextButton(
@@ -96,7 +102,7 @@ class _PostScreenState extends State<PostsContent> {
                             backgroundColor: WidgetStateProperty.all(
                                 Color(0xFFE6EEEC)),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             _showCreateDialog(context);
 
                           }, child: Text("Create something new +", style: TextStyle(color: Color(
@@ -127,6 +133,8 @@ class _PostScreenState extends State<PostsContent> {
             Expanded(
               child: postProvider.initialLoading
                   ? Center(child: CircularProgressIndicator())
+                  : postProvider.posts.isEmpty
+                  ? Center(child: Text("It seems there's no posts for now!"))
                   : ListView.builder(
                 itemCount: postProvider.posts.length,
                 itemBuilder: (context, index) {
@@ -144,6 +152,13 @@ class _PostScreenState extends State<PostsContent> {
 
 
 void _showCreateDialog(BuildContext context) {
+  final postProvider = Provider.of<PostProvider>(context, listen: false);
+
+  final titleController = TextEditingController();
+  final subjectController = TextEditingController();
+  final contentController = TextEditingController();
+  final imageController = TextEditingController();
+
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -154,15 +169,19 @@ void _showCreateDialog(BuildContext context) {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
+              controller: titleController,
               decoration: InputDecoration(hintText: "Title"),
             ),
             TextField(
+              controller: subjectController,
               decoration: InputDecoration(hintText: "Subject"),
             ),
             TextField(
+              controller: contentController,
               decoration: InputDecoration(hintText: "Content"),
             ),
             TextField(
+              controller: imageController,
               decoration: InputDecoration(hintText: "Add an image"),
             ),
           ],
@@ -182,9 +201,29 @@ void _showCreateDialog(BuildContext context) {
             style: ButtonStyle(
               foregroundColor: WidgetStateProperty.all(Color(0xFF008A66)),
             ),
-            onPressed: () {
+            onPressed: () async {
               // Add your create logic here
-              Navigator.of(context).pop();
+
+              final title = titleController.text;
+              final subject = subjectController.text;
+              final content = contentController.text;
+              final image = imageController.text;
+
+              try {
+                await postProvider.createNewPost(title, subject, content, [image]);
+                Navigator.of(context).pop();
+                showCustomizeDialog(context, const SuccessfullyCreatePost());
+                postProvider.loadInitialPostsByCompanyId();
+
+              } catch (e) {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Error creating post: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
             },
           ),
         ],
