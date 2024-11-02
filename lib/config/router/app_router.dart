@@ -7,6 +7,7 @@ import 'package:aidmanager_mobile/features/calendar/presentation/screens/calenda
 import 'package:aidmanager_mobile/features/home/presentation/screens/home_screen.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/screens/post_detail_screen.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/screens/posts_screen.dart';
+import 'package:aidmanager_mobile/features/profile/presentation/screens/manager_profile_screen.dart';
 import 'package:aidmanager_mobile/features/profile/presentation/screens/profile_screen.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/screens/project_create_form_screen.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/screens/project_dashboard_screen.dart';
@@ -99,10 +100,12 @@ final appRouter = GoRouter(
           name: ProjectDashboardScreen.name,
           pageBuilder: (context, state) {
             final projectId = state.pathParameters['projectId']!;
-            final projectName = state.uri.queryParameters['name']!;
+            final projectName =
+                state.uri.queryParameters['name'] ?? 'No Project Name';
             return NoTransitionPage(
               key: state.pageKey,
-              child: ProjectDashboardScreen(projectId: projectId, projectName: projectName),
+              child: ProjectDashboardScreen(
+                  projectId: projectId, projectName: projectName),
             );
           },
         ),
@@ -111,9 +114,17 @@ final appRouter = GoRouter(
           name: ProjectPaymentFormScreen.name,
           pageBuilder: (context, state) {
             final projectId = state.pathParameters['projectId']!;
+            final projectName =
+                state.uri.queryParameters['name'] ?? 'No Project Name';
+            final amountSummary = state.extra as List<double>? ?? [];
+
             return NoTransitionPage(
               key: state.pageKey,
-              child: ProjectPaymentFormScreen(projectId: projectId),
+              child: ProjectPaymentFormScreen(
+                projectId: projectId,
+                projectName: projectName,
+                amountSummary: amountSummary,
+              ),
             );
           },
         ),
@@ -122,9 +133,17 @@ final appRouter = GoRouter(
           name: ProjectGoalsFormScreen.name,
           pageBuilder: (context, state) {
             final projectId = state.pathParameters['projectId']!;
+            final projectName =
+                state.uri.queryParameters['name'] ?? 'No Project Name';
+            final weeklySummary = state.extra as List<double>? ?? [];
+
             return NoTransitionPage(
               key: state.pageKey,
-              child: ProjectGoalsFormScreen(projectId: projectId),
+              child: ProjectGoalsFormScreen(
+                projectId: projectId,
+                projectName: projectName,
+                weeklySummary: weeklySummary,
+              ),
             );
           },
         ),
@@ -133,10 +152,14 @@ final appRouter = GoRouter(
           name: ProjectTasksScreen.name,
           pageBuilder: (context, state) {
             final projectId = state.pathParameters['projectId']!;
-            final projectName = state.uri.queryParameters['name']!;
+            final projectName =
+                state.uri.queryParameters['name'] ?? 'No projectName';
             return NoTransitionPage(
               key: state.pageKey,
-              child: ProjectTasksScreen(projectId: projectId, projectName: projectName,),
+              child: ProjectTasksScreen(
+                projectId: projectId,
+                projectName: projectName,
+              ),
             );
           },
         ),
@@ -145,9 +168,14 @@ final appRouter = GoRouter(
           name: ProjectTaskFormScreen.name,
           pageBuilder: (context, state) {
             final projectId = state.pathParameters['projectId']!;
+            final projectName =
+                state.uri.queryParameters['name'] ?? 'No projectName';
             return NoTransitionPage(
               key: state.pageKey,
-              child: ProjectTaskFormScreen(projectId: projectId),
+              child: ProjectTaskFormScreen(
+                projectId: projectId,
+                projectName: projectName,
+              ),
             );
           },
         ),
