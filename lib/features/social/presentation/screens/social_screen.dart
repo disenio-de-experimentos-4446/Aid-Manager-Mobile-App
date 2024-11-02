@@ -1,9 +1,11 @@
-import 'package:aidmanager_mobile/config/theme/app_theme.dart';
-import 'package:aidmanager_mobile/features/social/presentation/widgets/contact_card.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert'; //JSON
-import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
+import 'package:aidmanager_mobile/features/profile/domain/repositories/user_repository.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:aidmanager_mobile/features/social/presentation/widgets/contact_card.dart';
+import 'package:aidmanager_mobile/features/social/presentation/screens/social_provider.dart';
+
+import '../../../../config/theme/app_theme.dart';
 
 class SocialScreen extends StatelessWidget {
   static const String name = "social_screen";
@@ -30,59 +32,18 @@ class SocialContentState extends StatefulWidget {
 }
 
 class _SocialContentStateState extends State<SocialContentState> {
-  List<dynamic> teamMembers = [];
-  //se almacenan los teamMembers
-  bool isLoading = true;
-
   @override
   void initState() {
     super.initState();
-    fetchTeamMembers();
-  }
-
-  @override
-  void dispose() {
-    // evitar llamar a setState luego de que el widget haya sido desmontado.
-    super.dispose();
-  }
-
-  Future<void> fetchTeamMembers() async {
-    final response =
-        await http.get(Uri.parse('https://randomuser.me/api/?results=15'));
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (mounted) {
-        setState(() {
-          teamMembers = data["results"];
-          isLoading = false;
-        });
-      }
-    } else {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-      throw Exception('Error al cargar los datos de la API');
-    }
-  }
-
-  void launchWhatsApp(String phoneNumber) async {
-    // Limpiamos el numero
-    String cleanedNumber = phoneNumber.replaceAll(RegExp(r'\D'), '');
-    //abrimos la url a whatsapp
-    final url = 'https://wa.me/$cleanedNumber';
-    // ignore: deprecated_member_use
-    if (await canLaunch(url)) {
-      // ignore: deprecated_member_use
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
+    context.read<SocialProvider>().getMembersByCompany();
   }
 
   @override
   Widget build(BuildContext context) {
+    final socialProvider = context.watch<SocialProvider>();
+    final authProvider = context.watch<AuthProvider>();
+    final isDirector = authProvider.user?.role == 'Manager';
+
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
@@ -108,16 +69,14 @@ class _SocialContentStateState extends State<SocialContentState> {
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors
-                                  .white, // Fondo blanco para el TextField
+                              color: Colors.white, // Fondo blanco para el TextField
                               borderRadius: BorderRadius.circular(30.0),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.1),
                                   spreadRadius: 1,
                                   blurRadius: 5,
-                                  offset: Offset(
-                                      0, 3), // Cambia la posición de la sombra
+                                  offset: Offset(0, 3), // Cambia la posición de la sombra
                                 ),
                               ],
                             ),
@@ -126,8 +85,7 @@ class _SocialContentStateState extends State<SocialContentState> {
                                 hintText: 'Search a contact',
                                 prefixIcon: Icon(Icons.search),
                                 border: InputBorder.none,
-                                contentPadding:
-                                    EdgeInsets.symmetric(vertical: 12.0),
+                                contentPadding: EdgeInsets.symmetric(vertical: 12.0),
                               ),
                             ),
                           ),
@@ -138,8 +96,7 @@ class _SocialContentStateState extends State<SocialContentState> {
                             // Acción del botón
                           },
                           style: TextButton.styleFrom(
-                            backgroundColor:
-                                CustomColors.darkGreen, // Color de fondo
+                            backgroundColor: CustomColors.darkGreen, // Color de fondo
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 18.0, vertical: 8.0),
                           ),
@@ -158,25 +115,36 @@ class _SocialContentStateState extends State<SocialContentState> {
                 ),
               ),
             ),
-            isLoading
+            socialProvider.isLoading
                 ? Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 30.0),
-                    child: Center(child: CircularProgressIndicator()))
+                padding: const EdgeInsets.symmetric(vertical: 30.0),
+                child: Center(child: CircularProgressIndicator()))
                 : Expanded(
-                    child: ListView.builder(
-                      itemCount: teamMembers.length,
-                      itemBuilder: (context, index) {
-                        final member = teamMembers[index];
-                        return ContactCard(
-                          firstName: member["name"]["first"],
-                          lastName: member["name"]["last"],
-                          imageUrl: member["picture"]["thumbnail"],
-                          email: member["email"],
-                          phone: member["phone"],
-                        );
-                      },
-                    ),
-                  ),
+              child: ListView.builder(
+                itemCount: socialProvider.users.length,
+                itemBuilder: (context, index) {
+                  final member = socialProvider.users[index];
+                  final nameParts = member.name.split(' ');
+                  final firstName = nameParts.isNotEmpty ? nameParts[0] : '';
+                  final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+
+                  return ContactCard(
+                    firstName: firstName,
+                    lastName: lastName,
+                    imageUrl: member.profileImg ?? '',
+                    email: member.email,
+                    phone: member.phone ?? '',
+                    isDirector: member.role == 'Manager',
+                    onDelete: isDirector
+                        ? () async {
+                      await socialProvider.kickMemberFromCompany(member.id!);
+                      setState(() {}); // Refresh the view
+                    }
+                        : null,
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
