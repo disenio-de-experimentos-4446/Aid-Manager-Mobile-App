@@ -2,8 +2,6 @@ import 'package:aidmanager_mobile/config/router/app_router.dart';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/auth/domain/repositories/auth_repository.dart';
 import 'package:aidmanager_mobile/features/posts/domain/repositories/post_repositories.dart';
-import 'package:aidmanager_mobile/features/posts/infraestructure/datasources/post_datasource_impl.dart';
-import 'package:aidmanager_mobile/features/posts/infraestructure/repositories/post_repository_impl.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/providers/post_provider.dart';
 import 'package:aidmanager_mobile/features/profile/domain/repositories/user_repository.dart';
 import 'package:aidmanager_mobile/features/auth/infrastructure/datasources/auth_datasource_impl.dart';
@@ -22,6 +20,9 @@ import 'package:aidmanager_mobile/features/projects/presentation/providers/proje
 import 'package:aidmanager_mobile/features/projects/presentation/providers/task_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'features/posts/post-infrastructure/datasources/post_datasource_impl.dart';
+import 'features/posts/post-infrastructure/repositories/post_repository_impl.dart';
 
 void main() {
   // creamos las instancias de los repositorios con sus datasources
