@@ -6,4 +6,5 @@ abstract class UserRepository {
   Future<List<User>> getAllUsersByCompanyId(int companyId);
   Future<List<User>> getMembersByCompanyName(String companyName);
   Future<User> getDirectorByCompanyName(String companyName);
+  Future<void> updateUserInformationById(int userId, Map<String, dynamic> user);
 }
