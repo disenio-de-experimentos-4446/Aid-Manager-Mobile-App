@@ -67,7 +67,7 @@ class TaskProvider extends ChangeNotifier {
 
   Future<void> updateStatusFieldByTask(int projectId, int taskId, String newStatus) async {
 
-    print({projectId, taskId, newStatus});
+    //print({projectId, taskId, newStatus});
 
     updateLoading = true;
 

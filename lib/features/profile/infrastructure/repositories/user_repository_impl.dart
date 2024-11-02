@@ -22,4 +22,19 @@ class UserRepositoryImpl implements UserRepository {
   Future<void> deleteUserById(int userId) {
     return datasource.deleteUserById(userId);
   }
+
+  @override
+  Future<void> updateUserInformationById(int userId, Map<String, dynamic> user) async {
+    return datasource.updateUserInformationById(userId, user);
+  }
+
+  @override
+  Future<List<User>> getMembersByCompanyName(String companyName) {
+    return datasource.getMembersByCompanyName(companyName);
+  }
+
+  @override
+  Future<User> getDirectorByCompanyName(String companyName) {
+    return datasource.getDirectorByCompanyName(companyName);
+  }
 }

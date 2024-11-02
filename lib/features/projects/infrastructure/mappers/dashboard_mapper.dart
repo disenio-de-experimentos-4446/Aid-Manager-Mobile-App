@@ -16,9 +16,9 @@ class DashboardMapper {
           .toList(),
       progressbar: json['progressbar'] != null
           ? List<int>.from(json['progressbar'])
-          : null,
-      status: json['status'] != null ? List<int>.from(json['status']) : null,
-      tasks: json['tasks'] != null ? List<int>.from(json['tasks']) : null,
+          : [0], // Valor por defecto
+      status: json['status'] != null ? List<int>.from(json['status']) : [0], // Valor por defecto
+      tasks: json['tasks'] != null ? List<int>.from(json['tasks']) : [0], // Valor por defecto
     );
   }
 
@@ -27,12 +27,15 @@ class DashboardMapper {
     return {
       'projectId': dashboard.projectId,
       'id': dashboard.id,
-      'linesChartBarData':
-          dashboard.linesChartBarData.map((i) => AmountChartMapper.toJson(i)).toList(),
-      'barData': dashboard.barData.map((i) => GoalsChartMapper.toJson(i)).toList(),
-      'progressbar': dashboard.progressbar,
-      'status': dashboard.status,
-      'tasks': dashboard.tasks,
+      'linesChartBarData': dashboard.linesChartBarData
+          .map((i) => AmountChartMapper.toJson(i))
+          .toList(),
+      'barData': dashboard.barData
+          .map((i) => GoalsChartMapper.toJson(i))
+          .toList(),
+      'progressbar': dashboard.progressbar.isNotEmpty ? dashboard.progressbar : [0], // Valor por defecto
+      'status': dashboard.status.isNotEmpty ? dashboard.status : [0], // Valor por defecto
+      'tasks': dashboard.tasks.isNotEmpty ? dashboard.tasks : [0], // Valor por defecto
     };
   }
 }

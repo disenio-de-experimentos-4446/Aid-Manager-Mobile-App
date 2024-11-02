@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class SuccessfullyCreateTaskDialog extends StatelessWidget {
+class SuccessfullyGoalsChartUpdateDialog extends StatelessWidget {
+
   final String projectId;
   final String projectName;
 
-  const SuccessfullyCreateTaskDialog({super.key, required this.projectId, required this.projectName});
+  const SuccessfullyGoalsChartUpdateDialog({super.key, required this.projectId, required this.projectName});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class SuccessfullyCreateTaskDialog extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               Icon(
-                Icons.task,
+                Icons.flag,
                 color: Color.fromARGB(255, 44, 44, 44),
                 size: 72,
               ),
@@ -35,21 +36,21 @@ class SuccessfullyCreateTaskDialog extends StatelessWidget {
           ),
           SizedBox(height: 20),
           Text(
-            'Task Created Successfully',
+            'Goals Chart Updated Successfully',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
         ],
       ),
       content: const Text(
-        'The task has been\n created successfully.',
+        'The goals chart has been updated successfully.',
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 18, height: 1.65),
       ),
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop();
-            context.go('/projects/$projectId/tasks?name=${Uri.encodeComponent(projectName)}');
+            Navigator.pop(context);
+            context.go('/projects/$projectId/dashboard?name=${Uri.encodeComponent(projectName)}');
           },
           child: const Text(
             'OK',

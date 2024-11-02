@@ -1,30 +1,46 @@
-import 'package:aidmanager_mobile/config/mocks/calendar_data.dart';
+import 'package:aidmanager_mobile/features/calendar/presentation/widgets/dialog/task_user_info_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class TaskCard extends StatelessWidget {
   final String title;
   final String description;
-  final Status status;
+  final String status;
+  final int projectId;
+  final String assigneeName;
+  final String assigneeImage;
+  final DateTime assigneeAt;
+  final DateTime createdAt;
 
-  const TaskCard(
-      {super.key,
-      required this.title,
-      required this.description,
-      required this.status});
+  const TaskCard({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.status,
+    required this.projectId,
+    required this.assigneeName,
+    required this.assigneeImage,
+    required this.assigneeAt,
+    required this.createdAt,
+  });
 
   @override
   Widget build(BuildContext context) {
-    Color getStatusColor(Status status) {
+    Color getStatusColor(String status) {
       switch (status) {
-        case Status.toDo:
+        case 'ToDo':
           return const Color.fromARGB(255, 216, 66, 55);
-        case Status.inProcess:
+        case 'Progress':
           return const Color.fromARGB(255, 236, 218, 48);
-        case Status.done:
+        case 'Done':
           return const Color.fromARGB(255, 58, 138, 61);
         default:
           return Colors.blue;
       }
+    }
+
+    String formatDate(DateTime date) {
+      return DateFormat('dd MMM yyyy').format(date);
     }
 
     return Padding(
@@ -67,11 +83,11 @@ class TaskCard extends StatelessWidget {
                           color: Colors.black,
                         ),
                       ),
-                      const SizedBox(height: 5.0),
+                      const SizedBox(height: 8.0),
                       Text(
-                        description,
+                        '${formatDate(createdAt)} - ${formatDate(assigneeAt)}',
                         style: TextStyle(
-                          fontSize: 15.0,
+                          fontSize: 16.0,
                           color: Colors.grey[600],
                         ),
                       ),
@@ -79,10 +95,27 @@ class TaskCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const Icon(
-                Icons.info_outline_rounded,
-                color: Colors.grey,
-                size: 36.0,
+              GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return TaskUserInfoDialog(
+                        imageUrl: assigneeImage,
+                        name: assigneeName,
+                        title: title,
+                        state: status,
+                        projectId: projectId,
+                        assigneeAt: assigneeAt,
+                      );
+                    },
+                  );
+                },
+                child: const Icon(
+                  Icons.info_outline_rounded,
+                  color: Colors.grey,
+                  size: 34.0,
+                ),
               ),
               const SizedBox(width: 15.0),
             ],

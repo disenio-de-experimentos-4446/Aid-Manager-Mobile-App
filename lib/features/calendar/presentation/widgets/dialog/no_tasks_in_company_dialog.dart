@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class SuccessfullyCreateTaskDialog extends StatelessWidget {
-  final String projectId;
-  final String projectName;
-
-  const SuccessfullyCreateTaskDialog({super.key, required this.projectId, required this.projectName});
+class NoTasksInCompanyDialog extends StatelessWidget {
+  const NoTasksInCompanyDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +23,8 @@ class SuccessfullyCreateTaskDialog extends StatelessWidget {
                 right: 0,
                 bottom: 3,
                 child: Icon(
-                  Icons.check_circle,
-                  color: Color.fromARGB(255, 76, 175, 80),
+                  Icons.cancel,
+                  color: Colors.red,
                   size: 30,
                 ),
               ),
@@ -35,21 +32,21 @@ class SuccessfullyCreateTaskDialog extends StatelessWidget {
           ),
           SizedBox(height: 20),
           Text(
-            'Task Created Successfully',
+            'No Tasks in Company',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
         ],
       ),
       content: const Text(
-        'The task has been\n created successfully.',
+        'There are no tasks in the current company.',
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 18, height: 1.65),
       ),
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop();
-            context.go('/projects/$projectId/tasks?name=${Uri.encodeComponent(projectName)}');
+            Navigator.pop(context);
+            context.go('/projects');
           },
           child: const Text(
             'OK',

@@ -1,15 +1,29 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/auth/shared/widgets/is_empty_dialog.dart';
+import 'package:aidmanager_mobile/features/projects/domain/entities/goals_chart.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/providers/dashboard_provider.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/widgets/dashboard/dialog/successfully_goals_chart_update_dialog.dart';
+import 'package:aidmanager_mobile/features/projects/shared/widgets/custom_error_dashboard_dialog.dart';
+import 'package:aidmanager_mobile/shared/helpers/show_customize_dialog.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:math';
+import 'package:provider/provider.dart';
 
 class ProjectGoalsFormScreen extends StatefulWidget {
   static const String name = "project_goals_form_screen";
   final String projectId;
+  final String projectName;
+  final List<double> weeklySummary;
 
-  const ProjectGoalsFormScreen({super.key, required this.projectId});
+  const ProjectGoalsFormScreen({
+    super.key,
+    required this.projectId,
+    required this.projectName,
+    required this.weeklySummary,
+  });
 
   @override
   State<ProjectGoalsFormScreen> createState() => _ProjectGoalsFormScreenState();
@@ -21,21 +35,53 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
     (_) => TextEditingController(),
   );
 
-  List<double> weeklySummary = [
-    35.75,
-    42.50,
-    58.20,
-    63.40,
-    77.10,
-    84.25,
-    91.60,
-  ];
+  Future<void> onSubmitUpdateGoalsGraph() async {
+    bool allFieldsFilled =
+        _controllers.every((controller) => controller.text.isNotEmpty);
+
+    if (!allFieldsFilled) {
+      showCustomizeDialog(context, const IsEmptyDialog());
+      return;
+    }
+
+    final goalsChartData = GoalsChart(
+      sunAmmount: int.parse(_controllers[0].text),
+      monAmmount: int.parse(_controllers[1].text),
+      tueAmmount: int.parse(_controllers[2].text),
+      wedAmmount: int.parse(_controllers[3].text),
+      thuAmmount: int.parse(_controllers[4].text),
+      friAmmount: int.parse(_controllers[5].text),
+      satAmmount: int.parse(_controllers[6].text),
+    );
+
+    final dashboardProvider = context.read<DashboardProvider>();
+
+    try {
+      await dashboardProvider.updateGoalsChartByProjectId(
+          int.parse(widget.projectId), goalsChartData);
+
+      if (!mounted) return;
+
+      showCustomizeDialog(
+        context,
+        SuccessfullyGoalsChartUpdateDialog(
+          projectId: widget.projectId,
+          projectName: widget.projectName,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      // mostrar un dialog perzonalizado para cada exception
+      final dialog = getDashboardErrorDialog(context, e as Exception);
+      showErrorDialog(context, dialog);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     for (int i = 0; i < _controllers.length; i++) {
-      _controllers[i].text = weeklySummary[i].toString();
+      _controllers[i].text = widget.weeklySummary[i].toInt().toString();
     }
   }
 
@@ -44,7 +90,7 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
       for (int i = 0; i < _controllers.length; i++) {
         final double? value = double.tryParse(_controllers[i].text);
         if (value != null && value >= 0 && value <= 100) {
-          weeklySummary[i] = value;
+          widget.weeklySummary[i] = value;
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -80,7 +126,7 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
           backgroundColor: CustomColors.darkGreen,
           centerTitle: false,
           title: Text(
-            'Lonely Beach Pacific',
+            widget.projectName,
             style: TextStyle(
               fontSize: 22.0,
               color: const Color.fromARGB(255, 255, 255, 255),
@@ -90,7 +136,8 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: () {
-              context.go('/projects/${widget.projectId}/dashboard');
+              context.go(
+                  '/projects/${widget.projectId}/dashboard?name=${Uri.encodeComponent(widget.projectName)}');
             },
           ),
           toolbarHeight: 70.0,
@@ -201,7 +248,7 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
                         padding: EdgeInsets.symmetric(vertical: 10.0),
                       ),
                       child: Text(
-                        'Update Graph',
+                        'Preview Graph',
                         style: TextStyle(
                             fontSize: 18.0, fontWeight: FontWeight.bold),
                       ),
@@ -210,7 +257,7 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
                   SizedBox(width: 10), // Espacio entre los botones
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _generateRandomValues,
+                      onPressed: onSubmitUpdateGoalsGraph,
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: Colors.red,
@@ -220,7 +267,7 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
                         padding: EdgeInsets.symmetric(vertical: 10.0),
                       ),
                       child: Text(
-                        'Randomize',
+                        'Update Graph',
                         style: TextStyle(
                             fontSize: 18.0, fontWeight: FontWeight.bold),
                       ),
@@ -257,12 +304,13 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
                           ),
                         ),
                       ),
-                      barGroups: List.generate(weeklySummary.length, (i) {
+                      barGroups:
+                          List.generate(widget.weeklySummary.length, (i) {
                         return BarChartGroupData(
                           x: i,
                           barRods: [
                             BarChartRodData(
-                              toY: weeklySummary[i],
+                              toY: widget.weeklySummary[i],
                               color: Colors.green,
                               width: 15,
                               backDrawRodData: BackgroundBarChartRodData(
@@ -282,9 +330,11 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
             ],
           ),
         ),
+        // BOLITA 8 (NO BORRAR (NO FUNCIONA LA APP SI BORRAS))
         floatingActionButton: FloatingActionButton(
           onPressed: _generateRandomValues,
-          backgroundColor: const Color.fromARGB(255, 214, 214, 214), // Color del botón flotante
+          backgroundColor: const Color.fromARGB(
+              255, 214, 214, 214), // Color del botón flotante
           child: BounceInUp(
             animate: true,
             duration: Duration(milliseconds: 1500),

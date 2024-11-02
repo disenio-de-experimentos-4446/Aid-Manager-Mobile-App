@@ -191,7 +191,7 @@ class _ProjectTasksScreenState extends State<ProjectTasksScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.go('/projects/${widget.projectId}/tasks/new');
+          context.go('/projects/${widget.projectId}/tasks/new?name=${Uri.encodeComponent(widget.projectName)}');
         },
         backgroundColor: CustomColors.darkGreen,
         child: Icon(

@@ -5,11 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class BarChartCard extends StatelessWidget {
-
   final String projectId;
+  final String projectName;
   final List<double> summary;
 
-  const BarChartCard({super.key, required this.summary, required this.projectId});
+  const BarChartCard({
+    super.key,
+    required this.summary,
+    required this.projectId,
+    required this.projectName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +27,9 @@ class BarChartCard extends StatelessWidget {
       friAmount: summary[5],
       satAmount: summary[6],
     );
+
+    // Calcula el total de amountSummary
+    final double totalAmount = summary.reduce((a, b) => a + b);
 
     myBarData.initializeBarData();
 
@@ -56,7 +64,7 @@ class BarChartCard extends StatelessWidget {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: '24',
+                          text: totalAmount.toInt().toString(),
                           style: TextStyle(
                             fontSize: 28.0,
                             fontWeight: FontWeight.bold,
@@ -64,7 +72,7 @@ class BarChartCard extends StatelessWidget {
                           ),
                         ),
                         TextSpan(
-                          text: '/ 100 goals completed',
+                          text: '/ 700 goals completed',
                           style: TextStyle(
                               fontSize: 20.0,
                               fontWeight: FontWeight.normal,
@@ -78,10 +86,14 @@ class BarChartCard extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  context.go('/projects/$projectId/dashboard/edit-goals');
+                  context.go(
+                    '/projects/$projectId/dashboard/edit-goals?name=${Uri.encodeComponent(projectName)}',
+                    extra: summary,
+                  );
                 },
                 style: TextButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
                   foregroundColor: Colors.green,
                   backgroundColor: CustomColors.fieldGrey,
                 ),

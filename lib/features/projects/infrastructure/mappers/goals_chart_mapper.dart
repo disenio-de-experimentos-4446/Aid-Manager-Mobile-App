@@ -4,25 +4,25 @@ class GoalsChartMapper {
 
   static GoalsChart fromJson(Map<String, dynamic> json) {
     return GoalsChart(
-      sunAmmount: json['sunAmmount'],
-      monAmmount: json['monAmmount'],
-      tueAmmount: json['tueAmmount'],
-      wedAmmount: json['wedAmmount'],
-      thuAmmount: json['thuAmmount'],
-      friAmmount: json['friAmmount'],
-      satAmmount: json['satAmmount'],
+      sunAmmount: json['sunAmount'],
+      monAmmount: json['monAmount'],
+      tueAmmount: json['tueAmount'],
+      wedAmmount: json['wedAmount'],
+      thuAmmount: json['thuAmount'],
+      friAmmount: json['friAmount'],
+      satAmmount: json['satAmount'],
     );
   }
 
-  static Map<String, dynamic> toJson(GoalsChart chart) {
+  static Map<String, dynamic> toJson(GoalsChart goalsChart) {
     return {
-      'sunAmmount': chart.sunAmmount,
-      'monAmmount': chart.monAmmount,
-      'tueAmmount': chart.tueAmmount,
-      'wedAmmount': chart.wedAmmount,
-      'thuAmmount': chart.thuAmmount,
-      'friAmmount': chart.friAmmount,
-      'satAmmount': chart.satAmmount,
+      'sunAmount': goalsChart.sunAmmount,
+      'monAmount': goalsChart.monAmmount,
+      'tueAmount': goalsChart.tueAmmount,
+      'wedAmount': goalsChart.wedAmmount,
+      'thuAmount': goalsChart.thuAmmount,
+      'friAmount': goalsChart.friAmmount,
+      'satAmount': goalsChart.satAmmount,
     };
   }
 
