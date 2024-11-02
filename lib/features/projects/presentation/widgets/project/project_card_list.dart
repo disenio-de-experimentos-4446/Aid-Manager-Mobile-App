@@ -142,6 +142,10 @@ class PrincipalProjectCard extends StatelessWidget {
                         ),
                         Container(
                           decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.black12,
+                              width: 1.0
+                            ),
                             color: const Color.fromARGB(255, 255, 255, 255),
                             borderRadius: BorderRadius.circular(20.0),
                           ),
