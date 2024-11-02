@@ -4,8 +4,8 @@ class User {
   final int? age;
   final String email;
   final String password;
-  final String? role;
-  final String? teamRegisterCode;
+  final String role;
+  final String teamRegisterCode;
   final String? phone;
   final String? profileImg;
   final String? companyName;

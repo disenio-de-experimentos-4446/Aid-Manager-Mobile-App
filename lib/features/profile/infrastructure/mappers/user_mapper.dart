@@ -20,7 +20,7 @@ class UserMapper {
       age: json['age'],
       email: json['email'],
       password: json['password'], 
-      role: intToRole[json['role']], // convertir entero a rol
+      role: json['role'],
       teamRegisterCode: json['teamRegisterCode'] ?? '',
       phone: json['phone'],
       profileImg: json['profileImg'] ?? 'https://st3.depositphotos.com/4111759/13425/v/600/depositphotos_134255710-stock-illustration-avatar-vector-male-profile-gray.jpg',
@@ -38,20 +38,18 @@ class UserMapper {
     final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
     return {
-      'id': user.id,
       'firstName': firstName,
       'lastName': lastName,
       'age': user.age ?? 0,
       'email': user.email,
       'password': user.password,
       'role': roleToInt[user.role] ?? -1, // convertir rol a entero (request body)
-      'teamRegisterCode': user.teamRegisterCode ?? '',
+      'teamRegisterCode': user.teamRegisterCode,
       'phone': user.phone ?? '',
       'profileImg': user.profileImg ?? '',
       'companyName': user.companyName ?? '',
       'companyEmail': user.companyEmail ?? '',
       'companyCountry': user.companyCountry ?? '',
-      'companyId': user.companyId ?? -1,
     };
   }
 }
