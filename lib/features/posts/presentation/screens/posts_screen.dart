@@ -1,6 +1,11 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/posts/presentation/providers/post_provider.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/widgets/post_card.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../shared/helpers/storage_helper.dart';
+import '../../../profile/domain/entities/user.dart';
 
 class PostsScreen extends StatelessWidget {
   static const String name = "posts_screen";
@@ -19,11 +24,40 @@ class PostsScreen extends StatelessWidget {
   }
 }
 
-class PostsContent extends StatelessWidget {
+class PostsContent extends StatefulWidget {
   const PostsContent({super.key});
 
   @override
+  _PostScreenState createState() => _PostScreenState();
+}
+
+class _PostScreenState extends State<PostsContent> {
+
+  User? user;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPosts();
+    _loadUserData();
+  }
+
+  Future<void>  _loadUserData() async {
+    user = await StorageHelper.getUser();
+    print("UserImageLoaded: ${user?.profileImg}");
+    setState(() {});
+  }
+
+  Future<void>  _loadPosts() async {
+    final postProvider = Provider.of<PostProvider>(context, listen: false);
+    await postProvider.loadInitialPostsByCompanyId();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final postProvider = Provider.of<PostProvider>(context);
+
+
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
@@ -46,46 +80,29 @@ class PostsContent extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 50.0,
-                      height: 50.0,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: AssetImage(
-                              'assets/images/hotman-placeholder.jpg'), // Usa AssetImage en lugar de Image.asset
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                    CircleAvatar(
+                      radius: 25.0,
+                      backgroundImage: user?.profileImg != null ?
+                      NetworkImage(user!.profileImg!) :
+                      AssetImage('assets/images/hotman-placeholder.jpg') as ImageProvider,
                     ),
                     SizedBox(width: 12.0),
                     Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white, // Fondo blanco para el TextField
-                          borderRadius: BorderRadius.circular(30.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              spreadRadius: 1,
-                              blurRadius: 5,
-                              offset: Offset(
-                                  0, 3), // Cambia la posición de la sombra
-                            ),
-                          ],
-                        ),
-                        child: TextField(
-                          textAlignVertical: TextAlignVertical.center,
-                          decoration: InputDecoration(
-                            hintText: 'I like NTR because...',
-                            suffixIcon: Icon(Icons.send_rounded),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(vertical: 5.0)
-                                .copyWith(left: 20.0),
+                        child: TextButton(
+                          style: ButtonStyle(
+                            elevation: WidgetStateProperty.all(10),
+                            shadowColor: WidgetStateProperty.all(
+                                Colors.black.withOpacity(0.5)),
+                            backgroundColor: WidgetStateProperty.all(
+                                Color(0xFFE6EEEC)),
                           ),
+                          onPressed: () {
+                            _showCreateDialog(context);
+
+                          }, child: Text("Create something new +", style: TextStyle(color: Color(
+                            0xFF02513D), fontSize: 18),),
                         ),
                       ),
-                    ),
                     SizedBox(width: 16.0),
                     Container(
                       decoration: BoxDecoration(
@@ -108,18 +125,72 @@ class PostsContent extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: List.generate(
-                    10, // Número de PostCards que deseas generar
-                    (index) => PostCard(),
-                  ),
-                ),
+              child: postProvider.initialLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                itemCount: postProvider.posts.length,
+                itemBuilder: (context, index) {
+                  final post = postProvider.posts[index];
+                  return PostCard(post: post);
+                },
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
 }
+
+
+void _showCreateDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Create New Post'),
+        backgroundColor: Color(0xFFE6EEEC),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              decoration: InputDecoration(hintText: "Title"),
+            ),
+            TextField(
+              decoration: InputDecoration(hintText: "Subject"),
+            ),
+            TextField(
+              decoration: InputDecoration(hintText: "Content"),
+            ),
+            TextField(
+              decoration: InputDecoration(hintText: "Add an image"),
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Cancel'),
+            style: ButtonStyle(
+              foregroundColor: WidgetStateProperty.all(Color(0xFF008A66)),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: Text('Create'),
+            style: ButtonStyle(
+              foregroundColor: WidgetStateProperty.all(Color(0xFF008A66)),
+            ),
+            onPressed: () {
+              // Add your create logic here
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
