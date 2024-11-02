@@ -1,9 +1,10 @@
 
-import 'package:aidmanager_mobile/features/posts/infraestructure/mappers/post_mapper.dart';
 import 'package:aidmanager_mobile/shared/service/http_service.dart';
 import 'package:aidmanager_mobile/features/posts/domain/entities/post.dart';
 import 'package:aidmanager_mobile/features/posts/domain/datasources/post_datasource.dart';
 import 'dart:io';
+
+import '../mappers/post_mapper.dart';
 
 
 class PostDatasourceImpl extends HttpService implements PostsDatasource{
@@ -76,11 +77,11 @@ class PostDatasourceImpl extends HttpService implements PostsDatasource{
   @override
   Future<List<Post>> getPosts(int companyId) async{
     try{
-      final response = await dio.get('/posts/$companyId');
+      final response = await dio.get('/posts/company/$companyId');
 
-      if(response.statusCode != HttpStatus.ok || response.data == null || response.data.isEmpty)
+      if(response.statusCode != HttpStatus.ok || response.data == null)
       {
-        throw Exception('Failed to get posts');
+        throw Exception('Failed to get posts Status code: ${response.statusCode}, Response body: ${response.data}');
       }
       final List<dynamic> postsJson = response.data;
       return postsJson.map((json) => PostMapper.fromJson(json)).toList();
