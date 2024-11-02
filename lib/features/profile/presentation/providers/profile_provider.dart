@@ -14,6 +14,8 @@ class ProfileProvider extends ChangeNotifier {
 
   Future<void> getMembersByCompany() async {
     isLoading = true;
+    notifyListeners();
+
     final companyId = authProvider.user!.companyId!;
 
     try {
@@ -22,8 +24,7 @@ class ProfileProvider extends ChangeNotifier {
 
       users = teamMembers;
     } catch (e) {
-      // Manejar el error de manera adecuada
-      //print('Error fetching users: $e');
+      // Handle the error appropriately
       throw Exception('Failed to fetch users');
     } finally {
       isLoading = false;

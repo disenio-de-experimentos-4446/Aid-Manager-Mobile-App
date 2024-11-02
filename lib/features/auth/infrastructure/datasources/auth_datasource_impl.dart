@@ -38,13 +38,14 @@ class AuthDatasourceImpl extends HttpService implements AuthDatasource {
 
       return LoginResponse(id: id, token: token);
     } catch (e) {
+      print("SIGN IN BODY: ${requestBody}");
       throw SignInFailedException('Failed to sign in: $e');
     }
   }
 
   @override
   Future<void> signUp(User user) async {
-    final requestBody = UserMapper.toJson(user);
+    final requestBody = UserMapper.toJsonPost(user);
 
     try {
       final response = await dio.post(
@@ -55,6 +56,10 @@ class AuthDatasourceImpl extends HttpService implements AuthDatasource {
       if (response.statusCode != HttpStatus.ok) {
         throw Exception('Failed to sign up: ${response.statusCode}');
       }
+
+      final responseData = response.data;
+      final newUser = UserMapper.fromJsonPost(responseData);
+
     } catch (e) {
       if (e is DioException && e.response != null) {
 

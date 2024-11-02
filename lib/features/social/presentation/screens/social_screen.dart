@@ -3,7 +3,7 @@ import 'package:aidmanager_mobile/features/social/presentation/widgets/contact_c
 import 'package:flutter/material.dart';
 import 'dart:convert'; //JSON
 import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
+import "package:http/http.dart" as http;
 
 class SocialScreen extends StatelessWidget {
   static const String name = "social_screen";

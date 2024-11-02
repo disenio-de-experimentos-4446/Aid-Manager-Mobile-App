@@ -4,22 +4,9 @@ import 'package:aidmanager_mobile/features/profile/domain/entities/user.dart';
 import 'package:aidmanager_mobile/features/profile/infrastructure/mappers/user_mapper.dart';
 import 'package:aidmanager_mobile/shared/service/http_service.dart';
 
-class UserDatasourceImpl extends HttpService implements UserDatasource {
-  @override
-  Future<List<User>> getAllUsers() async {
-    try {
-      final response = await dio.get('/users');
+import '../../../../shared/helpers/storage_helper.dart';
 
-      if (response.statusCode == HttpStatus.ok) {
-        final List<dynamic> usersJson = response.data;
-        return usersJson.map((json) => UserMapper.fromJson(json)).toList();
-      } else {
-        throw Exception('Failed to fetch users: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Failed to fetch all users: $e');
-    }
-  }
+class UserDatasourceImpl extends HttpService implements UserDatasource {
 
   @override
   Future<List<User>> getAllUsersByCompanyId(int companyId) async {
@@ -28,7 +15,7 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
 
       if (response.statusCode == HttpStatus.ok) {
         final List<dynamic> usersJson = response.data;
-        return usersJson.map((json) => UserMapper.fromJson(json)).toList();
+        return usersJson.map((json) => UserMapper.fromJsonGetAll(json)).toList();
       } else {
         throw Exception('Failed to fetch users: ${response.statusCode}');
       }
@@ -38,46 +25,17 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
   }
 
   @override
-  Future<User> getDirectorByCompanyName(String companyName) async {
-    try {
-      final response = await dio.get('/users/company/$companyName/director');
-
-      if (response.statusCode == HttpStatus.ok) {
-        final dynamic userJson = response.data;
-        return UserMapper.fromJson(userJson);
-      } else {
-        throw Exception('Failed to fetch director: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Failed to fetch director by company $companyName: $e');
-    }
-  }
-
-  @override
-  Future<List<User>> getMembersByCompanyName(String companyName) async {
-    try {
-      final response = await dio.get('/users/company/$companyName/members');
-
-      if (response.statusCode == HttpStatus.ok) {
-        final List<dynamic> usersJson = response.data;
-        return usersJson.map((json) => UserMapper.fromJson(json)).toList();
-      } else {
-        throw Exception('Failed to fetch members: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Failed to fetch members by $companyName: $e');
-    }
-  }
-
-  @override
   Future<User> getUserById(int id) async {
     try {
-      final response = await dio.get('/users/user/$id');
 
+      final response = await dio.get('/users/user/$id');
+      print("JSON RESPONSE: ${response.data}");
 
       if (response.statusCode == HttpStatus.ok) {
         final dynamic userJson = response.data;
-        return UserMapper.fromJson(userJson);
+        var data = UserMapper.fromJsonGetOne(userJson);
+        StorageHelper.saveUser(data);
+        return data;
       } else {
         throw Exception('Failed to fetch user: ${response.statusCode}');
       }

@@ -1,4 +1,3 @@
-import 'package:aidmanager_mobile/features/posts/domain/entities/comment.dart';
 
 class Post {
   int? id;

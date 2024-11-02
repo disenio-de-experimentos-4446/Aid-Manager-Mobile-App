@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../domain/entities/comment.dart';
 import '../providers/comment_provider.dart';
+import '../widgets/comment_card.dart';
 
 class PostDetailScreen extends StatefulWidget {
   final String postId;

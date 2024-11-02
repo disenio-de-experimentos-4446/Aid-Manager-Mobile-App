@@ -12,6 +12,7 @@ class HttpService {
             baseUrl: Environment.baseUrl,
           ),
         ) {
+    print('HttpService initialized');
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         // verificamos si el token está en memoria
@@ -26,6 +27,14 @@ class HttpService {
 
         options.headers['Content-Type'] = 'application/json';
         return handler.next(options);
+      },
+      onResponse: (response, handler) async {
+        // Save the token if it's present in the response headers
+        if (response.headers['Authorization'] != null) {
+          _token = response.headers['Authorization']!.first;
+          await StorageHelper.saveToken(_token!);
+        }
+        return handler.next(response);
       },
     ));
   }

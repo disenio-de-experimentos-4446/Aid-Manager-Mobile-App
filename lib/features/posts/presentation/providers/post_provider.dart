@@ -1,5 +1,4 @@
 import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
-import 'package:aidmanager_mobile/features/posts/domain/entities/comment.dart';
 import 'package:aidmanager_mobile/features/posts/domain/entities/post.dart';
 import 'package:aidmanager_mobile/features/posts/domain/repositories/post_repositories.dart';
 import 'package:flutter/foundation.dart';
@@ -77,6 +76,7 @@ class PostProvider extends ChangeNotifier {
 
     try {
       await postsRepository.createPost(newPost);
+      await loadInitialPostsByCompanyId();
     } catch (e) {
       throw Exception('Failed to create a new post');
     } finally {
@@ -87,7 +87,9 @@ class PostProvider extends ChangeNotifier {
 
   Future<void> deletePostById(int id) async {
     try {
-      // await postsRepository.deletePostById(id);
+      await postsRepository.deletePostById(id);
+
+      await loadInitialPostsByCompanyId();
     } catch (e) {
       throw Exception('Failed to delete post with id: $id');
     }

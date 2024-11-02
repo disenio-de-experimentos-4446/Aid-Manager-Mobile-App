@@ -16,7 +16,7 @@ class StorageHelper {
 
   static Future<void> saveUser(User user) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_userKey, jsonEncode(UserMapper.toJson(user)));
+    await prefs.setString(_userKey, jsonEncode(UserMapper.fromJsonPost(user)));
     print("SAVE: ${prefs.getString(_userKey)}");
 
   }
@@ -30,9 +30,10 @@ class StorageHelper {
     final prefs = await SharedPreferences.getInstance();
     final userString = prefs.getString(_userKey);
     if (userString != null) {
-      print("GET USERS: ${jsonDecode(userString)}");
-      return UserMapper.fromJson(jsonDecode(userString));
+      print("\n USER GOTTEN FROM STORAGE HELPER: \n ${jsonDecode(userString)} \n");
+      return UserMapper.fromJsonGetOne(jsonDecode(userString));
     }
+    print("ERROR NULL WHEN GET USER");
     return null;
   }
 

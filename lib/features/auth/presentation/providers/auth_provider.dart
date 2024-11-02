@@ -56,14 +56,12 @@ class AuthProvider extends ChangeNotifier {
       // es importante guardar el token en shrprefs antes de esta llamada porque
       // el token se utilizará para autenticar las peticiones en el interceptor HTTP de Dio !!
       final user = await userRepository.getUserById(id);
-
-      // guardamos el usuario en el estado global y en SharedPreferences
-      setUser(user);
       print("USER SAVED: ${user}");
-      await StorageHelper.saveUser(user);
+      setUser(user);
 
       //print('Almacenados en el estado global: ${{token, user.id}}');
     } catch (e) {
+      print("PROVIDER");
       throw SignInFailedException('Sign in failed: $e');
     } finally {
       isLoading = false;

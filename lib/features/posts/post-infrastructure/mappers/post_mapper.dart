@@ -1,9 +1,14 @@
-import 'package:aidmanager_mobile/features/posts/domain/entities/comment.dart';
-import 'package:intl/intl.dart';
+
 import 'package:aidmanager_mobile/features/posts/domain/entities/post.dart';
 
 class PostMapper {
   static Post fromJson(Map<String, dynamic> json) {
+
+    var image = json['userImage'];
+    if (!Uri.tryParse(image)!.hasAbsolutePath){
+      image = 'noImage';
+    }
+
     return Post(
       id: json['id'],
       title: json['title'],
@@ -14,7 +19,7 @@ class PostMapper {
       userId: json['userId'],
       userName: json['userName'],
       email: json['email'],
-      userImage: json['userImage'],
+      userImage: image,
       rating: json['rating'],
       images: json['images'] != null ? List<dynamic>.from(json['images']) : [],
       commentsList: json['commentsList'] != null ? List<dynamic>.from(json['commentsList']) : [],
