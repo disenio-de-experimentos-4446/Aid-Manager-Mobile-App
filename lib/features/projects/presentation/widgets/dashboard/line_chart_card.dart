@@ -3,12 +3,19 @@ import 'package:aidmanager_mobile/features/projects/presentation/widgets/dashboa
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class LineChartCard extends StatelessWidget {
-
   final String projectId;
+  final String projectName;
+  final List<double> amountSummary;
 
-  const LineChartCard({super.key, required this.projectId});
+  const LineChartCard({
+    super.key,
+    required this.projectId,
+    required this.projectName,
+    required this.amountSummary,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +29,12 @@ class LineChartCard extends StatelessWidget {
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     );
+
+    // Calcula el total de amountSummary
+    final double totalAmount = amountSummary.reduce((a, b) => a + b);
+
+    // Formatea el total como una cadena con el formato de moneda
+    final String formatedAmount = NumberFormat.currency(symbol: '\$', decimalDigits: 0).format(totalAmount * 1000);
 
     return Container(
       width: double.infinity,
@@ -54,7 +67,7 @@ class LineChartCard extends StatelessWidget {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: '\$90,324',
+                          text: formatedAmount,
                           style: TextStyle(
                             fontSize: 28.0,
                             fontWeight: FontWeight.bold,
@@ -77,7 +90,11 @@ class LineChartCard extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  context.go('/projects/$projectId/dashboard/edit-payments');
+                  // le pasamos los datos del resumen de monto total en el param para recuperarlos en la otra vista de edit
+                  context.go(
+                    '/projects/$projectId/dashboard/edit-payments?name=${Uri.encodeComponent(projectName)}',
+                    extra: amountSummary,
+                  );
                 },
                 style: TextButton.styleFrom(
                   padding:
@@ -139,13 +156,13 @@ class LineChartCard extends StatelessWidget {
                 lineBarsData: [
                   LineChartBarData(
                     spots: [
-                      FlSpot(0, 3),
-                      FlSpot(2, 2),
-                      FlSpot(4, 4),
-                      FlSpot(6, 2.5),
-                      FlSpot(8, 4),
-                      FlSpot(10.3, 3),
-                      FlSpot(12, 4),
+                      FlSpot(0, amountSummary[0]),
+                      FlSpot(2, amountSummary[1]),
+                      FlSpot(4, amountSummary[2]),
+                      FlSpot(6, amountSummary[3]),
+                      FlSpot(8, amountSummary[4]),
+                      FlSpot(10.3, amountSummary[5]),
+                      FlSpot(12, amountSummary[6]),
                     ],
                     isCurved: true,
                     color: const Color.fromARGB(255, 30, 143, 49),

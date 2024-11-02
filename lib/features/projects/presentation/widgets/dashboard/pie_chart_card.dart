@@ -1,13 +1,18 @@
 import 'package:aidmanager_mobile/config/mocks/pie_data.dart';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/projects/domain/entities/task.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class PieChartCard extends StatelessWidget {
-
+  final List<Task> tasks;
   final List<PieChartSectionData> getSections;
 
-  const PieChartCard({super.key, required this.getSections});
+  const PieChartCard({
+    super.key,
+    required this.getSections,
+    required this.tasks,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +47,8 @@ class PieChartCard extends StatelessWidget {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: '24',
+                          text:
+                              '${tasks.where((task) => task.state == 'Done').length}',
                           style: TextStyle(
                             fontSize: 28.0,
                             fontWeight: FontWeight.bold,
@@ -50,7 +56,7 @@ class PieChartCard extends StatelessWidget {
                           ),
                         ),
                         TextSpan(
-                          text: '/40 tasks completed',
+                          text: '/${tasks.length} tasks completed',
                           style: TextStyle(
                             fontSize: 20.0,
                             fontWeight: FontWeight.normal,
@@ -71,7 +77,7 @@ class PieChartCard extends StatelessWidget {
                   ),
                   SizedBox(width: 5.0),
                   Text(
-                    '2.4%', // Porcentaje
+                    '${(tasks.where((task) => task.state == 'Done').length / tasks.length * 100).toStringAsFixed(1)}%',
                     style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
@@ -95,7 +101,7 @@ class PieChartCard extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 25.0),
+          SizedBox(height: 35.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: PieData.pieData.map((data) {
