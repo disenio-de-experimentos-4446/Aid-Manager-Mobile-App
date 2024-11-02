@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:aidmanager_mobile/features/posts/domain/entities/comment.dart';
-import 'package:aidmanager_mobile/features/posts/infrastructure/mappers/comment_mapper.dart';
 import 'package:aidmanager_mobile/shared/service/http_service.dart';
 import 'package:dio/dio.dart';
 
 import '../../domain/datasources/comment_datasource.dart';
+import '../mappers/comment_mapper.dart';
 
 class CommentsDatasourceImpl extends HttpService implements CommentDatasource {
   Dio dio;
