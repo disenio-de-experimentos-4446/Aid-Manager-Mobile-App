@@ -9,20 +9,20 @@ class PostMapper {
       title: json['title'],
       subject: json['subject'],
       description: json['description'],
-      postTime: DateFormat('yyyy-MM-ddTHH:mm:ss.SSSZ').parse(json['postTime']),
+      postTime: json['postTime'] != null ? DateTime.parse(json['postTime']) : null,
       companyId: json['companyId'],
       userId: json['userId'],
       userName: json['userName'],
       email: json['email'],
       userImage: json['userImage'],
       rating: json['rating'],
-      images: List<String>.from(json['images']),
-      commentsList: List<dynamic>.from(json['userList'])
+      images: json['images'] != null ? List<dynamic>.from(json['images']) : [],
+      commentsList: json['commentsList'] != null ? List<dynamic>.from(json['commentsList']) : [],
+
     );
   }
 
   static Map<String,dynamic> toJson(Post post){
-    final DateFormat dateFormat = DateFormat('yyyy-MM-ddTHH:mm:ss.SSSZ');
     return{
       'title': post.title,
       'subject': post.subject,
