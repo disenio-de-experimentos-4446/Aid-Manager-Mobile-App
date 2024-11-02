@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
-class SuccessfullyCreateTaskDialog extends StatelessWidget {
-  final String projectId;
-  final String projectName;
-
-  const SuccessfullyCreateTaskDialog({super.key, required this.projectId, required this.projectName});
+class ErrorUpdateGoalsChartDialog extends StatelessWidget {
+  const ErrorUpdateGoalsChartDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +14,7 @@ class SuccessfullyCreateTaskDialog extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               Icon(
-                Icons.task,
+                Icons.flag,
                 color: Color.fromARGB(255, 44, 44, 44),
                 size: 72,
               ),
@@ -26,8 +22,8 @@ class SuccessfullyCreateTaskDialog extends StatelessWidget {
                 right: 0,
                 bottom: 3,
                 child: Icon(
-                  Icons.check_circle,
-                  color: Color.fromARGB(255, 76, 175, 80),
+                  Icons.cancel,
+                  color: Color.fromARGB(255, 244, 67, 54),
                   size: 30,
                 ),
               ),
@@ -35,21 +31,20 @@ class SuccessfullyCreateTaskDialog extends StatelessWidget {
           ),
           SizedBox(height: 20),
           Text(
-            'Task Created Successfully',
+            'Error Updating Goals Chart',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
         ],
       ),
       content: const Text(
-        'The task has been\n created successfully.',
+        'There was an error updating the goals chart.',
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 18, height: 1.65),
       ),
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop();
-            context.go('/projects/$projectId/tasks?name=${Uri.encodeComponent(projectName)}');
+            Navigator.pop(context);
           },
           child: const Text(
             'OK',
