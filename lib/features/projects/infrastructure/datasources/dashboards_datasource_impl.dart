@@ -38,7 +38,7 @@ class DashboardsDatasourceImpl extends HttpService implements DashboardsDatasour
   @override
   Future<List<Dashboard>> getAllDashboardDataByCompanyId(int companyId) async {
     try {
-      final response = await dio.get('/analytics/$companyId');
+      final response = await dio.get('/analytics-by-company/$companyId');
 
       if(response.statusCode == HttpStatus.ok) {
         final List<dynamic> dashboardsJson = response.data;
@@ -55,6 +55,7 @@ class DashboardsDatasourceImpl extends HttpService implements DashboardsDatasour
 
   @override
   Future<Dashboard> getDashboardByProjectId(int projectId) async {
+
     try {
       final response = await dio.get('/projects/$projectId/analytics');
 
@@ -73,7 +74,9 @@ class DashboardsDatasourceImpl extends HttpService implements DashboardsDatasour
 
   @override
   Future<void> updateAmountChartByProjectId(int projectId, AmountChart chart) async {
-    final requestBody = AmountChartMapper.toJson(chart);
+    final requestBody = {
+      'lines': [AmountChartMapper.toJson(chart)]
+    };
 
     try {
       final response = await dio.patch(
@@ -92,7 +95,9 @@ class DashboardsDatasourceImpl extends HttpService implements DashboardsDatasour
 
   @override
   Future<void> updateGoalsChartByProjectId(int projectId, GoalsChart chart) async {
-    final requestBody = GoalsChartMapper.toJson(chart);
+    final requestBody = {
+      'barData': [GoalsChartMapper.toJson(chart)]
+    };
 
     try {
       final response = await dio.patch(

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:aidmanager_mobile/features/profile/domain/datasources/user_datasource.dart';
 import 'package:aidmanager_mobile/features/profile/domain/entities/user.dart';
@@ -74,7 +75,6 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
     try {
       final response = await dio.get('/users/user/$id');
 
-
       if (response.statusCode == HttpStatus.ok) {
         final dynamic userJson = response.data;
         return UserMapper.fromJson(userJson);
@@ -83,6 +83,26 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
       }
     } catch (e) {
       throw Exception('Failed to fetch user by $id ID: $e');
+    }
+  }
+
+  @override
+  Future<void> updateUserInformationById(int userId, Map<String, dynamic> userData) async {
+    print(userData);
+
+    try {
+      final response = await dio.put(
+        '/users/$userId',
+        data: jsonEncode(userData),
+      );
+
+      if (response.statusCode == 200) {
+        print('User updated successfully');
+      } else {
+        throw Exception('Failed to update user: ${response.statusCode} ${response.statusMessage}');
+      }
+    } catch (e) {
+      throw Exception('Failed to update user by id: $userId, $e');
     }
   }
 }

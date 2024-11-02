@@ -33,5 +33,9 @@ class UserRepositoryImpl implements UserRepository {
     return datasource.getUserById(id);
   }
 
+  @override
+  Future<void> updateUserInformationById(int userId, Map<String, dynamic> user) async {
+    return datasource.updateUserInformationById(userId, user);
+  }
   
 }

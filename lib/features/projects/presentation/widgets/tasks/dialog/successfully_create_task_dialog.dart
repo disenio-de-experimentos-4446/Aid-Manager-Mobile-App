@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class SuccessfullyCreateTaskDialog extends StatelessWidget {
-
   final String projectId;
+  final String projectName;
 
-  const SuccessfullyCreateTaskDialog({super.key, required this.projectId});
+  const SuccessfullyCreateTaskDialog({super.key, required this.projectId, required this.projectName});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class SuccessfullyCreateTaskDialog extends StatelessWidget {
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
-              context.go('/projects/$projectId/tasks');
+            context.go('/projects/$projectId/tasks?name=${Uri.encodeComponent(projectName)}');
           },
           child: const Text(
             'OK',

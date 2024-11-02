@@ -29,6 +29,11 @@ class TasksRepositoryImpl implements TasksRepository {
   }
 
   @override
+  Future<List<Task>> getAllTasksByCompanyId(int companyId) {
+    return datasource.getAllTasksByCompanyId(companyId);
+  }
+
+  @override
   Future<void> updateTaskById(int id, Task task) {
     return datasource.updateTaskById(id, task);
   }

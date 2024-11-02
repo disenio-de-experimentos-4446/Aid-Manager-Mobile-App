@@ -1,11 +1,12 @@
-import 'package:aidmanager_mobile/config/mocks/pie_data.dart';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/providers/dashboard_provider.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/widgets/dashboard/bar_chart_card.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/widgets/dashboard/line_chart_card.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/widgets/dashboard/pie_chart_card.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class ProjectDashboardScreen extends StatefulWidget {
   static const String name = "project_dashboard_screen";
@@ -25,39 +26,79 @@ class ProjectDashboardScreen extends StatefulWidget {
 class _ProjectDashboardScreenState extends State<ProjectDashboardScreen> {
   List<bool> isSelected = [true, false];
 
-  List<PieChartSectionData> getSections() => PieData.pieData
-      .asMap()
-      .map<int, PieChartSectionData>((index, data) {
-        final radius = 50.0 + (data.percent / 100) * 60.0;
-        final fontSize = 16.0 + (data.percent / 100) * 25.0;
-        final value = PieChartSectionData(
-          color: data.color,
-          value: data.percent,
-          title: '${data.percent}%',
-          titleStyle: TextStyle(
-            fontSize: fontSize,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-          radius: radius,
-        );
-        return MapEntry(index, value);
-      })
-      .values
-      .toList();
+  List<PieChartSectionData> getSections(
+      double donePercentage, double progressPercentage, double toDoPercentage) {
+    return [
+      PieChartSectionData(
+        color: Colors.green,
+        value: donePercentage,
+        title: '${donePercentage.toStringAsFixed(1)}%',
+        titleStyle: TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        radius: 50.0 + (donePercentage / 100) * 60.0,
+      ),
+      PieChartSectionData(
+        color: Colors.blue,
+        value: progressPercentage,
+        title: '${progressPercentage.toStringAsFixed(1)}%',
+        titleStyle: TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        radius: 50.0 + (progressPercentage / 100) * 60.0,
+      ),
+      PieChartSectionData(
+        color: Colors.red,
+        value: toDoPercentage,
+        title: '${toDoPercentage.toStringAsFixed(1)}%',
+        titleStyle: TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        radius: 50.0 + (toDoPercentage / 100) * 60.0,
+      ),
+    ];
+  }
 
-  List<double> weeklySummary = [
-    35.75,
-    42.50,
-    58.20,
-    63.40,
-    77.10,
-    84.25,
-    91.60,
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadDashboardInformation();
+  }
+
+  Future<void> _loadDashboardInformation() async {
+    final projectId = int.parse(widget.projectId);
+    final dashboardRepository =
+        Provider.of<DashboardProvider>(context, listen: false);
+
+    await dashboardRepository.getDashboardInformationByProjectId(projectId);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final dashboardRepository = context.watch<DashboardProvider>();
+    final doneTasksCount =
+        dashboardRepository.tasks.where((task) => task.state == 'Done').length;
+    final progressTasksCount = dashboardRepository.tasks
+        .where((task) => task.state == 'Progress')
+        .length;
+    final toDoTasksCount =
+        dashboardRepository.tasks.where((task) => task.state == 'ToDo').length;
+
+    int totalTasks = doneTasksCount + progressTasksCount + toDoTasksCount;
+
+    double donePercentage =
+        totalTasks > 0 ? (doneTasksCount / totalTasks) * 100 : 0;
+    double progressPercentage =
+        totalTasks > 0 ? (progressTasksCount / totalTasks) * 100 : 0;
+    double toDoPercentage =
+        totalTasks > 0 ? (toDoTasksCount / totalTasks) * 100 : 0;
+
     return Scaffold(
       backgroundColor: CustomColors.lightGrey,
       appBar: AppBar(
@@ -151,20 +192,123 @@ class _ProjectDashboardScreenState extends State<ProjectDashboardScreen> {
               SizedBox(
                 height: 25,
               ),
-              PieChartCard(getSections: getSections()),
+              PieChartCard(
+                tasks: dashboardRepository.tasks,
+                getSections: getSections(
+                  donePercentage,
+                  progressPercentage,
+                  toDoPercentage,
+                ),
+              ),
               SizedBox(
                 height: 25,
               ),
               LineChartCard(
                 projectId: widget.projectId,
+                projectName: widget.projectName,
+                amountSummary: [
+                  (dashboardRepository
+                              .projectDashboard?.linesChartBarData.isNotEmpty ??
+                          false)
+                      ? dashboardRepository
+                          .projectDashboard!.linesChartBarData[0].data1
+                          .toDouble()
+                      : 0.0,
+                  (dashboardRepository
+                              .projectDashboard?.linesChartBarData.isNotEmpty ??
+                          false)
+                      ? dashboardRepository
+                          .projectDashboard!.linesChartBarData[0].data2
+                          .toDouble()
+                      : 0.0,
+                  (dashboardRepository
+                              .projectDashboard?.linesChartBarData.isNotEmpty ??
+                          false)
+                      ? dashboardRepository
+                          .projectDashboard!.linesChartBarData[0].data3
+                          .toDouble()
+                      : 0.0,
+                  (dashboardRepository
+                              .projectDashboard?.linesChartBarData.isNotEmpty ??
+                          false)
+                      ? dashboardRepository
+                          .projectDashboard!.linesChartBarData[0].data4
+                          .toDouble()
+                      : 0.0,
+                  (dashboardRepository
+                              .projectDashboard?.linesChartBarData.isNotEmpty ??
+                          false)
+                      ? dashboardRepository
+                          .projectDashboard!.linesChartBarData[0].data5
+                          .toDouble()
+                      : 0.0,
+                  (dashboardRepository
+                              .projectDashboard?.linesChartBarData.isNotEmpty ??
+                          false)
+                      ? dashboardRepository
+                          .projectDashboard!.linesChartBarData[0].data6
+                          .toDouble()
+                      : 0.0,
+                  (dashboardRepository
+                              .projectDashboard?.linesChartBarData.isNotEmpty ??
+                          false)
+                      ? dashboardRepository
+                          .projectDashboard!.linesChartBarData[0].data7
+                          .toDouble()
+                      : 0.0,
+                ],
               ),
               SizedBox(
                 height: 25,
               ),
               BarChartCard(
                 projectId: widget.projectId,
-                summary: weeklySummary,
-              )
+                projectName: widget.projectName,
+                summary: [
+                  (dashboardRepository.projectDashboard?.barData.isNotEmpty ??
+                          false)
+                      ? dashboardRepository
+                          .projectDashboard!.barData[0].sunAmmount
+                          .toDouble()
+                      : 0.0,
+                  (dashboardRepository.projectDashboard?.barData.isNotEmpty ??
+                          false)
+                      ? dashboardRepository
+                          .projectDashboard!.barData[0].monAmmount
+                          .toDouble()
+                      : 0.0,
+                  (dashboardRepository.projectDashboard?.barData.isNotEmpty ??
+                          false)
+                      ? dashboardRepository
+                          .projectDashboard!.barData[0].tueAmmount
+                          .toDouble()
+                      : 0.0,
+                  (dashboardRepository.projectDashboard?.barData.isNotEmpty ??
+                          false)
+                      ? dashboardRepository
+                          .projectDashboard!.barData[0].wedAmmount
+                          .toDouble()
+                      : 0.0,
+                  (dashboardRepository.projectDashboard?.barData.isNotEmpty ??
+                          false)
+                      ? dashboardRepository
+                          .projectDashboard!.barData[0].thuAmmount
+                          .toDouble()
+                      : 0.0,
+                  (dashboardRepository.projectDashboard?.barData.isNotEmpty ??
+                          false)
+                      ? dashboardRepository
+                          .projectDashboard!.barData[0].friAmmount
+                          .toDouble()
+                      : 0.0,
+                  (dashboardRepository.projectDashboard?.barData.isNotEmpty ??
+                          false)
+                      ? dashboardRepository
+                          .projectDashboard!.barData[0].satAmmount
+                          .toDouble()
+                      : 0.0,
+                ],
+              ),
             ],
           ),
         ),

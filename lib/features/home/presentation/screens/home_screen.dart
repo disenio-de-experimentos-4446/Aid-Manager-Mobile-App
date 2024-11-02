@@ -1,8 +1,11 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/home/presentation/providers/home_provider.dart';
+import 'package:aidmanager_mobile/features/home/presentation/widgets/members_carousel.dart';
 import 'package:aidmanager_mobile/features/home/presentation/widgets/metric_card.dart';
-import 'package:aidmanager_mobile/features/home/presentation/widgets/project_card.dart';
+import 'package:aidmanager_mobile/features/home/presentation/widgets/projects_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class MetricItem {
   final IconData icon;
@@ -11,16 +14,6 @@ class MetricItem {
 
   MetricItem({required this.icon, required this.caption, required this.title});
 }
-
-final List<MetricItem> metricsList = [
-  MetricItem(
-      icon: Icons.monetization_on, caption: '\$65.0', title: 'Total Earning'),
-  MetricItem(
-      icon: Icons.addchart_sharp, caption: '120', title: 'Total Projects'),
-  MetricItem(icon: Icons.people, caption: '350', title: 'Total Customers'),
-  MetricItem(icon: Icons.star, caption: '4.8', title: 'Average Rating'),
-];
-
 class HomeScreen extends StatelessWidget {
   static const String name = "home_screen";
 
@@ -38,234 +31,232 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class HomeContent extends StatelessWidget {
+class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: CustomColors.lightGrey,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 25.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const _BannerHome(),
-              const SizedBox(height: 25),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Recent members',
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          context.go('/social');
-                        },
-                        child: Row(
-                          children: [
-                            Text(
-                              'See All',
-                              style: TextStyle(
-                                  fontSize: 20.0,
-                                  color: CustomColors.darkGreen,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(width: 5.0),
-                            Icon(
-                              Icons.arrow_forward_rounded,
-                              color: CustomColors.darkGreen,
-                              size: 24.0,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        _MemberShape('assets/images/hotman-placeholder.jpg'),
-                        _MemberShape('assets/images/hotman-placeholder.jpg'),
-                        _MemberShape('assets/images/hotman-placeholder.jpg'),
-                        _MemberShape('assets/images/hotman-placeholder.jpg'),
-                        _MemberShape('assets/images/hotman-placeholder.jpg'),
-                        _MemberShape('assets/images/hotman-placeholder.jpg'),
-                        _MemberShape('assets/images/hotman-placeholder.jpg'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 35),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Popular Projects',
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          context.go('/projects');
-                        },
-                        child: Row(
-                          children: [
-                            Text(
-                              'See All',
-                              style: TextStyle(
-                                  fontSize: 20.0,
-                                  color: CustomColors.darkGreen,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(
-                                width: 5.0), // Espacio entre el texto y el icono
-                            Icon(
-                              Icons.arrow_forward_rounded,
-                              color: CustomColors.darkGreen,
-                              size: 24.0,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 25),
-                  SizedBox(
-                    height: 240,
-                    child: CarouselView(
-                        itemExtent: MediaQuery.sizeOf(context).width - 96,
-                        padding: const EdgeInsets.only(right: 10),
-                        itemSnapping: true,
-                        elevation: 4.0,
-                        children: List.generate(
-                            10, (int index) => const ProjectCard())),
-                  )
-                ],
-              ),
-              const SizedBox(height: 35),
-              Column(
-                children: [
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Organization metrics',
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'See All',
-                            style: TextStyle(
-                                fontSize: 20.0,
-                                color: CustomColors.darkGreen,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          SizedBox(width: 5.0),
-                          Icon(
-                            Icons.arrow_forward_rounded,
-                            color: CustomColors.darkGreen,
-                            size: 24.0,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    height: 340,
-                    child: GridView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 20.0,
-                        mainAxisSpacing: 20.0,
-                        childAspectRatio: 1.5,
-                      ),
-                      itemCount: 4,
-                      itemBuilder: (context, index) {
-                        final metric = metricsList[index];
-                        return MetricCard(
-                          icon: metric.icon,
-                          title: metric.title,
-                          caption: metric.caption,
-                        );
-                      },
-                    ),
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  State<HomeContent> createState() => _HomeContentState();
 }
 
-class _MemberShape extends StatelessWidget {
-  final String imagePath;
+class _HomeContentState extends State<HomeContent> {
+  @override
+  void initState() {
+    super.initState();
+    _loadInitialInformation();
+  }
 
-  const _MemberShape(this.imagePath);
+  Future<void> _loadInitialInformation() async {
+    final homeProvider = Provider.of<HomeProvider>(context, listen: false);
+    await homeProvider.loadInitialInformation();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(right: 12.0),
-      child: Column(
+    final homeProvider = context.watch<HomeProvider>();
+    final teamMembers =
+        homeProvider.users.where((user) => user.role == 'TeamMember').toList();
+        
+    final doneTasksCount = homeProvider.tasks.where((task) => task.state == 'Done').length;
+
+
+    return Scaffold(
+      backgroundColor: CustomColors.lightGrey,
+      body: Stack(
         children: [
-          Container(
-            width: 80.0,
-            height: 80.0,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.grey, // Borde gris
-                width: 2.0,
-              ),
-            ),
-            child: ClipOval(
-              child: ColorFiltered(
-                colorFilter: ColorFilter.mode(
-                  Colors.black.withOpacity(0.10), // Fondo opaco
-                  BlendMode.darken,
-                ),
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.cover,
-                ),
+          SingleChildScrollView(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 25.0, vertical: 25.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const _BannerHome(),
+                  const SizedBox(height: 25),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Recent members',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              context.go('/social');
+                            },
+                            child: Row(
+                              children: [
+                                Text(
+                                  'See All',
+                                  style: TextStyle(
+                                      fontSize: 20.0,
+                                      color: CustomColors.darkGreen,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                SizedBox(width: 5.0),
+                                Icon(
+                                  Icons.arrow_forward_rounded,
+                                  color: CustomColors.darkGreen,
+                                  size: 24.0,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      MembersCarousel(members: teamMembers),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Popular Projects',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              context.go('/projects');
+                            },
+                            child: Row(
+                              children: [
+                                Text(
+                                  'See All',
+                                  style: TextStyle(
+                                      fontSize: 20.0,
+                                      color: CustomColors.darkGreen,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                SizedBox(
+                                    width:
+                                        5.0), // Espacio entre el texto y el icono
+                                Icon(
+                                  Icons.arrow_forward_rounded,
+                                  color: CustomColors.darkGreen,
+                                  size: 24.0,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 25),
+                      ProjectsCarousel(
+                        projects: homeProvider.projects,
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 35),
+                  Column(
+                    children: [
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Organization metrics',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                'See All',
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    color: CustomColors.darkGreen,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              SizedBox(width: 5.0),
+                              Icon(
+                                Icons.arrow_forward_rounded,
+                                color: CustomColors.darkGreen,
+                                size: 24.0,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        height: 340,
+                        child: GridView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 20.0,
+                            mainAxisSpacing: 20.0,
+                            childAspectRatio: 1.5,
+                          ),
+                          itemCount: 4,
+                          itemBuilder: (context, index) {
+                            switch (index) {
+                              case 0:
+                                return MetricCard(
+                                  icon: Icons.grading_outlined,
+                                  title: 'Tasks Completed',
+                                  caption: doneTasksCount.toString(),
+                                );
+                              case 1:
+                                return MetricCard(
+                                  icon: Icons.addchart_sharp,
+                                  title: 'Total Projects',
+                                  caption: homeProvider.projects.length.toString(),
+                                );
+                              case 2:
+                                return MetricCard(
+                                  icon: Icons.people,
+                                  title: 'Total Members',
+                                  caption: homeProvider.users.length.toString(),
+                                );
+                              case 3:
+                                return MetricCard(
+                                  icon: Icons.star_rounded,
+                                  title: 'Average Rating',
+                                  caption: '4.5',
+                                );
+                              default:
+                                return Container();
+                            }
+                          },
+                        ),
+                      )
+                    ],
+                  )
+                ],
               ),
             ),
           ),
-          const SizedBox(height: 10.0),
-          const Text(
-            'Hotman',
-            style: TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.normal,
+          if (homeProvider.initialLoading)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 8,
+                    color:
+                        CustomColors.darkGreen, // Puedes cambiar el color aquí
+                  ),
+                ),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -297,7 +288,7 @@ class _BannerHome extends StatelessWidget {
             color: Colors.black.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 3,
-            offset: const Offset(0, 3), // changes position of shadow
+            offset: const Offset(0, 3),
           ),
         ],
         image: const DecorationImage(
@@ -337,6 +328,7 @@ class _BannerHome extends StatelessWidget {
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 26.0,
+                              letterSpacing: 0.65,
                               fontWeight: FontWeight.bold,
                               height: 1.65),
                         ),
