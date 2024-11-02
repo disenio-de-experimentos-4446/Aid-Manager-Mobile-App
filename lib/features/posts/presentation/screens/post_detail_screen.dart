@@ -1,20 +1,36 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/posts/presentation/widgets/post_card.dart';
+import 'package:aidmanager_mobile/features/posts/presentation/widgets/comment_card.dart';
+import 'package:aidmanager_mobile/shared/helpers/storage_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
-class PostDetailScreen extends StatelessWidget {
+import '../../domain/entities/comment.dart';
+import '../providers/comment_provider.dart';
+import '../providers/post_provider.dart';
+
+class PostDetailScreen extends StatefulWidget {
   final String postId;
   static const String name = "posts_detail_screen";
 
   const PostDetailScreen({super.key, required this.postId});
 
   @override
+  _PostDetailScreenState createState() => _PostDetailScreenState();
+}
+
+class _PostDetailScreenState extends State<PostDetailScreen> {
+  bool isExpanded = false;
+  int commentsToShow = 3; // Number of comments to show initially
+
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 65.0,
-        automaticallyImplyLeading:
-            false, // Elimina el botón de retroceso predeterminado
+        automaticallyImplyLeading: false,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -32,25 +48,12 @@ class PostDetailScreen extends StatelessWidget {
               children: [
                 IconButton(
                   icon: Icon(
-                    Icons.save,
+                    Icons.delete,
                     size: 32.0,
                     color: Colors.black,
                   ),
                   onPressed: () {
-                    // Lógica para guardar
-                  },
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.favorite_border,
-                    size: 32.0,
-                    color: Colors.black,
-                  ),
-                  onPressed: () {
-                    // Lógica para agregar a favoritos
+                    // Save logic
                   },
                 ),
               ],
@@ -61,441 +64,193 @@ class PostDetailScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: CustomColors.grey, // Color del borde
-                    width: 2.0, // Ancho del borde
-                  ),
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 20.0, right: 20.0, bottom: 30.0, top: 0.0),
-                child: Column(
-                  children: [
-                    Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CircleAvatar(
-                              radius: 30.0,
-                              backgroundImage: NetworkImage(
-                                  'https://avatars.githubusercontent.com/u/129230632?v=4'), // URL de la imagen de perfil
-                            ),
-                            SizedBox(width: 12.0),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize
-                                  .min, // Reduce el tamaño del eje principal
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize
-                                      .min, // Reduce el tamaño del eje principal del Row
-                                  children: [
-                                    Text(
-                                      'Sebastian Hotman',
-                                      style: TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                        width:
-                                            14), // Ajusta el espacio entre el texto y el botón
-                                    TextButton.icon(
-                                      onPressed: () {
-                                        // Lógica para el botón de autor
-                                      },
-                                      icon: Icon(Icons.person, size: 22.0),
-                                      label: Text('Autor'),
-                                      style: TextButton.styleFrom(
-                                        foregroundColor: CustomColors.darkGreen,
-                                        textStyle: TextStyle(
-                                          fontSize: 18.0,
-                                        ),
-                                        padding: EdgeInsets
-                                            .zero, // Elimina el padding del botón
-                                        minimumSize: Size(0,
-                                            0), // Elimina el tamaño mínimo del botón
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Transform.translate(
-                                  offset: Offset(0, -5),
-                                  child: Text(
-                                    'nekito@example.com',
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                        SizedBox(height: 14),
-                        Text(
-                          'Me siento mal porque he traicionado la confianza de mi mejor amigo, Yesi, al enamorarme de su exnovia, Flavia. Después de confesarle mis sentimientos, decidí priorizar nuestra amistad. Aprendí que la verdadera lealtad es más valiosa que cualquier deseo personal.',
-                          style: TextStyle(fontSize: 16.0, height: 1.65),
-                        ),
-                        SizedBox(height: 20),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: Image.network(
-                            'https://img.europapress.es/fotoweb/fotonoticia_20191014112917_1200.jpg',
-                            width: double.infinity,
-                            height: 200.0,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(height: 18),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(Icons.comment,
-                                        size: 22.0,
-                                        color: const Color.fromARGB(
-                                            255, 114, 114, 114)),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      '24 reviews',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16.0,
-                                        color: const Color.fromARGB(
-                                            255, 75, 75, 75),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(Icons.thumb_up_rounded,
-                                        size: 22.0,
-                                        color: const Color.fromARGB(
-                                            255, 114, 114, 114)),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      '24 likes',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16.0,
-                                        color: const Color.fromARGB(
-                                            255, 75, 75, 75),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Icon(Icons.calendar_month,
-                                    size: 20.0,
-                                    color: const Color.fromARGB(
-                                        255, 114, 114, 114)),
-                                SizedBox(width: 6),
-                                Text(
-                                  '14 Oct 2019',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.0,
-                                    color:
-                                        const Color.fromARGB(255, 75, 75, 75),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Colors.grey, // Color del borde inferior
-                    width: 1.0, // Ancho del borde inferior
-                  ),
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CircleAvatar(
-                          radius: 30.0,
-                          backgroundImage: NetworkImage(
-                              'https://github.com/AplicacionesWeb-WX54/si730-WX54-Grupo1-Repository/blob/main/assets/members-profile/arigeimpleis.jpg?raw=true'),
-                        ),
-                        SizedBox(width: 12.0),
-                        Column(
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: AssetImage('assets/images/hotman-placeholder.jpg'),
+                        radius: 25,
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize
-                              .min, // Reduce el tamaño del eje principal
                           children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize
-                                  .min, // Reduce el tamaño del eje principal del Row
-                              children: [
-                                Text(
-                                  'Arian Rodriguez',
-                                  style: TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(
-                                    width:
-                                        14), // Ajusta el espacio entre el texto y el botón
-                                TextButton.icon(
-                                  onPressed: () {
-                                    // Lógica para el botón de autor
-                                  },
-                                  icon: Container(
-                                    width: 6.0,
-                                    height: 6.0,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey, // Color del punto
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  label: Text(
-                                    '3 hours ago',
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                      color:
-                                          const Color.fromARGB(255, 82, 82, 82),
-                                    ),
-                                  ),
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: CustomColors.darkGreen,
-                                    textStyle: TextStyle(
-                                      fontSize: 18.0,
-                                    ),
-                                    padding: EdgeInsets
-                                        .zero, // Elimina el padding del botón
-                                    minimumSize: Size(0,
-                                        0), // Elimina el tamaño mínimo del botón
-                                  ),
-                                )
-                              ],
-                            ),
-                            Transform.translate(
-                              offset: Offset(0, -5),
-                              child: Text(
-                                'yesi@monitas.com',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
+                            Text('Titulo del Post', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                            Text('nombre usuario', style: TextStyle(fontSize: 14, color: Colors.grey)),
                           ],
-                        )
-                      ],
+                        ),
+                      ),
+                      PopupMenuButton<String>(
+                        onSelected: (String result) {
+                          if (result == 'delete') {
+                            // Acción de borrar
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                          const PopupMenuItem<String>(
+                            value: 'delete',
+                            child: Text('Delete Post'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Text('SubjectDelPost', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w200)),
+                    ],
+                  ),
+                  Text(
+                    'This is a long text that will be truncated if it exceeds the maximum number of lines aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa. This is a long text that will be truncated if it exceeds the maximum number of lines.',
+                    maxLines: isExpanded ? null : 2,
+                    overflow: isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                  ),
+                  TextButton(
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.all(Color(0xFF008A66)),
                     ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Me siento realmente confundido y dolido. Nunca imaginé que mi mejor amigo, Sebastián, se enamorara de mi exnovia. Todos esos warikis compartidos entre ellos fueron a costa de acercarse a ella, y eso me duele.',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        height: 1.5,
+                    onPressed: () {
+                      setState(() {
+                        isExpanded = !isExpanded;
+                      });
+                    },
+                    child: Text(isExpanded ? 'See Less' : 'See More'),
+                  ),
+                  SizedBox(
+                    height: 225,
+                    child: CarouselView(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      itemExtent: MediaQuery.sizeOf(context).width - 96,
+                      padding: const EdgeInsets.only(right: 10),
+                      itemSnapping: true,
+                      elevation: 4.0,
+                      children: List.generate(
+                        10,
+                            (int index) => Image.network(
+                          'https://img.freepik.com/premium-photo/woman-with-backpack-stands-mountain-top-looking-beautiful-sunset_188544-54443.jpg',
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                    SizedBox(height: 15),
-                    Row(
-                      children: [
-                        Icon(Icons.thumb_up,
-                            size: 22.0,
-                            color: const Color.fromARGB(255, 114, 114, 114)),
-                        SizedBox(width: 5),
-                        Text(
-                          '15',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 75, 75, 75),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.favorite),
+                            onPressed: () {
+                              // Acción del botón
+                            },
                           ),
-                        ),
-                        SizedBox(width: 16),
-                        Icon(Icons.thumb_down,
-                            size: 22.0,
-                            color: const Color.fromARGB(255, 114, 114, 114)),
-                        SizedBox(width: 5),
-                        Text(
-                          '3',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 75, 75, 75),
+                          Text('0'),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text('0'),
+                          IconButton(
+                            icon: Icon(Icons.comment),
+                            onPressed: () {
+                              GoRouter.of(context).go('/posts/1');
+                            },
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('2024/10/10 - 13:00'),
+                    ],
+                  ),
+                ],
               ),
             ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Colors.grey, // Color del borde inferior
-                    width: 1.0,
-                  ),
-                ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Comments',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CircleAvatar(
-                          radius: 30.0,
-                          backgroundImage: NetworkImage(
-                              'https://github.com/AplicacionesWeb-WX54/si730-WX54-Grupo1-Repository/blob/main/assets/members-profile/arigeimpleis.jpg?raw=true'),
-                        ),
-                        SizedBox(width: 12.0),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize
-                              .min,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize
-                                  .min,
-                              children: [
-                                Text(
-                                  'Liderman',
-                                  style: TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(
-                                    width:
-                                        14),
-                                TextButton.icon(
-                                  onPressed: () {
-                                    // Lógica para el botón de autor
-                                  },
-                                  icon: Container(
-                                    width: 6.0,
-                                    height: 6.0,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey, // Color del punto
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  label: Text(
-                                    '3 hours ago',
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                      color:
-                                          const Color.fromARGB(255, 82, 82, 82),
-                                    ),
-                                  ),
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: CustomColors.darkGreen,
-                                    textStyle: TextStyle(
-                                      fontSize: 18.0,
-                                    ),
-                                    padding: EdgeInsets
-                                        .zero,
-                                    minimumSize: Size(0,
-                                        0),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Transform.translate(
-                              offset: Offset(0, -5),
-                              child: Text(
-                                'yesi@monitas.com',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Me siento realmente confundido y dolido. Nunca imaginé que mi mejor amigo, Sebastián, se enamorara de mi exnovia. Todos esos warikis compartidos entre ellos fueron a costa de acercarse a ella, y eso me duele.',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        height: 1.5,
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                    Row(
-                      children: [
-                        Icon(Icons.thumb_up,
-                            size: 22.0,
-                            color: const Color.fromARGB(255, 114, 114, 114)),
-                        SizedBox(width: 5),
-                        Text(
-                          '15',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 75, 75, 75),
-                          ),
-                        ),
-                        SizedBox(width: 16),
-                        Icon(Icons.thumb_down,
-                            size: 22.0,
-                            color: const Color.fromARGB(255, 114, 114, 114)),
-                        SizedBox(width: 5),
-                        Text(
-                          '3',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 75, 75, 75),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: commentsToShow, // Number of comments to show
+              itemBuilder: (context, index) {
+                return CommentCard(
+                  userName: 'User $index',
+                  commentText: 'This is a comment from user $index.',
+                  userImage: 'assets/images/hotman-placeholder.jpg',
+                  commentTime: '2024/10/10 - 13:00',
+                );
+              },
+            ),
+            if (commentsToShow < 10) // Show button if there are more comments to load
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    commentsToShow += 3; // Load 3 more comments
+                  });
+                },
+                child: Text('See More'),
               ),
-            )
           ],
         ),
       ),
     );
   }
+}
+
+void _showCreateCommentDialog(BuildContext context, int postId) {
+  final TextEditingController _commentController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Add Comment'),
+        content: TextField(
+          controller: _commentController,
+          decoration: InputDecoration(hintText: "Enter your comment"),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: Text('Add'),
+            onPressed: () {
+              final comment = Comment(
+                id: 0,
+                userId: 0, // Replace with actual user ID
+                userImage: 'string', // Replace with actual user image
+                userEmail: 'string', // Replace with actual user email
+                userName: 'string', // Replace with actual user name
+                comment: _commentController.text,
+                postId: postId,
+                commentTime: DateTime.now(),
+              );
+              int userId = 3;
+              Provider.of<CommentProvider>(context, listen: false).createNewComment(postId, "osi", userId);
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
