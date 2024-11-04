@@ -48,6 +48,7 @@ class AuthDatasourceImpl extends HttpService implements AuthDatasource {
     final requestBody = UserMapper.toJsonPost(user);
 
     try {
+      print("USER REQUEST CREATED: ${requestBody}");
       final response = await dio.post(
         '/users/sign-up',
         data: jsonEncode(requestBody),
@@ -58,18 +59,25 @@ class AuthDatasourceImpl extends HttpService implements AuthDatasource {
       }
 
       final responseData = response.data;
+      print("RETRIEVED DATA: ${responseData}");
       final newUser = UserMapper.fromJsonPost(responseData);
 
+      print("NEW USER: ${newUser}");
+
+
     } catch (e) {
+      print("SIGN UP BODY: ${requestBody} - ERROR ENCONTRADO ${e} - Error ${e.toString()} \n\n\n\n");
       if (e is DioException && e.response != null) {
 
         final responseBody = e.response?.data;
+
+        print("\n\n\n\n${responseBody} - ${e.response?.statusCode}: ERROR ENCONTRADO \n\n\n\n");
 
         if (responseBody == "Error: Not Valid Register Code") {
           throw InvalidCodeAccessException("Error: Not Valid Register Code");
         }
       }
-      
+      print("\n\n\n\n${e.toString()} - ERROR ENCONTRADO \n\n\n\n");
       throw Exception('Failed to sign up: ${e.toString()}');
     }
   }

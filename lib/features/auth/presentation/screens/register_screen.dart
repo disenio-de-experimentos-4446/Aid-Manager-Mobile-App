@@ -58,16 +58,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password.isEmpty ||
         passwordConfirm.isEmpty ||
         (!isDirectorSelected && !isTeamSelected)) {
+      print('Error: Campos vacíos o rol no seleccionado');
       showCustomizeDialog(context, const IsEmptyDialog());
       return;
     }
 
     if (password != passwordConfirm) {
+      print('Error: Las contraseñas no coinciden');
       showCustomizeDialog(context, const PasswordsNotSameDialog());
       return;
     }
 
     if (!RegexHelper.isValidEmail(email)) {
+      print("\n\nError: Email no válido\n\n");
       showCustomizeDialog(context, const InvalidEmailDialog());
       return;
     }
@@ -105,10 +108,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         if (!mounted) return;
 
+        print('\n\nRegistration successful\n\n');
         showCustomizeDialog(context, const RegisterSuccessfullyDialog());
       }
     } catch (e) {
       if (!mounted) return;
+      print('\n\nError: ${e.toString()}\n\n');
 
       final dialog = getErrorDialog(context, e as Exception);
       showErrorDialog(context, dialog);

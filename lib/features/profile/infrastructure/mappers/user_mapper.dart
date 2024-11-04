@@ -61,25 +61,36 @@ class UserMapper {
   }
 
   // Convert JSON response to a User object for posting a user
-  static Map<String, dynamic> fromJsonPost(User user) {
+  static User fromJsonPost(Map<String, dynamic> json) {
 
-    return {
-      'id': user.id,
-      'name': user.name,
-      'age': user.age ?? 0,
-      'email': user.email,
-      'password': user.password,
-      'role': user.role, // Convert role to integer (request body)
-      'teamRegisterCode': user.teamRegisterCode,
-      'phone': user.phone ?? '',
-      'profileImg': user.profileImg ?? '',
-      'companyName': user.companyName ?? '',
-      'companyEmail': user.companyEmail ?? '',
-      'companyCountry': user.companyCountry ?? '',
-      'companyId': user.companyId
-    };
+    var data = json['data'];
+    if (data == null) {
+      throw Exception('Invalid response data: data is null');
+    }
 
+    var image = data['profileImg'];
+    if (image == null || !Uri.tryParse(image)!.hasAbsolutePath) {
+      image = 'https://st3.depositphotos.com/4111759/13425/v/600/depositphotos_134255710-stock-illustration-avatar.jpg';
+    }
+
+    return User(
+        id: data['id'] ?? 0, // Provide a default value if 'id' is null
+        name: data['name'] ?? '', // Provide a default value if 'name' is null
+        age: data['age'] ?? 0, // Provide a default value if 'age' is null
+        email: data['email'] ?? '', // Provide a default value if 'email' is null
+        password: data['password'] ?? '', // Provide a default value if 'password' is null
+        role: data['role'] ?? '', // Provide a default value if 'role' is null
+        teamRegisterCode: data['teamRegisterCode'] ?? '', // Provide a default value if 'teamRegisterCode' is null
+        phone: data['phone'] ?? '', // Provide a default value if 'phone' is null
+        profileImg: image, // Use the validated or default image URL
+        companyName: data['companyName'] ?? '', // Provide a default value if 'companyName' is null
+        companyEmail: data['companyEmail'] ?? '', // Provide a default value if 'companyEmail' is null
+        companyCountry: data['companyCountry'] ?? '', // Provide a default value if 'companyCountry' is null
+        companyId: data['companyId'] ?? 0 // Provide a default value if 'companyId' is null
+    );
   }
+
+
 
   // Convert User object to JSON for posting a user
   static Map<String, dynamic> toJsonPost(User user) {
