@@ -7,7 +7,6 @@ import 'package:aidmanager_mobile/features/calendar/presentation/screens/calenda
 import 'package:aidmanager_mobile/features/home/presentation/screens/home_screen.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/screens/post_detail_screen.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/screens/posts_screen.dart';
-import 'package:aidmanager_mobile/features/profile/presentation/screens/manager_profile_screen.dart';
 import 'package:aidmanager_mobile/features/profile/presentation/screens/profile_screen.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/screens/project_create_form_screen.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/screens/project_dashboard_screen.dart';
