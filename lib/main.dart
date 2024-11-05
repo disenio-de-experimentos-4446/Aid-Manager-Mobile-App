@@ -1,7 +1,10 @@
 import 'package:aidmanager_mobile/config/router/app_router.dart';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/auth/domain/repositories/auth_repository.dart';
+import 'package:aidmanager_mobile/features/posts/comment-infrastructure/datasources/comments_datasource_impl.dart';
+import 'package:aidmanager_mobile/features/posts/comment-infrastructure/repositories/comments_repository_impl.dart';
 import 'package:aidmanager_mobile/features/posts/domain/repositories/post_repositories.dart';
+import 'package:aidmanager_mobile/features/posts/presentation/providers/comment_provider.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/providers/post_provider.dart';
 import 'package:aidmanager_mobile/features/profile/domain/repositories/user_repository.dart';
 import 'package:aidmanager_mobile/features/auth/infrastructure/datasources/auth_datasource_impl.dart';
@@ -21,6 +24,7 @@ import 'package:aidmanager_mobile/features/projects/presentation/providers/task_
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'features/posts/domain/repositories/commen_repository.dart';
 import 'features/posts/post-infrastructure/datasources/post_datasource_impl.dart';
 import 'features/posts/post-infrastructure/repositories/post_repository_impl.dart';
 
@@ -32,6 +36,7 @@ void main() {
       ProjectsRepositoryImpl(datasource: ProjectsDatasourceImpl());
   final tasksRepository = TasksRepositoryImpl(datasource: TasksDatasourceImpl());
   final postsRepository = PostRepositoryImpl(datasource: PostDatasourceImpl());
+  final commentRepository = CommentRepositoryImpl(datasource: CommentsDatasourceImpl());
 
   runApp(
     MultiProvider(
@@ -43,7 +48,7 @@ void main() {
         Provider<ProjectsRepository>.value(value: projectRepository),
         Provider<TasksRepository>.value(value: tasksRepository),
         Provider<PostsRepository>.value(value: postsRepository),
-
+        Provider<CommentRepository>.value(value: commentRepository),
         // hay que proveer una instancia de AuthProvider
         // AuthProvider necesita instancias de UserRepository y AuthRepository
         // que se inyectan mediante el contexto
@@ -87,6 +92,15 @@ void main() {
           update: (context, authProvider, postProvider) =>
               postProvider!..authProvider = authProvider,
         ),
+        ChangeNotifierProxyProvider<AuthProvider, CommentProvider>(
+          create: (context) => CommentProvider(
+            commentRepository: commentRepository,
+            authProvider: Provider.of<AuthProvider>(context, listen: false),
+          ),
+          update: (context, authProvider, commentProvider) =>
+              commentProvider!..authProvider = authProvider,
+        ),
+
       ],
       child: const MyApp(),
     ),

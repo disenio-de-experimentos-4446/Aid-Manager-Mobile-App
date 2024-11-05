@@ -17,7 +17,11 @@ class CommentMapper {
     return {
       'userId': comment.userId,
       'comment': comment.comment,
-
     };
   }
+
+  static List<Comment> fromJsonList(List<dynamic> jsonList) {
+    return jsonList.map((json) => fromJson(json)).toList();
+  }
+
 }

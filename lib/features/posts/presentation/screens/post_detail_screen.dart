@@ -1,10 +1,12 @@
-import 'package:aidmanager_mobile/features/posts/presentation/widgets/comment_card.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
+import '../../../../shared/helpers/storage_helper.dart';
+import '../../../profile/domain/entities/user.dart';
 import '../../domain/entities/comment.dart';
+import '../../domain/entities/post.dart';
 import '../providers/comment_provider.dart';
+import '../providers/post_provider.dart';
 import '../widgets/comment_card.dart';
 
 class PostDetailScreen extends StatefulWidget {
@@ -20,157 +22,193 @@ class PostDetailScreen extends StatefulWidget {
 class _PostDetailScreenState extends State<PostDetailScreen> {
   bool isExpanded = false;
   int commentsToShow = 3; // Number of comments to show initially
+  Post? post;
+  User? user;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadPostData();
+    _loadUserData();
+    _loadCommentData();
+  }
+
+  Future<void> _loadPostData() async {
+    var postId = int.parse(widget.postId);
+    final postProvider = Provider.of<PostProvider>(context, listen: false);
+    post = await postProvider.getPostById(postId);
+    setState(() {});
+  }
+
+  Future<void> _loadCommentData() async {
+    final commentProvider = Provider.of<CommentProvider>(
+        context, listen: false);
+    await commentProvider.loadCommentsByPostId(int.parse(widget.postId));
+    setState(() {});
+  }
+
+  Future<void> _loadUserData() async {
+    user = await StorageHelper.getUser();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController _commentController = TextEditingController();
+    final commentProvider = Provider.of<CommentProvider>(context);
+
+    bool _isValidUrl(String url) {
+      print("Is valid image? " + url);
+      return Uri.tryParse(url)?.hasAbsolutePath ?? false;
+    }
+
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 65.0,
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            GestureDetector(
-              onTap: () {
-                context.go('/posts');
-              },
-              child: Icon(
-                Icons.arrow_back_rounded,
-                size: 32.0,
-                color: Colors.black,
-              ),
-            ),
-            Row(
-              children: [
-                IconButton(
-                  icon: Icon(
-                    Icons.delete,
-                    size: 32.0,
-                    color: Colors.black,
-                  ),
-                  onPressed: () {
-                    // Save logic
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
+        title: Text('Post Details'),
       ),
-      body: SingleChildScrollView(
+      body: post == null
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: AssetImage('assets/images/hotman-placeholder.jpg'),
-                        radius: 25,
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Titulo del Post', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                            Text('nombre usuario', style: TextStyle(fontSize: 14, color: Colors.grey)),
+            Card(
+              margin: const EdgeInsets.all(10),
+              elevation: 5,
+              color: Color(0xFFE6EEEC),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: _isValidUrl(post!.userImage)
+                              ? NetworkImage(post!.userImage)
+                              : AssetImage(
+                              'assets/images/profile-placeholder.jpg'),
+                          radius: 25,
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(post!.title, style: TextStyle(
+                                  fontSize: 27, fontWeight: FontWeight.bold)),
+                              Text(post!.userName, style: TextStyle(
+                                  fontSize: 14, color: Colors.grey)),
+                            ],
+                          ),
+                        ),
+                        PopupMenuButton<String>(
+                          onSelected: (String result) {
+                            if (result == 'delete') {
+                              // Acción de borrar
+                            }
+                          },
+                          itemBuilder: (BuildContext context) =>
+                          <PopupMenuEntry<String>>[
+                            const PopupMenuItem<String>(
+                              value: 'delete',
+                              child: Text('Delete Post'),
+                            ),
                           ],
                         ),
-                      ),
-                      PopupMenuButton<String>(
-                        onSelected: (String result) {
-                          if (result == 'delete') {
-                            // Acción de borrar
-                          }
-                        },
-                        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                          const PopupMenuItem<String>(
-                            value: 'delete',
-                            child: Text('Delete Post'),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Text('SubjectDelPost', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w200)),
-                    ],
-                  ),
-                  Text(
-                    'This is a long text that will be truncated if it exceeds the maximum number of lines aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa. This is a long text that will be truncated if it exceeds the maximum number of lines.',
-                    maxLines: isExpanded ? null : 2,
-                    overflow: isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
-                  ),
-                  TextButton(
-                    style: ButtonStyle(
-                      foregroundColor: WidgetStateProperty.all(Color(0xFF008A66)),
+                      ],
                     ),
-                    onPressed: () {
-                      setState(() {
-                        isExpanded = !isExpanded;
-                      });
-                    },
-                    child: Text(isExpanded ? 'See Less' : 'See More'),
-                  ),
-                  SizedBox(
-                    height: 225,
-                    child: CarouselView(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+                    SizedBox(height: 8),
+                    Text(
+                      post!.subject,
+                      style: TextStyle(
+                          fontSize: 25, fontWeight: FontWeight.w200),
+                    ),
+                    Text(
+                      post!.description,
+                      maxLines: isExpanded ? null : 2,
+                      overflow: isExpanded ? TextOverflow.visible : TextOverflow
+                          .ellipsis,
+                      style: TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w200),
+                    ),
+                    TextButton(
+                      style: ButtonStyle(
+                        foregroundColor: MaterialStateProperty.all(Color(
+                            0xFF008A66)),
                       ),
-                      itemExtent: MediaQuery.sizeOf(context).width - 96,
-                      padding: const EdgeInsets.only(right: 10),
-                      itemSnapping: true,
-                      elevation: 4.0,
-                      children: List.generate(
-                        10,
-                            (int index) => Image.network(
-                          'https://img.freepik.com/premium-photo/woman-with-backpack-stands-mountain-top-looking-beautiful-sunset_188544-54443.jpg',
-                          fit: BoxFit.cover,
+                      onPressed: () {
+                        setState(() {
+                          isExpanded = !isExpanded;
+                        });
+                      },
+                      child: Text(isExpanded ? 'See Less' : 'See More'),
+                    ),
+                    SizedBox(
+                      height: 225,
+                      child: CarouselView(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
                         ),
+                        itemExtent: post!.images.length > 1
+                            ? MediaQuery
+                            .sizeOf(context)
+                            .width - 96
+                            : MediaQuery
+                            .sizeOf(context)
+                            .width,
+                        padding: post!.images.length > 1
+                            ? const EdgeInsets.only(right: 10)
+                            : const EdgeInsets.only(right: 0),
+                        itemSnapping: true,
+                        elevation: 4.0,
+                        children: post!.images.length > 1
+                            ? post!.images.map((image) {
+                          return _isValidUrl(image)
+                              ? Image.network(image, fit: BoxFit.cover)
+                              : Image.asset(
+                              'assets/images/profile-placeholder.jpg',
+                              fit: BoxFit.cover);
+                        }).toList()
+                            : [Image.asset(
+                            'assets/images/profile-placeholder.jpg',
+                            fit: BoxFit.cover)
+                        ],
                       ),
                     ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.favorite),
-                            onPressed: () {
-                              // Acción del botón
-                            },
-                          ),
-                          Text('0'),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text('0'),
-                          IconButton(
-                            icon: Icon(Icons.comment),
-                            onPressed: () {
-                              GoRouter.of(context).go('/posts/1');
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text('2024/10/10 - 13:00'),
-                    ],
-                  ),
-                ],
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.favorite),
+                              onPressed: () {
+                                // Acción del botón
+                              },
+                            ),
+                            Text(post!.rating.toString()),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text(post!.commentsList.length.toString()),
+                            IconButton(
+                              icon: Icon(Icons.comment),
+                              onPressed: () {
+                                GoRouter.of(context).go('/posts/${post!.id}');
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(post!.postTime.toString()),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
             Padding(
@@ -180,73 +218,64 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
-            ListView.builder(
+            commentProvider.comments.isEmpty
+                ? Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('No comments yet'),
+            )
+                : ListView.builder(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
-              itemCount: commentsToShow, // Number of comments to show
+              itemCount: commentProvider.comments.length,
               itemBuilder: (context, index) {
+                final comment = commentProvider.comments[index];
                 return CommentCard(
-                  userName: 'User $index',
-                  commentText: 'This is a comment from user $index.',
-                  userImage: 'assets/images/hotman-placeholder.jpg',
-                  commentTime: '2024/10/10 - 13:00',
+                  userName: comment.userName!,
+                  commentText: comment.comment,
+                  userImage: comment.userImage!,
+                  commentTime: comment.commentTime!,
                 );
               },
             ),
-            if (commentsToShow < 10) // Show button if there are more comments to load
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    commentsToShow += 3; // Load 3 more comments
-                  });
-                },
-                child: Text('See More'),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    backgroundImage: AssetImage(
+                        'assets/images/profile-placeholder.jpg'),
+                    radius: 20,
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: _commentController,
+                      decoration: InputDecoration(
+                        hintText: 'Add a comment...',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: () {
+                      commentProvider.createNewComment(
+                          int.parse(widget.postId), _commentController.text,
+                          user!.id!);
+                      setState(() {
+                        _loadCommentData();
+                        _commentController.clear();
+                      });
+                    },
+                  ),
+                ],
               ),
+            ),
           ],
         ),
       ),
     );
   }
-}
-
-void _showCreateCommentDialog(BuildContext context, int postId) {
-  final TextEditingController _commentController = TextEditingController();
-
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Add Comment'),
-        content: TextField(
-          controller: _commentController,
-          decoration: InputDecoration(hintText: "Enter your comment"),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            child: Text('Add'),
-            onPressed: () {
-              final comment = Comment(
-                id: 0,
-                userId: 0, // Replace with actual user ID
-                userImage: 'string', // Replace with actual user image
-                userEmail: 'string', // Replace with actual user email
-                userName: 'string', // Replace with actual user name
-                comment: _commentController.text,
-                postId: postId,
-                commentTime: DateTime.now().toIso8601String(),              );
-              int userId = 3;
-              Provider.of<CommentProvider>(context, listen: false).createNewComment(postId, "osi", userId);
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
 }

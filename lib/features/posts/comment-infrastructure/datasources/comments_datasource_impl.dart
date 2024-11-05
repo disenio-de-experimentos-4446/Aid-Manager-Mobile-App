@@ -3,18 +3,13 @@ import 'dart:io';
 
 import 'package:aidmanager_mobile/features/posts/domain/entities/comment.dart';
 import 'package:aidmanager_mobile/shared/service/http_service.dart';
-import 'package:dio/dio.dart';
 
 import '../../domain/datasources/comment_datasource.dart';
 import '../mappers/comment_mapper.dart';
 
 class CommentsDatasourceImpl extends HttpService implements CommentDatasource {
-  Dio dio;
-
-  CommentsDatasourceImpl({required String baseUrl}) : dio = Dio(BaseOptions(baseUrl: baseUrl));
-
   @override
-  Future<void> createCommentByPostId(int postId, Comment comment) async {
+  Future<Comment> createCommentByPostId(int postId, Comment comment) async {
     final requestBody = CommentMapper.toJson(comment);
     try {
       final response = await dio.post(
@@ -22,9 +17,18 @@ class CommentsDatasourceImpl extends HttpService implements CommentDatasource {
         data: jsonEncode(requestBody),
       );
 
-      if (response.statusCode != HttpStatus.created) {
-        throw Exception('Failed to create a new comment: ${response.statusCode}');
+      if(response.statusCode != HttpStatus.ok)
+      {
+        throw Exception('Failed to create a new Comment: ${response.statusCode}');
       }
+
+      if(response.data == null || response.data.isEmpty)
+      {
+        throw Exception('Failed to create a new Comment: Response body is empty');
+      }
+
+      return CommentMapper.fromJson(response.data);
+
     } catch (e) {
       throw Exception('Failed to create a new Comment by post id: $postId');
     }
@@ -48,8 +52,10 @@ class CommentsDatasourceImpl extends HttpService implements CommentDatasource {
       final response = await dio.get('/posts/$postId/comments');
 
       if (response.statusCode == HttpStatus.ok) {
-        final List<dynamic> commentsJson = response.data;
-        return commentsJson.map((json) => CommentMapper.fromJson(json)).toList();
+
+        print("COMMENT LIST: ${response.data}");
+
+        return CommentMapper.fromJsonList(response.data);
       } else {
         throw Exception('Failed to fetch comments data for post ${response.statusCode}');
       }

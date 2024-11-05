@@ -147,7 +147,7 @@ class _PostCardState extends State<PostCard> {
                       IconButton(
                         icon: Icon(Icons.comment),
                         onPressed: () {
-                          GoRouter.of(context).go('/posts/${widget.post.id}');
+                          GoRouter.of(context).go('/posts/${widget.post.id}', extra:widget.post.id);
                         },
                       ),
 

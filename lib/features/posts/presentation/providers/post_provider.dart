@@ -38,11 +38,12 @@ class PostProvider extends ChangeNotifier {
     }
   }
 
-   Future<void> getPostById(int postId) async {
+   Future<Post> getPostById(int postId) async {
     isLoading = true;
 
     try {
       _selectedPost = await postsRepository.getPostById(postId);
+      return _selectedPost!;
     } catch (e) {
       throw Exception('Failed to fetch post with id: $postId');
     } finally {
