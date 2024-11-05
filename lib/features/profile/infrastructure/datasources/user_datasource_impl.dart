@@ -4,9 +4,9 @@ import 'package:aidmanager_mobile/features/profile/domain/datasources/user_datas
 import 'package:aidmanager_mobile/features/profile/domain/entities/user.dart';
 import 'package:aidmanager_mobile/features/profile/infrastructure/mappers/user_mapper.dart';
 import 'package:aidmanager_mobile/shared/service/http_service.dart';
+import 'package:dio/dio.dart';
 
 class UserDatasourceImpl extends HttpService implements UserDatasource {
-
   @override
   Future<List<User>> getAllUsersByCompanyId(int companyId) async {
     try {
@@ -43,7 +43,7 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
   Future<void> deleteUserById(int userId) async {
     try {
       final response = await dio.delete('/users/kick-member/$userId');
-      if (response.statusCode != HttpStatus.noContent) {
+      if (response.statusCode != HttpStatus.ok) {
         throw Exception('Failed to delete user');
       }
     } catch (e) {
@@ -52,7 +52,8 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
   }
 
   @override
-  Future<void> updateUserInformationById(int userId, Map<String, dynamic> userData) async {
+  Future<void> updateUserInformationById(
+      int userId, Map<String, dynamic> userData) async {
     print(userData);
 
     try {
@@ -64,7 +65,8 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
       if (response.statusCode == 200) {
         print('User updated successfully');
       } else {
-        throw Exception('Failed to update user: ${response.statusCode} ${response.statusMessage}');
+        throw Exception(
+            'Failed to update user: ${response.statusCode} ${response.statusMessage}');
       }
     } catch (e) {
       throw Exception('Failed to update user by id: $userId, $e');
@@ -83,7 +85,8 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
         throw Exception('Failed to fetch members: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Failed to fetch members by company name $companyName: $e');
+      throw Exception(
+          'Failed to fetch members by company name $companyName: $e');
     }
   }
 
@@ -99,7 +102,67 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
         throw Exception('Failed to fetch director: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Failed to fetch director by company name $companyName: $e');
+      throw Exception(
+          'Failed to fetch director by company name $companyName: $e');
     }
   }
+
+  @override
+  Future<String> uploadImageToCloud(File file) async {
+    // nueva instancia de dio para no mandar el token y evitar el interceptor
+    final Dio _dio = Dio();
+
+    final String cloudName = "dhf6g6xkf";
+    final String uploadPreset = "ml_default";
+    final cloudinaryUrl = 'https://api.cloudinary.com/v1_1/$cloudName/image/upload';
+
+    try {
+      FormData formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(file.path),
+        'upload_preset': uploadPreset,
+      });
+
+      final response = await _dio.post(cloudinaryUrl, data: formData);
+
+      print('Hola');
+      print('${response.data['secure_url']}');
+      
+      if (response.statusCode == 200) {
+        return response.data['secure_url'];
+      } else {
+        throw Exception("Error al subir la imagen a Cloudinary: ${response.statusCode}, ${response.statusMessage}");
+      }
+    } finally {
+      // se elimina una vez subido a la nube para lib espacio en el almacenamiento
+      file.delete();
+    }
+  }
+
+  @override
+  Future<void> updateProfileImageByUser(int userId, String imageUrl) async {
+    
+    final requestBody = jsonEncode({
+      'image': imageUrl
+    });
+
+    try {
+      final response = await dio.patch(
+        '/users/update-image/$userId',
+        data: requestBody
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        throw Exception('Failed to update profile image for user with id: $userId: ${response.statusCode}');
+      }
+
+      if (response.data == null || response.data.isEmpty) {
+        throw Exception('Failed to update user image with id $userId: Response body is empty');
+      }
+
+    } catch (e) {
+      throw Exception('Failed to update profile image in user with id: $userId. Original error: $e');
+    }
+
+  }  
+
 }
