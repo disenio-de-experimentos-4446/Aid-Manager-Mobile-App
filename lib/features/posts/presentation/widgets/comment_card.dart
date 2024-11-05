@@ -18,7 +18,8 @@ class CommentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundImage: AssetImage(userImage),
+        backgroundImage: _isValidUrl(userImage) == true ?
+        NetworkImage(userImage) : AssetImage('assets/images/defaultavatar.jpg'),
       ),
       title: Text(userName),
       subtitle: Column(
@@ -31,5 +32,9 @@ class CommentCard extends StatelessWidget {
       trailing: IconButton(onPressed: (){}, icon: Icon(Icons.delete)),
 
     );
+  }
+
+  _isValidUrl(String userImage) {
+    return Uri.tryParse(userImage)?.hasAbsolutePath ?? false;
   }
 }

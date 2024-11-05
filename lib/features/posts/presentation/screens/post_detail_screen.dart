@@ -41,14 +41,21 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   Future<void> _loadCommentData() async {
-    final commentProvider = Provider.of<CommentProvider>(
-        context, listen: false);
+    final commentProvider = Provider.of<CommentProvider>(context, listen: false);
     await commentProvider.loadCommentsByPostId(int.parse(widget.postId));
     setState(() {});
   }
 
   Future<void> _loadUserData() async {
     user = await StorageHelper.getUser();
+    setState(() {});
+  }
+
+  Future<void> _createComment(String comment) async {
+    final commentProvider = Provider.of<CommentProvider>(context, listen: false);
+    await commentProvider.createNewComment(int.parse(widget.postId), comment, user!.id!);
+    _loadCommentData();
+    _loadPostData();
     setState(() {});
   }
 
@@ -133,7 +140,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     ),
                     TextButton(
                       style: ButtonStyle(
-                        foregroundColor: MaterialStateProperty.all(Color(
+                        foregroundColor: WidgetStateProperty.all(Color(
                             0xFF008A66)),
                       ),
                       onPressed: () {
@@ -211,6 +218,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 ),
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
@@ -218,32 +226,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
-            commentProvider.comments.isEmpty
-                ? Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text('No comments yet'),
-            )
-                : ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: commentProvider.comments.length,
-              itemBuilder: (context, index) {
-                final comment = commentProvider.comments[index];
-                return CommentCard(
-                  userName: comment.userName!,
-                  commentText: comment.comment,
-                  userImage: comment.userImage!,
-                  commentTime: comment.commentTime!,
-                );
-              },
-            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
                   CircleAvatar(
                     backgroundImage: AssetImage(
-                        'assets/images/profile-placeholder.jpg'),
+                        'assets/images/defaultavatar.jpg'),
                     radius: 20,
                   ),
                   SizedBox(width: 10),
@@ -261,21 +250,48 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   IconButton(
                     icon: Icon(Icons.send),
                     onPressed: () {
-                      commentProvider.createNewComment(
-                          int.parse(widget.postId), _commentController.text,
-                          user!.id!);
+                      _createComment(_commentController.text);
+                      _commentController.clear();
                       setState(() {
-                        _loadCommentData();
-                        _commentController.clear();
                       });
                     },
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
+            commentProvider.comments.isEmpty
+                ? Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('No comments yet'),
+            )
+                : ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: commentsToShow < commentProvider.comments.length
+                  ? commentsToShow
+                  : commentProvider.comments.length,
+              itemBuilder: (context, index) {
+                var comment = commentProvider.comments.reversed.toList()[index];
+                return CommentCard(
+                  userName: comment.userName ?? 'Unknown',
+                  commentText: comment.comment ?? '',
+                  userImage: comment.userImage ?? 'assets/images/profile-placeholder.jpg',
+                  commentTime: comment.commentTime ?? DateTime.now().toIso8601String(),
+                );
+              },
+            ),
+        if (commentsToShow < commentProvider.comments.length)
+    TextButton(
+      onPressed: () {
+        setState(() {
+          commentsToShow += 3; // Increment the number of comments to show
+        });
+      },
+      child: Text('See More Comments'),
+    ),
+    ],
+    ),
+    ),
     );
   }
 }
