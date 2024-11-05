@@ -1,9 +1,13 @@
+import 'dart:io';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
-import 'package:aidmanager_mobile/features/auth/shared/widgets/custom_dialog_error.dart';
 import 'package:aidmanager_mobile/features/auth/shared/widgets/is_empty_dialog.dart';
 import 'package:aidmanager_mobile/features/profile/presentation/providers/profile_provider.dart';
+import 'package:aidmanager_mobile/features/profile/presentation/widgets/dialog/successfully_profile_image_update_dialog.dart';
+import 'package:aidmanager_mobile/features/profile/shared/widgets/custom_error_profile_dialog.dart';
+import 'package:aidmanager_mobile/shared/helpers/show_customize_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -31,6 +35,105 @@ class ProfileContent extends StatefulWidget {
 }
 
 class _ProfileContentState extends State<ProfileContent> {
+  // ignore: unused_field
+  File? _image;
+  final picker = ImagePicker();
+
+  Future<void> getImageGallery() async {
+    final pickedFile =
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+        uploadProfileImage();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('No image selected.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    });
+  }
+
+  Future<void> getImageCamera() async {
+    final pickedFile =
+        await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+        uploadProfileImage();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('No image selected.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    });
+  }
+
+  Future<void> uploadProfileImage() async {
+    if (_image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No image selected.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    final userProvider = context.read<ProfileProvider>();
+
+    try {
+      await userProvider.updateProfileImageFromCurrentUser(_image!);
+
+      if (!mounted) return;
+
+      showCustomizeDialog(context, SuccessfullyProfileImageUpdateDialog());
+    } catch (e) {
+      if (!mounted) return;
+      // mostrar un dialog perzonalizado para cada exception
+      final dialog = getProfileErrorDialog(context, e as Exception);
+      showErrorDialog(context, dialog);
+    }
+  }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text('Photo Library'),
+                onTap: () {
+                  getImageGallery();
+                  Navigator.of(context).pop();
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.photo_camera),
+                title: Text('Camera'),
+                onTap: () {
+                  getImageCamera();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -46,29 +149,70 @@ class _ProfileContentState extends State<ProfileContent> {
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 25.0),
         child: Column(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.grey.shade300, // Borde gris suave
-                  width: 2.0,
-                ),
-              ),
-              child: ClipOval(
-                child: Image.network(
-                  user?.profileImg ??
-                      "https://static.vecteezy.com/system/resources/thumbnails/004/511/281/small/default-avatar-photo-placeholder-profile-picture-vector.jpg",
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.asset(
-                      'assets/images/profile-placeholder.jpg',
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
+            GestureDetector(
+              onLongPress: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    final double dialogSize =
+                        MediaQuery.of(context).size.width * 0.8;
+                    return Dialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(14.0),
+                        child: Container(
+                          width: dialogSize,
+                          height: dialogSize,
+                          padding: const EdgeInsets.all(0.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(14.0),
+                            child: Image.network(
+                              user?.profileImg ??
+                                  "https://static.vecteezy.com/system/resources/thumbnails/004/511/281/small/default-avatar-photo-placeholder-profile-picture-vector.jpg",
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  'assets/images/profile-placeholder.jpg',
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
                     );
                   },
+                );
+              },
+              onTap: () {
+                _showPicker(context);
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.grey.shade300, // Borde gris suave
+                    width: 2.0,
+                  ),
+                ),
+                child: ClipOval(
+                  child: Image.network(
+                    user?.profileImg ??
+                        "https://static.vecteezy.com/system/resources/thumbnails/004/511/281/small/default-avatar-photo-placeholder-profile-picture-vector.jpg",
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/images/profile-placeholder.jpg',
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
@@ -187,9 +331,7 @@ class _ProfileContentState extends State<ProfileContent> {
                   ),
                 ),
                 TextButton.icon(
-                  onPressed: () {
-                    
-                  },
+                  onPressed: () {},
                   label: Text(
                     'Edit Info',
                     style: TextStyle(
