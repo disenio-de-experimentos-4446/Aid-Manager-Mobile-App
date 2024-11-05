@@ -34,7 +34,7 @@ class _ProjectsContentState extends State<ProjectsContent> {
 
   @override
   void initState() {
-    super.initState();
+    super.initState();  
     _loadProjects();
   }
 

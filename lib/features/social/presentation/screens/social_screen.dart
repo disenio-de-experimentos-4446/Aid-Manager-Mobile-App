@@ -1,9 +1,7 @@
+import 'package:aidmanager_mobile/features/social/presentation/providers/social_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:aidmanager_mobile/features/profile/domain/repositories/user_repository.dart';
-import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:aidmanager_mobile/features/social/presentation/widgets/contact_card.dart';
-import 'package:aidmanager_mobile/features/social/presentation/screens/social_provider.dart';
 
 import '../../../../config/theme/app_theme.dart';
 
@@ -40,9 +38,8 @@ class _SocialContentStateState extends State<SocialContentState> {
 
   @override
   Widget build(BuildContext context) {
-    final socialProvider = context.watch<SocialProvider>();
-    final authProvider = context.watch<AuthProvider>();
-    final isDirector = authProvider.user?.role == 'Manager';
+    final socialProvider = Provider.of<SocialProvider>(context, listen: true);
+    final isDirector = socialProvider.authProvider.user?.role == 'Manager';
 
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
