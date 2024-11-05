@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
 import 'package:aidmanager_mobile/features/profile/domain/entities/user.dart';
 import 'package:aidmanager_mobile/features/profile/domain/repositories/user_repository.dart';
+import 'package:aidmanager_mobile/features/profile/shared/exceptions/profile_exception.dart';
 import 'package:aidmanager_mobile/shared/helpers/storage_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -35,7 +38,6 @@ class ProfileProvider extends ChangeNotifier {
 
   Future<void> updatePersonalInformation(String firstName, String lastName,
       String phone, String email, int age) async {
-
     final loggedCompanyName = authProvider.user!.companyName;
     final loggedCompanyEmail = authProvider.user!.companyEmail;
     final loggedCompanyCountry = authProvider.user!.companyCountry;
@@ -45,8 +47,7 @@ class ProfileProvider extends ChangeNotifier {
     final loggedUserId = authProvider.user!.id;
     final loggedRole = authProvider.user!.role;
     final currentTeamCode = authProvider.user!.teamRegisterCode;
-
-    print(loggedUserId);
+    //print(loggedUserId);
 
     // map to requestBody for update user
     final Map<String, dynamic> updatedUser = {
@@ -88,9 +89,32 @@ class ProfileProvider extends ChangeNotifier {
       authProvider.setUser(userToUpdate);
       await StorageHelper.saveUser(userToUpdate);
 
-      print('Almacenados en el estado global: ${{userToUpdate.teamRegisterCode.toString()}}');
+      //print('Almacenados en el estado global: ${{userToUpdate.teamRegisterCode.toString()}}');
     } catch (e) {
       throw Exception("Error to update user");
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateProfileImageFromCurrentUser(File file) async {
+    final loggedUserId = authProvider.user!.id!;
+
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      final newProfileImgUrl = await userRepository.uploadImageToCloud(file);
+      await userRepository.updateProfileImageByUser(loggedUserId, newProfileImgUrl);
+
+      // creamos una copia de la instancia user act el campo profileImg
+      // para no mandar toda la wea como en updatePersonalInfo :V      
+      final updatedUser = authProvider.user!.copyWith(profileImg: newProfileImgUrl);
+      authProvider.setUser(updatedUser);
+      await StorageHelper.saveUser(updatedUser);
+    } catch (e) {
+      throw UserProfileUpdateFailedException('Error to update profile image for user');
     } finally {
       isLoading = false;
       notifyListeners();
