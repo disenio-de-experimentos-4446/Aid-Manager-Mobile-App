@@ -1,6 +1,7 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/calendar/presentation/providers/calendar_provider.dart';
 import 'package:aidmanager_mobile/features/calendar/presentation/widgets/task_card.dart';
+import 'package:aidmanager_mobile/features/calendar/shared/widgets/custom_error_calendar_dialog.dart';
 import 'package:aidmanager_mobile/features/projects/domain/entities/task.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -43,9 +44,15 @@ class _CalendarContentState extends State<CalendarContent> {
   }
 
   Future<void> _loadTasksForCalendar() async {
-    final calendarProvider =
-        Provider.of<CalendarProvider>(context, listen: false);
-    await calendarProvider.loadAllTasks();
+    final calendarProvider = Provider.of<CalendarProvider>(context, listen: false);
+    try {
+      await calendarProvider.loadAllTasks();
+    } catch (e) {
+      if (!mounted) return;
+      // mostrar un dialog perzonalizado para cada exception
+      final dialog = getCalendarErrorDialog(context, e as Exception);
+      showErrorDialog(context, dialog);
+    }
   }
 
   void _onDaySelected(DateTime day, DateTime focusedDay) {
@@ -73,13 +80,13 @@ class _CalendarContentState extends State<CalendarContent> {
         Provider.of<CalendarProvider>(context, listen: false);
     final tasks = calendarProvider.tasks;
 
-    // Filtra las tareas que tienen una fecha de vencimiento posterior a 'today'
+    // filtra las tareas que tienen una fecha de vencimiento posterior a 'today'
     final sortedTasks = tasks
         .where((task) => task.dueDate.isAfter(today))
         .toList()
       ..sort((a, b) => a.dueDate.compareTo(b.dueDate));
 
-    // Devuelve la fecha de vencimiento de la primera tarea en la lista ordenada
+    // devuelve la fecha de vencimiento de la primera tarea en la lista
     return sortedTasks.isNotEmpty ? sortedTasks.first.dueDate : null;
   }
 

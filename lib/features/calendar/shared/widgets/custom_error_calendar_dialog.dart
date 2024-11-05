@@ -4,11 +4,11 @@ import 'package:aidmanager_mobile/features/calendar/shared/exceptions/calendar_e
 import 'package:flutter/material.dart';
 
 Widget getCalendarErrorDialog(BuildContext context, Exception e) {
-  if (e is TasksFetchException) {
-    return const ErrorFetchTasksDialog();
-  } 
-  else if (e is NoTasksInCompanyException) {
+  if (e is NoTasksInCompanyException) {
     return const NoTasksInCompanyDialog();
+  } 
+  else if (e is TasksFetchException) {
+    return const ErrorFetchTasksDialog();
   }
   else {
     return AlertDialog(

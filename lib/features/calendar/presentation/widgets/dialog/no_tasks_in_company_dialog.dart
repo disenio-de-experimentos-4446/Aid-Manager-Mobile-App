@@ -38,7 +38,7 @@ class NoTasksInCompanyDialog extends StatelessWidget {
         ],
       ),
       content: const Text(
-        'There are no tasks in the current company.',
+        'There are no tasks\nin the current company.',
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 18, height: 1.65),
       ),
