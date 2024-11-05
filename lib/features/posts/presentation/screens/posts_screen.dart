@@ -139,7 +139,7 @@ class _PostScreenState extends State<PostsContent> {
                 itemCount: postProvider.posts.length,
                 itemBuilder: (context, index) {
                   final post = postProvider.posts[index];
-                  return PostCard(post: post);
+                  return PostCard(post: post, userImage: user?.profileImg ?? '');
                 },
               ),
             ),

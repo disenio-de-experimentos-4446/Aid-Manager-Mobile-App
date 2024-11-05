@@ -43,6 +43,23 @@ class UserMapper {
       image = 'https://st3.depositphotos.com/4111759/13425/v/600/depositphotos_134255710-stock-illustration-avatar.jpg';
     }
 
+    print("JSON: $json");
+
+    print("Parsed values:");
+    print("id: ${json['id']}");
+    print("name: ${json['name']}");
+    print("age: ${json['age']}");
+    print("email: ${json['email']}");
+    print("password: ${json['password']}");
+    print("role: ${json['role']}");
+    print("teamRegisterCode: ${json['teamRegisterCode']}");
+    print("phone: ${json['phone']}");
+    print("profileImg: $image");
+    print("companyName: ${json['companyName']}");
+    print("companyEmail: ${json['companyEmail']}");
+    print("companyCountry: ${json['companyCountry']}");
+    print("companyId: ${json['companyId']}");
+
     return User(
         id: json['id'],
         name: json['name'],
@@ -90,7 +107,23 @@ class UserMapper {
     );
   }
 
-
+  static Map<String, dynamic> saveUserJSON(User user) {
+    return {
+      'id': user.id,
+      'name': user.name,
+      'age': user.age ?? 0,
+      'email': user.email,
+      'password': user.password,
+      'role': user.role, // Convert role to integer (request body)
+      'teamRegisterCode': user.teamRegisterCode,
+      'phone': user.phone ?? '',
+      'profileImg': user.profileImg ?? '',
+      'companyName': user.companyName ?? '',
+      'companyEmail': user.companyEmail ?? '',
+      'companyCountry': user.companyCountry ?? '',
+      'companyId': user.companyId
+    };
+  }
 
   // Convert User object to JSON for posting a user
   static Map<String, dynamic> toJsonPost(User user) {

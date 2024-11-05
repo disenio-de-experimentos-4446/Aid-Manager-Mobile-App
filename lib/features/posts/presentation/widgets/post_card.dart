@@ -6,8 +6,9 @@ import 'package:provider/provider.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
+  final String userImage;
 
-  const PostCard({super.key, required this.post});
+  const PostCard({super.key, required this.post, required this.userImage});
 
 
 
@@ -43,8 +44,8 @@ class _PostCardState extends State<PostCard> {
                   CircleAvatar(
                     radius: 25.0,
                     backgroundImage:
-                    widget.post.userImage.isNotEmpty == true
-                        ? NetworkImage(widget.post.userImage)
+                        _isValidUrl(widget.userImage)== true
+                        ? NetworkImage(widget.userImage)
                         : AssetImage('assets/images/defaultavatar.jpg'),
                   ),
                   SizedBox(width: 10),
