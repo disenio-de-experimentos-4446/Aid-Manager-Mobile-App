@@ -126,6 +126,7 @@ class _SocialContentStateState extends State<SocialContentState> {
                   final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
                   return ContactCard(
+                    userId: member.id!,
                     firstName: firstName,
                     lastName: lastName,
                     imageUrl: member.profileImg ?? '',
@@ -135,7 +136,7 @@ class _SocialContentStateState extends State<SocialContentState> {
                     onDelete: isDirector
                         ? () async {
                       await socialProvider.kickMemberFromCompany(member.id!);
-                      setState(() {}); // Refresh the view
+                      setState(() {});
                     }
                         : null,
                   );

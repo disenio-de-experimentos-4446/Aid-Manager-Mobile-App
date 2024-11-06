@@ -20,15 +20,10 @@ class SocialProvider extends ChangeNotifier {
     isLoading = true;
 
     try {
-      // Fetch the logged-in user
-      final loggedInUser =
-          await userRepository.getUserById(authProvider.user!.id!);
+      final loggedInUser = await userRepository.getUserById(authProvider.user!.id!);
 
-      // Fetch all users by company ID
-      final allUsers =
-          await userRepository.getAllUsersByCompanyId(loggedInUser.companyId!);
+      final allUsers = await userRepository.getAllUsersByCompanyId(loggedInUser.companyId!);
 
-      // Filter out the logged-in user from the list
       users = allUsers.where((user) => user.id != loggedInUser.id).toList();
     } catch (e) {
       throw Exception('Error to fetch members by company');
