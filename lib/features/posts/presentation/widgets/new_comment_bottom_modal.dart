@@ -60,7 +60,7 @@ class _NewCommentBottomModalState extends State<NewCommentBottomModal> {
               controller: widget.commentController,
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
-                labelText: 'Title',
+                labelText: 'Content',
               ),
             ),
             const SizedBox(height: 16),
