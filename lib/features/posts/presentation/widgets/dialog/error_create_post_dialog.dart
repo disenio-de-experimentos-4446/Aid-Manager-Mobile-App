@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class ErrorCreatePostDialog extends StatelessWidget {
   const ErrorCreatePostDialog({super.key});
