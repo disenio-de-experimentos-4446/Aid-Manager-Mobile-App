@@ -2,6 +2,7 @@
 import 'dart:io';
 
 import 'package:aidmanager_mobile/features/profile/domain/datasources/user_datasource.dart';
+import 'package:aidmanager_mobile/features/profile/domain/entities/company.dart';
 import 'package:aidmanager_mobile/features/profile/domain/entities/user.dart';
 import 'package:aidmanager_mobile/features/profile/domain/repositories/user_repository.dart';
 
@@ -43,6 +44,11 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<void> updateProfileImageByUser(int userId, String imageUrl) {
     return datasource.updateProfileImageByUser(userId, imageUrl);
+  }
+
+  @override
+  Future<void> updateCompanyInformation(int companyId, Company company) {
+    return datasource.updateCompanyInformation(companyId, company);
   }
 
   @override
