@@ -139,7 +139,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                         border: Border(
                           bottom: BorderSide(
                             color: CustomColors.grey, // Color del borde
-                            width: 2.0, // Ancho del borde
+                            width: 1.5, // Ancho del borde
                           ),
                         ),
                       ),
@@ -158,6 +158,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                       radius: 30.0,
                                       child: ClipOval(
                                         child: FadeInImage.assetNetwork(
+                                          width: double.infinity,
                                           placeholder:
                                               'assets/images/profile-placeholder.jpg',
                                           image: post?.userImage ??
@@ -228,7 +229,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     )
                                   ],
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(height: 15),
                                 Align(
                                   alignment: Alignment.topLeft,
                                   child: Text(
@@ -241,7 +242,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(height: 8),
                                 Align(
                                   alignment: Alignment.topLeft,
                                   child: Text(
@@ -358,16 +359,43 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     ),
                                   ),
                                 ),
-                                child: TextButton.icon(
-                                  onPressed: () {
-                                    showBottomModalComment(context);
-                                  },
-                                  icon: Icon(Icons.add, color: Colors.blue),
-                                  label: Text(
-                                    'Agregar comentario',
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                    ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20.0, vertical: 10.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Comentarios:',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          showBottomModalComment(context);
+                                        },
+                                        style: TextButton.styleFrom(
+                                          padding: EdgeInsets
+                                              .zero, // Quitar el padding por defecto
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.add_rounded, color: CustomColors.darkGreen),
+                                            SizedBox(width: 5),
+                                            Text(
+                                              'Add new comment',
+                                              style: TextStyle(
+                                                color: CustomColors.darkGreen,
+                                                fontSize: 16.0,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
