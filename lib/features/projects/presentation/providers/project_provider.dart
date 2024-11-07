@@ -19,10 +19,7 @@ class ProjectProvider extends ChangeNotifier {
 
   Future<void> loadInitialProjects() async {
     initialLoading = true;
-    final companyId = authProvider.user?.companyId!;
-    if (companyId == null) {
-      throw ProjectsFetchException('Company ID is null');
-    }
+    final companyId = authProvider.user!.companyId!;
 
     try {
       final projectsList = await projectsRepository.getProjectsByCompanyId(companyId);
