@@ -60,9 +60,12 @@ class AuthProvider extends ChangeNotifier {
       // guardamos el usuario en el estado global y en SharedPreferences
       setUser(user);
       await StorageHelper.saveUser(user);
+      print("USER SAVED: ${user}");
+      setUser(user);
 
       //print('Almacenados en el estado global: ${{token, user.id}}');
     } catch (e) {
+      print("PROVIDER");
       throw SignInFailedException('Sign in failed: $e');
     } finally {
       isLoading = false;
