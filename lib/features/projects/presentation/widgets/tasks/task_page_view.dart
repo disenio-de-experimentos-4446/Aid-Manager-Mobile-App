@@ -35,8 +35,7 @@ class TaskPageView extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20.0),
-                    border: Border.all(
-                        color: Colors.black54, width: 1), // Borde negro
+                    border: Border.all(color: Colors.black54, width: 1),
                   ),
                   child: Container(
                     padding: EdgeInsets.all(16),
@@ -114,16 +113,16 @@ class TaskPageView extends StatelessWidget {
                                 Icon(Icons.calendar_today),
                                 SizedBox(width: 8),
                                 Transform.translate(
-                                  offset: Offset(0,
-                                      1), // Desplazamiento en el eje Y negativo
+                                  offset: Offset(0, 1),
                                   child: Text(
                                     DateFormat('yyyy-MM-dd')
                                         .format(task.dueDate),
                                     style: TextStyle(
-                                        fontSize: 18,
-                                        letterSpacing: 1,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black54),
+                                      fontSize: 18,
+                                      letterSpacing: 1,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black54,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -141,9 +140,9 @@ class TaskPageView extends StatelessWidget {
                                         20), // Bordes redondeados
                                   ),
                                   child: Text(
-                                    'Risk', // Texto del contenedor
+                                    'Risk',
                                     style: TextStyle(
-                                      color: Colors.white, // Color del texto
+                                      color: Colors.white,
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),

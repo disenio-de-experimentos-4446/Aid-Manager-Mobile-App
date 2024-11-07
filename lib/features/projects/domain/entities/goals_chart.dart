@@ -17,3 +17,4 @@ class GoalsChart {
     required this.satAmmount,
   });
 }
+// TODO: "implementar";

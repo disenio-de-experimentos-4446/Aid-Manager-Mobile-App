@@ -2,6 +2,7 @@ import 'package:aidmanager_mobile/features/projects/domain/entities/dashboard.da
 import 'package:aidmanager_mobile/features/projects/infrastructure/mappers/amount_chart_mapper.dart';
 import 'package:aidmanager_mobile/features/projects/infrastructure/mappers/goals_chart_mapper.dart';
 
+// TODO: "implementar";
 class DashboardMapper {
   // Método para convertir JSON a un objeto Dashboard
   static Dashboard fromJson(Map<String, dynamic> json) {
