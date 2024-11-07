@@ -17,5 +17,3 @@ class AmountChart {
     required this.data7,
   });
 }
-
-// TODO: "implementar";
