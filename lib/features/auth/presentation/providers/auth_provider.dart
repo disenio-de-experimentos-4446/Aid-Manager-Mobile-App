@@ -56,6 +56,9 @@ class AuthProvider extends ChangeNotifier {
       // es importante guardar el token en shrprefs antes de esta llamada porque
       // el token se utilizará para autenticar las peticiones en el interceptor HTTP de Dio !!
       final user = await userRepository.getUserById(id);
+
+      // guardamos el usuario en el estado global y en SharedPreferences
+      setUser(user);
       await StorageHelper.saveUser(user);
       print("USER SAVED: ${user}");
       setUser(user);

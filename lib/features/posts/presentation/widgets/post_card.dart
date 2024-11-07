@@ -1,168 +1,215 @@
-import 'package:aidmanager_mobile/features/posts/domain/entities/post.dart';
-import 'package:aidmanager_mobile/features/posts/presentation/providers/post_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
-class PostCard extends StatefulWidget {
-  final Post post;
-  final String userImage;
+class PostCard extends StatelessWidget {
+  final int postId;
+  final String username;
+  final String title;
+  final String description;
+  final String email;
+  final String profileImg;
+  final List<String> images;
+  final int rating;
+  final int numComments;
+  final DateTime postTime;
 
-  const PostCard({super.key, required this.post, required this.userImage});
-
-
-
-  @override
-  _PostCardState createState() => _PostCardState();
-}
-
-class _PostCardState extends State<PostCard> {
-  bool isExpanded = false;
-
-  bool _isValidUrl(String url) {
-    print("Is valid image? " + url);
-    return Uri.tryParse(url)?.hasAbsolutePath ?? false;
-  }
-
+  const PostCard({
+    super.key,
+    required this.username,
+    required this.email,
+    required this.profileImg,
+    required this.images,
+    required this.rating,
+    required this.numComments,
+    required this.postTime,
+    required this.postId,
+    required this.description,
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final postProvider = Provider.of<PostProvider>(context, listen: false);
-  final double screenWidth = MediaQuery.of(context).size.width;
-    return Center(
-      child: Card(
-        elevation: 20,
-        color: Color(0xFFE6EEEC),
-        child: Container(
-          width: screenWidth * 0.9,
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 25.0,
-                    backgroundImage:
-                        _isValidUrl(widget.userImage)== true
-                        ? NetworkImage(widget.userImage)
-                        : AssetImage('assets/images/defaultavatar.jpg'),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey,
+            width: 1.0,
+          ),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(
+            top: 25.0, right: 20.0, left: 20.0, bottom: 30.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 50.0,
+                      height: 50.0,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                      ),
+                      child: ClipOval(
+                        child: FadeInImage.assetNetwork(
+                          placeholder: 'assets/images/profile-placeholder.jpg',
+                          image: profileImg,
+                          fit: BoxFit.cover,
+                          imageErrorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              'assets/images/profile-placeholder.jpg',
+                              fit: BoxFit.cover,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16.0),
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        //Aqui va el nombre del usuario y el TITULO del post
-                        Text(widget.post.title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                        Text(widget.post.userName, style: TextStyle(fontSize: 14, color: Colors.grey)),
+                        Text(
+                          username,
+                          style: TextStyle(
+                            fontSize: 17.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          email,
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            color: Colors.grey,
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-                  PopupMenuButton<String>(
-                    onSelected: (String result) async {
-                      if (result == 'delete') {
-                        await postProvider.deletePostById(widget.post.id!);
-                      }
-                    },
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                      const PopupMenuItem<String>(
-                        value: 'delete',
-                        child: Text('Delete Post'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 8),
-
-              Row(
-                children: [
-
-                  //Aqui va el asunto del post
-                  Text(widget.post.subject ,style: TextStyle(fontSize: 13, fontWeight: FontWeight.w200, )),
-                ],
-              ),
-              //TEXTO DEL POST
-              Text(
-                widget.post.description,
-                maxLines: isExpanded ? null : 2,
-                overflow: isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
-              ),
-              TextButton(
-
-                style: ButtonStyle(
-                  foregroundColor: WidgetStateProperty.all(Color(0xFF008A66)),
-
+                  ],
                 ),
-
-                onPressed: () {
-                  setState(() {
-                    isExpanded = !isExpanded;
-                  });
-                },
-                child: Text(isExpanded ? 'See Less' : 'See More'),
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        context.go('/posts/$postId');
+                      },
+                      child: Icon(Icons.open_in_new_rounded, size: 32),
+                    ),
+                    SizedBox(width: 12.0),
+                    GestureDetector(
+                      onTap: () {
+                        // Acción del botón de editar
+                      },
+                      child: Icon(Icons.more_vert_sharp, size: 34),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2.0),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  title,
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                    height: 1.65,
+                  ),
+                ),
               ),
-
+            ),
+            SizedBox(height: 5),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2.0),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  description,
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    fontSize: 17.0,
+                    fontWeight: FontWeight.w500,
+                    height: 1.65,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 15),
             SizedBox(
-                height: 225,
-                child: CarouselView(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                        20.0), // Ajusta el radio del borde según sea necesario
+              height: 225,
+              child: CarouselView(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                      20.0), // Ajusta el radio del borde según sea necesario
+                ),
+                itemExtent: MediaQuery.sizeOf(context).width - 96,
+                padding: const EdgeInsets.only(right: 10),
+                itemSnapping: true,
+                elevation: 4.0,
+                children: List.generate(
+                  10,
+                  (int index) => Image.network(
+                    'https://img.freepik.com/premium-photo/woman-with-backpack-stands-mountain-top-looking-beautiful-sunset_188544-54443.jpg',
+                    fit: BoxFit.cover,
                   ),
-                  itemExtent: MediaQuery.sizeOf(context).width - 96,
-                  padding: const EdgeInsets.only(right: 10),
-                  itemSnapping: true,
-                  elevation: 4.0,
-                  //Aqui va la lista de imagenes del post
-                  children: widget.post.images.map((image) {
-                    return _isValidUrl(image)
-                        ? Image.network(image, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
-                      return Image.asset('assets/images/defaultavatar.jpg', fit: BoxFit.cover);
-                    })
-                        : Image.asset('assets/images/defaultavatar.jpg', fit: BoxFit.cover);
-                  }).toList(),
                 ),
               ),
-
-              Row(
+            ),
+            SizedBox(height: 18),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.favorite),
-                        onPressed: () {
-                          // Acción del botón
-                        },
+                      Icon(
+                        Icons.favorite,
+                        color: Colors.red,
+                        size: 26.0,
                       ),
-                      Text(widget.post.rating.toString()),
+                      SizedBox(width: 8.0),
+                      Text(rating.toString(), style: TextStyle(fontSize: 16.0)),
+                      SizedBox(width: 16.0),
+                      Icon(
+                        Icons.comment,
+                        color: Colors.grey,
+                        size: 26.0,
+                      ),
+                      SizedBox(width: 8.0),
+                      Text(numComments.toString(),
+                          style: TextStyle(fontSize: 16.0)),
                     ],
                   ),
                   Row(
                     children: [
-                      Text(widget.post.commentsList.length.toString()),
-                      IconButton(
-                        icon: Icon(Icons.comment),
-                        onPressed: () {
-                          GoRouter.of(context).go('/posts/${widget.post.id}', extra:widget.post.id);
-                        },
+                      Icon(
+                        Icons.calendar_today,
+                        color: Colors.grey,
+                        size: 24.0,
                       ),
-
+                      SizedBox(width: 8.0),
+                      Text(
+                        DateFormat('dd/MM/yyyy').format(postTime),
+                        style: TextStyle(fontSize: 16.0, letterSpacing: 1.05),
+                      ), // Fecha
                     ],
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  //Aqui va la fecha y la hora del post
-                  Text('${widget.post.postTime?.toLocal().toString().split(' ')[0]} - ${widget.post.postTime?.toLocal().toString().split(' ')[1]}'),
-                ],
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -167,7 +167,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                 children: [
                                   Flexible(
                                     child: Text(
-                                      project?.name ?? 'Project PlaceHolder',
+                                      project.name ?? 'Project PlaceHolder',
                                       style: TextStyle(
                                         fontSize: 24.0,
                                         fontWeight: FontWeight.bold,
@@ -234,7 +234,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                   ),
                                   SizedBox(width: 8.0),
                                   Text(
-                                    project?.projectDate != null
+                                    project.projectDate != null
                                         ? DateFormat('yyyy-MM-dd')
                                             .format(project.projectDate)
                                         : 'No date',
@@ -260,7 +260,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                   ),
                                   SizedBox(width: 8.0),
                                   Text(
-                                    project?.projectTime != null
+                                    project.projectTime != null
                                         ? formatTimeOfDay(project.projectTime)
                                         : 'No Time',
                                     style: TextStyle(
@@ -425,7 +425,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                 height: 15,
                               ),
                               Text(
-                                project?.description ?? 'No description',
+                                project.description ?? 'No description',
                                 style: TextStyle(fontSize: 18.0, height: 1.65),
                               ),
                               SizedBox(
@@ -468,7 +468,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                                 ),
                                                 SizedBox(width: 12.0),
                                                 Text(
-                                                  project?.projectLocation ??
+                                                  project.projectLocation ??
                                                       'No location',
                                                   style:
                                                       TextStyle(fontSize: 18.0),
@@ -500,11 +500,12 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                             ),
                                             SizedBox(width: 12.0),
                                             Text(
-                                              'From: Jan 1, 2023 - To: Jan 10, 2023',
+                                              'From: ${project.audit != null ? DateFormat('MMM d, yyyy').format(project.audit!) : 'No date'} - To: ${DateFormat('MMM d, yyyy').format(project.projectDate)}',
                                               style: TextStyle(
-                                                  fontSize: 18.0,
-                                                  color: const Color.fromARGB(
-                                                      200, 0, 0, 0)),
+                                                fontSize: 18.0,
+                                                color: const Color.fromARGB(
+                                                    200, 0, 0, 0),
+                                              ),
                                             ),
                                           ],
                                         ),

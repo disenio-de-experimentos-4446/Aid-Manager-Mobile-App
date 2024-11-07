@@ -22,7 +22,6 @@ Widget getErrorDialog(BuildContext context, Exception e) {
     return const ErrorRegisterUserDialog();
   }
   else if (e is SignInFailedException) {
-    print("ERROR DE SIGN IN  ${e}");
     return const LoginErrorDialog();
   } 
   else {

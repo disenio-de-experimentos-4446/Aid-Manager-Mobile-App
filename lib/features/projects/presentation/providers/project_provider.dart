@@ -68,7 +68,7 @@ class ProjectProvider extends ChangeNotifier {
 
     isLoading = true;
     notifyListeners();
-    print({projectTime});
+    //print({projectTime});
 
     try {
       await projectsRepository.createProject(newProject);

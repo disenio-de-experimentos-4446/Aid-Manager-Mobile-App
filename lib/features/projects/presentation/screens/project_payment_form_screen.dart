@@ -1,17 +1,30 @@
 import 'dart:math';
-
+import 'package:aidmanager_mobile/features/auth/shared/widgets/is_empty_dialog.dart';
+import 'package:aidmanager_mobile/features/projects/domain/entities/amount_chart.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/providers/dashboard_provider.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/widgets/dashboard/dialog/successfully_payment_chart_update_dialog.dart';
+import 'package:aidmanager_mobile/features/projects/shared/widgets/custom_error_dashboard_dialog.dart';
+import 'package:aidmanager_mobile/shared/helpers/show_customize_dialog.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/widgets/dashboard/line_titles_data.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class ProjectPaymentFormScreen extends StatefulWidget {
   final String projectId;
+  final String projectName;
+  final List<double> amountSummary;
   static const String name = "project_payment_form_screen";
 
-  const ProjectPaymentFormScreen({super.key, required this.projectId});
+  const ProjectPaymentFormScreen({
+    super.key,
+    required this.projectId,
+    required this.projectName,
+    required this.amountSummary,
+  });
 
   @override
   State<ProjectPaymentFormScreen> createState() =>
@@ -24,22 +37,62 @@ class _ProjectPaymentFormScreenState extends State<ProjectPaymentFormScreen> {
     (_) => TextEditingController(),
   );
 
-  final List<FlSpot> _points = [
-    FlSpot(0, 3),
-    FlSpot(2, 2),
-    FlSpot(4, 4),
-    FlSpot(6, 2.5),
-    FlSpot(8, 4),
-    FlSpot(10, 3),
-    FlSpot(12, 4)
-  ];
+  List<FlSpot> _points = [];
 
   @override
-  void dispose() {
-    for (var controller in _controllers) {
-      controller.dispose();
+  void initState() {
+    super.initState();
+    _points = [
+      FlSpot(0, widget.amountSummary[0]),
+      FlSpot(2, widget.amountSummary[1]),
+      FlSpot(4, widget.amountSummary[2]),
+      FlSpot(6, widget.amountSummary[3]),
+      FlSpot(8, widget.amountSummary[4]),
+      FlSpot(10, widget.amountSummary[5]),
+      FlSpot(12, widget.amountSummary[6])
+    ];
+  }
+
+  Future<void> onSubmitUpdatePaymentGraph() async {
+    bool allFieldsFilled =
+        _controllers.every((controller) => controller.text.isNotEmpty);
+
+    if (!allFieldsFilled) {
+      showCustomizeDialog(context, const IsEmptyDialog());
+      return;
     }
-    super.dispose();
+
+    final paymentChartData = AmountChart(
+      data1: int.parse(_controllers[0].text),
+      data2: int.parse(_controllers[1].text),
+      data3: int.parse(_controllers[2].text),
+      data4: int.parse(_controllers[3].text),
+      data5: int.parse(_controllers[4].text),
+      data6: int.parse(_controllers[5].text),
+      data7: int.parse(_controllers[6].text),
+    );
+
+    final dashboardProvider = context.read<DashboardProvider>();
+
+    try {
+      await dashboardProvider.updatePaymentsChartByProjectId(
+          int.parse(widget.projectId), paymentChartData);
+
+      if (!mounted) return;
+
+      showCustomizeDialog(
+        context,
+        SuccessfullyPaymentChartUpdateDialog(
+          projectId: widget.projectId,
+          projectName: widget.projectName,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      // mostrar un dialog perzonalizado para cada exception
+      final dialog = getDashboardErrorDialog(context, e as Exception);
+      showErrorDialog(context, dialog);
+    }
   }
 
   void _updatePoints() {
@@ -59,18 +112,25 @@ class _ProjectPaymentFormScreenState extends State<ProjectPaymentFormScreen> {
     });
   }
 
+  // funcionalidad para la bolita 8 (no borrar :c)
   void _generatePoints() {
     final randomNumber = Random();
 
     setState(() {
       for (var i = 0; i < _controllers.length; i++) {
-        int randomValue = randomNumber
-            .nextInt(6);
-        _controllers[i].text =
-            randomValue.toString();
+        int randomValue = randomNumber.nextInt(6);
+        _controllers[i].text = randomValue.toString();
       }
       _updatePoints();
     });
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -94,7 +154,7 @@ class _ProjectPaymentFormScreenState extends State<ProjectPaymentFormScreen> {
           backgroundColor: CustomColors.darkGreen,
           centerTitle: false,
           title: Text(
-            'Lonely Beach Pacific',
+            widget.projectName,
             style: TextStyle(
               fontSize: 22.0,
               color: const Color.fromARGB(255, 255, 255, 255),
@@ -104,7 +164,8 @@ class _ProjectPaymentFormScreenState extends State<ProjectPaymentFormScreen> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: () {
-              context.go('/projects/${widget.projectId}/dashboard');
+              context.go(
+                  '/projects/${widget.projectId}/dashboard?name=${Uri.encodeComponent(widget.projectName)}');
             },
           ),
           toolbarHeight: 70.0,
@@ -228,7 +289,7 @@ class _ProjectPaymentFormScreenState extends State<ProjectPaymentFormScreen> {
                   SizedBox(width: 10), // Espacio entre los botones
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _updatePoints,
+                      onPressed: onSubmitUpdatePaymentGraph,
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: const Color.fromARGB(255, 235, 69, 57),
@@ -291,6 +352,7 @@ class _ProjectPaymentFormScreenState extends State<ProjectPaymentFormScreen> {
                   ),
                 ),
               ),
+              SizedBox(height: 20.0),
             ],
           ),
         ),

@@ -6,9 +6,9 @@ class Dashboard {
   final int id;
   final List<AmountChart> linesChartBarData;
   final List<GoalsChart> barData;
-  final List<int>? progressbar;
-  final List<int>? status;
-  final List<int>? tasks;
+  final List<int> progressbar;
+  final List<int> status;
+  final List<int> tasks;
 
   Dashboard({
     required this.projectId,

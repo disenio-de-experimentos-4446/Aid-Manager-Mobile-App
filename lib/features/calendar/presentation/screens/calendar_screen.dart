@@ -1,7 +1,11 @@
-import 'package:aidmanager_mobile/config/mocks/calendar_data.dart';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/calendar/presentation/providers/calendar_provider.dart';
 import 'package:aidmanager_mobile/features/calendar/presentation/widgets/task_card.dart';
+import 'package:aidmanager_mobile/features/calendar/shared/widgets/custom_error_calendar_dialog.dart';
+import 'package:aidmanager_mobile/features/projects/domain/entities/task.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarScreen extends StatelessWidget {
@@ -30,12 +34,25 @@ class CalendarContent extends StatefulWidget {
 
 class _CalendarContentState extends State<CalendarContent> {
   DateTime today = DateTime.now();
-  List<TaskItem> selectedTasks = [];
+  List<Task> selectedTasks = [];
 
   @override
   void initState() {
     super.initState();
+    _loadTasksForCalendar();
     _onDaySelected(today, today);
+  }
+
+  Future<void> _loadTasksForCalendar() async {
+    final calendarProvider = Provider.of<CalendarProvider>(context, listen: false);
+    try {
+      await calendarProvider.loadAllTasks();
+    } catch (e) {
+      if (!mounted) return;
+      // mostrar un dialog perzonalizado para cada exception
+      final dialog = getCalendarErrorDialog(context, e as Exception);
+      showErrorDialog(context, dialog);
+    }
   }
 
   void _onDaySelected(DateTime day, DateTime focusedDay) {
@@ -45,8 +62,32 @@ class _CalendarContentState extends State<CalendarContent> {
     });
   }
 
-  List<TaskItem> _getTasksForDay(DateTime day) {
-    return tasksList.where((task) => isSameDay(task.date, day)).toList();
+  List<Task> _getTasksForDay(DateTime day) {
+    final calendarProvider =
+        Provider.of<CalendarProvider>(context, listen: false);
+    final tasks = calendarProvider.tasks;
+    return tasks.where((task) => isSameDay(task.dueDate, day)).toList();
+  }
+
+  bool isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
+  DateTime? getNextTaskDate() {
+    final calendarProvider =
+        Provider.of<CalendarProvider>(context, listen: false);
+    final tasks = calendarProvider.tasks;
+
+    // filtra las tareas que tienen una fecha de vencimiento posterior a 'today'
+    final sortedTasks = tasks
+        .where((task) => task.dueDate.isAfter(today))
+        .toList()
+      ..sort((a, b) => a.dueDate.compareTo(b.dueDate));
+
+    // devuelve la fecha de vencimiento de la primera tarea en la lista
+    return sortedTasks.isNotEmpty ? sortedTasks.first.dueDate : null;
   }
 
   @override
@@ -98,7 +139,7 @@ class _CalendarContentState extends State<CalendarContent> {
                   return Positioned(
                     left: 0,
                     bottom: 2,
-                    right: 1/2,
+                    right: 1 / 2,
                     child: Container(
                       decoration: const BoxDecoration(
                         color: Colors.red,
@@ -115,14 +156,14 @@ class _CalendarContentState extends State<CalendarContent> {
             // cargar los eventos para un dia en especifico
             eventLoader: _getTasksForDay,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 15),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Tasks for ${today.day} de Setiembre - ${today.year}',
+                  'Tasks for ${today.day} de ${DateFormat('MMMM').format(today)} - ${today.year}',
                   style: const TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
@@ -130,15 +171,20 @@ class _CalendarContentState extends State<CalendarContent> {
                 ),
                 TextButton(
                   onPressed: () {
-                    // evento para ir al proximo dia en el calendario
+                    final nextTaskDate = getNextTaskDate();
+                    //print(nextTaskDate.toString());
+                    if (nextTaskDate != null) {
+                      _onDaySelected(nextTaskDate, nextTaskDate);
+                    }
                   },
                   child: const Row(
                     children: [
                       Text(
-                        'Next Day',
+                        'Next',
                         style: TextStyle(
-                          fontSize: 16.0,
+                          fontSize: 17.0,
                           color: CustomColors.darkGreen,
+                          letterSpacing: 0.65,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -169,7 +215,12 @@ class _CalendarContentState extends State<CalendarContent> {
                   return TaskCard(
                     title: task.title,
                     description: task.description,
-                    status: task.status,
+                    status: task.state,
+                    projectId: task.projectId!,
+                    assigneeName: task.assigneeName!,
+                    assigneeImage: task.assignImage!,
+                    assigneeAt: task.dueDate,
+                    createdAt: task.createdAt!,
                   );
                 },
               ),

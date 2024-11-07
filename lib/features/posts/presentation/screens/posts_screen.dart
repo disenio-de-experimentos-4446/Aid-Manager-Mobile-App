@@ -1,13 +1,12 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/providers/post_provider.dart';
-import 'package:aidmanager_mobile/features/posts/presentation/widgets/SuccessfullyCreatePost.dart';
+import 'package:aidmanager_mobile/features/posts/presentation/widgets/dialog/successfull_post_create_dialog.dart';
+import 'package:aidmanager_mobile/features/posts/presentation/widgets/new_post_bottom_modal.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/widgets/post_card.dart';
+import 'package:aidmanager_mobile/features/posts/shared/widgets/custom_error_posts_dialog.dart';
+import 'package:aidmanager_mobile/shared/helpers/show_customize_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../shared/helpers/show_customize_dialog.dart';
-import '../../../../shared/helpers/storage_helper.dart';
-import '../../../profile/domain/entities/user.dart';
 
 class PostsScreen extends StatelessWidget {
   static const String name = "posts_screen";
@@ -30,38 +29,50 @@ class PostsContent extends StatefulWidget {
   const PostsContent({super.key});
 
   @override
-  _PostScreenState createState() => _PostScreenState();
+  State<PostsContent> createState() => _PostsContentState();
 }
 
-class _PostScreenState extends State<PostsContent> {
-
-  User? user;
+class _PostsContentState extends State<PostsContent> {
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _subjectController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _loadPosts();
-    _loadUserData();
+    _loadPostsFromCompany();
   }
 
-  Future<void>  _loadUserData() async {
-    user = await StorageHelper.getUser();
-    setState(() {});
+  Future<void> _loadPostsFromCompany() async {
+    final postsProvider = Provider.of<PostProvider>(context, listen: false);
+
+    postsProvider.loadInitialPostsByCompanyId();
   }
 
-  Future<void>  _loadPosts() async {
-    final postProvider = Provider.of<PostProvider>(context, listen: false);
-    await postProvider.loadInitialPostsByCompanyId();
+  Future<void> onSubmitNewPost() async {
+    final title = _titleController.text;
+    final subject = _subjectController.text;
+    final description = _descriptionController.text;
+
+    //print({title, subject, description});
+    final postProvider = context.read<PostProvider>();
+
+    try {
+      await postProvider.createNewPost(title, subject, description);
+      if (!mounted) return;
+
+      showCustomizeDialog(context, const SuccessfullPostCreateDialog());
+    } catch (e) {
+      if (!mounted) return;
+      // mostrar un dialog perzonalizado para cada exception
+      final dialog = getPostErrorDialog(context, e as Exception);
+      showErrorDialog(context, dialog);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final postProvider = Provider.of<PostProvider>(context);
-    
-    bool _isValidUrl(String url) {
-      print("Is valid image? " + url);
-      return Uri.tryParse(url)?.hasAbsolutePath ?? false;
-    }
+    final postsProvider = Provider.of<PostProvider>(context, listen: true);
 
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -87,32 +98,80 @@ class _PostScreenState extends State<PostsContent> {
                   children: [
                     CircleAvatar(
                       radius: 25.0,
-                      backgroundImage:
-                        user?.profileImg?.isNotEmpty == true
-                            ? NetworkImage(user!.profileImg!)
-                            : AssetImage('assets/images/defaultavatar.jpg'),
-                      ),
-                    SizedBox(width: 12.0),
-                    Expanded(
-                        child: TextButton(
-                          style: ButtonStyle(
-                            elevation: WidgetStateProperty.all(10),
-                            shadowColor: WidgetStateProperty.all(
-                                Colors.black.withOpacity(0.5)),
-                            backgroundColor: WidgetStateProperty.all(
-                                Color(0xFFE6EEEC)),
-                          ),
-                          onPressed: () async {
-                            _showCreateDialog(context);
-
-                          }, child: Text("Create something new +", style: TextStyle(color: Color(
-                            0xFF02513D), fontSize: 18),),
+                      child: ClipOval(
+                        child: FadeInImage.assetNetwork(
+                          placeholder: 'assets/images/profile-placeholder.jpg',
+                          width: double.infinity,
+                          image: postsProvider.authProvider.user?.profileImg ??
+                              'https://static.vecteezy.com/system/resources/thumbnails/003/337/584/small/default-avatar-photo-placeholder-profile-icon-vector.jpg',
+                          fit: BoxFit.cover,
+                          imageErrorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              'assets/images/profile-placeholder.jpg',
+                              fit: BoxFit.cover,
+                            );
+                          },
                         ),
                       ),
+                    ),
+                    SizedBox(width: 12.0),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white, // Fondo blanco para el TextField
+                          borderRadius: BorderRadius.circular(30.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              spreadRadius: 1,
+                              blurRadius: 5,
+                              offset: Offset(
+                                  0, 3), // Cambia la posición de la sombra
+                            ),
+                          ],
+                        ),
+                        child: GestureDetector(
+                          onTap: () {
+                            showBottomModalPost(context);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(
+                                  255, 244, 252, 242), // Color de fondo verde
+                              borderRadius: BorderRadius.circular(30.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.02),
+                                  spreadRadius: 1,
+                                  blurRadius: 5,
+                                  offset: Offset(
+                                      0, 3), // Cambia la posición de la sombra
+                                ),
+                              ],
+                            ),
+                            child: IgnorePointer(
+                              child: TextField(
+                                readOnly:
+                                    true, // Hacer el TextField de solo lectura
+                                textAlignVertical: TextAlignVertical.center,
+                                decoration: InputDecoration(
+                                  hintText: 'Write something incredible...',
+                                  suffixIcon: Icon(Icons.add, size: 28.0),
+                                  border: InputBorder.none,
+                                  contentPadding:
+                                      EdgeInsets.symmetric(vertical: 5.0)
+                                          .copyWith(left: 20.0),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                     SizedBox(width: 16.0),
                     Container(
                       decoration: BoxDecoration(
-                        color: CustomColors.lightGreen,
+                        color: CustomColors.fieldGrey,
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
@@ -121,9 +180,7 @@ class _PostScreenState extends State<PostsContent> {
                           color: Colors.black87,
                           size: 28.0,
                         ),
-                        onPressed: () {
-                          // Acción del botón
-                        },
+                        onPressed: () {},
                       ),
                     ),
                   ],
@@ -131,15 +188,22 @@ class _PostScreenState extends State<PostsContent> {
               ),
             ),
             Expanded(
-              child: postProvider.initialLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : postProvider.posts.isEmpty
-                  ? Center(child: Text("It seems there's no posts for now!"))
-                  : ListView.builder(
-                itemCount: postProvider.posts.length,
+              child: ListView.builder(
+                itemCount: postsProvider.posts.length,
                 itemBuilder: (context, index) {
-                  final post = postProvider.posts[index];
-                  return PostCard(post: post, userImage: user?.profileImg ?? '');
+                  final post = postsProvider.posts[index];
+                  return PostCard(
+                    username: post.userName!,
+                    email: post.email!,
+                    profileImg: post.userImage!,
+                    images: post.images,
+                    rating: post.rating!,
+                    numComments: post.commentsList!.length,
+                    postTime: post.postTime!,
+                    postId: post.id!,
+                    title: post.title,
+                    description: post.description,
+                  );
                 },
               ),
             ),
@@ -148,88 +212,19 @@ class _PostScreenState extends State<PostsContent> {
       ),
     );
   }
+
+  void showBottomModalPost(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return NewPostBottomModal(
+          onSubmitPost: onSubmitNewPost,
+          titleController: _titleController,
+          subjectController: _subjectController,
+          descriptionController: _descriptionController,
+        );
+      },
+    );
+  }
 }
-
-
-void _showCreateDialog(BuildContext context) {
-  final postProvider = Provider.of<PostProvider>(context, listen: false);
-
-  final titleController = TextEditingController();
-  final subjectController = TextEditingController();
-  final contentController = TextEditingController();
-  final imageController = TextEditingController();
-
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Create New Post'),
-        backgroundColor: Color(0xFFE6EEEC),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: titleController,
-              decoration: InputDecoration(hintText: "Title"),
-            ),
-            TextField(
-              controller: subjectController,
-              decoration: InputDecoration(hintText: "Subject"),
-            ),
-            TextField(
-              controller: contentController,
-              decoration: InputDecoration(hintText: "Content"),
-            ),
-            TextField(
-              controller: imageController,
-              decoration: InputDecoration(hintText: "Add an image"),
-            ),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Cancel'),
-            style: ButtonStyle(
-              foregroundColor: WidgetStateProperty.all(Color(0xFF008A66)),
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            child: Text('Create'),
-            style: ButtonStyle(
-              foregroundColor: WidgetStateProperty.all(Color(0xFF008A66)),
-            ),
-            onPressed: () async {
-              // Add your create logic here
-
-              final title = titleController.text;
-              final subject = subjectController.text;
-              final content = contentController.text;
-              final image = imageController.text;
-
-              try {
-                await postProvider.createNewPost(title, subject, content, [image]);
-                Navigator.of(context).pop();
-                showCustomizeDialog(context, const SuccessfullyCreatePost());
-                postProvider.loadInitialPostsByCompanyId();
-
-              } catch (e) {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Error creating post: $e'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-

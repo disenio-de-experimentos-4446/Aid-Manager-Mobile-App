@@ -12,9 +12,10 @@ import 'package:intl/intl.dart';
 
 class ProjectTaskFormScreen extends StatefulWidget {
   final String projectId;
+  final String projectName;
   static const String name = "project_task_form_screen";
 
-  const ProjectTaskFormScreen({super.key, required this.projectId});
+  const ProjectTaskFormScreen({super.key, required this.projectId, required this.projectName});
 
   @override
   State<ProjectTaskFormScreen> createState() => _ProjectTaskFormScreenState();
@@ -71,7 +72,7 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
 
       if(!mounted) return;
       
-      showCustomizeDialog(context, SuccessfullyCreateTaskDialog(projectId: widget.projectId,));
+      showCustomizeDialog(context, SuccessfullyCreateTaskDialog(projectId: widget.projectId, projectName: widget.projectName,));
     } catch (e) {
       if(!mounted) return;
       showCustomizeDialog(context, ErrorTaskCreationDialog());
@@ -99,7 +100,7 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
           backgroundColor: CustomColors.darkGreen,
           centerTitle: false,
           title: Text(
-            'Lonely Beach Pacific',
+            widget.projectName,
             style: TextStyle(
               fontSize: 22.0,
               color: const Color.fromARGB(255, 255, 255, 255),
@@ -109,7 +110,7 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: () {
-              context.go('/projects/${widget.projectId}/tasks');
+              context.go('/projects/${widget.projectId}/tasks?name=${Uri.encodeComponent(widget.projectName)}');
             },
           ),
           toolbarHeight: 70.0,

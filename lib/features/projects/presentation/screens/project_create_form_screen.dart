@@ -28,15 +28,17 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
   final TextEditingController _projectLocation = TextEditingController();
 
   Future<void> onSubmitNewProject() async {
-
     if (_projectNameController.text.trim().isEmpty ||
         _descriptionController.text.trim().isEmpty ||
         _numberImagesController.text.isEmpty ||
         _projectDateController.text.trim().isEmpty ||
         _projectTimeController.text.trim().isEmpty ||
         _projectLocation.text.trim().isEmpty) {
-      showErrorDialog(context, const IsEmptyDialog());
-      return; // Ensure the function exits after showing the dialog
+      showErrorDialog(
+        context,
+        const IsEmptyDialog(),
+      );
+      return;
     }
 
     final name = _projectNameController.text.trim();
@@ -299,15 +301,17 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
                                     firstDate: DateTime(2000),
                                     lastDate: DateTime(2101),
                                   );
-                                  String formattedDate =
-                                      DateFormat('yyyy-MM-dd')
-                                          .format(pickedDate!);
-                                  setState(() {
-                                    // actualiza el controlador del campo de texto con la fecha seleccionada
-                                    _projectDateController.text =
-                                        formattedDate;
-                                  });
-                                                                },
+                                  if (pickedDate != null) {
+                                    String formattedDate =
+                                        DateFormat('yyyy-MM-dd')
+                                            .format(pickedDate);
+                                    setState(() {
+                                      // actualiza el controlador del campo de texto con la fecha seleccionada
+                                      _projectDateController.text =
+                                          formattedDate;
+                                    });
+                                  }
+                                },
                                 controller: _projectDateController,
                               ),
                             ],
