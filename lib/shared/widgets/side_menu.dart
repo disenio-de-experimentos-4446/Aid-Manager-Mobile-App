@@ -35,8 +35,6 @@ class _SideMenuState extends State<SideMenu> {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
 
-    print("USERINSIDEENU ${user?.profileImg}");
-
     return Drawer(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.75,
