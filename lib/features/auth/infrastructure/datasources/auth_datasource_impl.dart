@@ -9,7 +9,6 @@ import 'package:aidmanager_mobile/features/auth/shared/exceptions/register_excep
 import 'package:aidmanager_mobile/shared/service/http_service.dart';
 import 'package:dio/dio.dart';
 
-// TODO: "borrar";
 class AuthDatasourceImpl extends HttpService implements AuthDatasource {
   @override
   Future<LoginResponse> signIn(String email, String password) async {
