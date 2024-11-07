@@ -1,5 +1,6 @@
 import 'package:aidmanager_mobile/features/projects/domain/entities/task.dart';
 
+// TODO: "implementar";
 abstract class TasksRepository {
   Future<void> createTaskByProjectId(int projectId, Task task);
   Future<List<Task>> getTasksByProjectId(int projectId);
