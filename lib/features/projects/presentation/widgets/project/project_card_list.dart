@@ -112,7 +112,7 @@ class PrincipalProjectCard extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 4.0),
+                    SizedBox(height: 8.0),
                     Text(
                       description,
                       style: TextStyle(

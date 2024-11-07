@@ -13,20 +13,21 @@ class User {
   final String? companyCountry;
   final int? companyId;
 
-  User(
-      {this.id,
-      required this.name,
-      this.age,
-      required this.email,
-      required this.password,
-      required this.role,
-      required this.teamRegisterCode,
-      this.phone,
-      this.profileImg,
-      this.companyName,
-      this.companyEmail,
-      this.companyCountry,
-      this.companyId});
+  User({
+    this.id,
+    required this.name,
+    this.age,
+    required this.email,
+    required this.password,
+    required this.role,
+    required this.teamRegisterCode,
+    this.phone,
+    this.profileImg,
+    this.companyName,
+    this.companyEmail,
+    this.companyCountry,
+    this.companyId,
+  });
 
   // este metodo propio de mi entidad User es para crear una copia de la instancia
   // para actualizar campos especificos, en este caso para el profileImage

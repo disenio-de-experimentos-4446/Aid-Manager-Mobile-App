@@ -54,7 +54,6 @@ class _PostsContentState extends State<PostsContent> {
     final subject = _subjectController.text;
     final description = _descriptionController.text;
 
-    //print({title, subject, description});
     final postProvider = context.read<PostProvider>();
 
     try {
@@ -118,15 +117,14 @@ class _PostsContentState extends State<PostsContent> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white, // Fondo blanco para el TextField
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(30.0),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.1),
                               spreadRadius: 1,
                               blurRadius: 5,
-                              offset: Offset(
-                                  0, 3), // Cambia la posición de la sombra
+                              offset: Offset(0, 3),
                             ),
                           ],
                         ),
@@ -136,23 +134,20 @@ class _PostsContentState extends State<PostsContent> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: const Color.fromARGB(
-                                  255, 244, 252, 242), // Color de fondo verde
+                              color: const Color.fromARGB(255, 244, 252, 242),
                               borderRadius: BorderRadius.circular(30.0),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.02),
                                   spreadRadius: 1,
                                   blurRadius: 5,
-                                  offset: Offset(
-                                      0, 3), // Cambia la posición de la sombra
+                                  offset: Offset(0, 3),
                                 ),
                               ],
                             ),
                             child: IgnorePointer(
                               child: TextField(
-                                readOnly:
-                                    true, // Hacer el TextField de solo lectura
+                                readOnly: true,
                                 textAlignVertical: TextAlignVertical.center,
                                 decoration: InputDecoration(
                                   hintText: 'Write something incredible...',

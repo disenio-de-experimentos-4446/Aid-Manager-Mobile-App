@@ -66,14 +66,14 @@ class _SocialContentStateState extends State<SocialContentState> {
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white, // Fondo blanco para el TextField
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(30.0),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.1),
                                   spreadRadius: 1,
                                   blurRadius: 5,
-                                  offset: Offset(0, 3), // Cambia la posición de la sombra
+                                  offset: Offset(0, 3),
                                 ),
                               ],
                             ),
@@ -82,7 +82,8 @@ class _SocialContentStateState extends State<SocialContentState> {
                                 hintText: 'Search a contact',
                                 prefixIcon: Icon(Icons.search),
                                 border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(vertical: 12.0),
+                                contentPadding:
+                                    EdgeInsets.symmetric(vertical: 12.0),
                               ),
                             ),
                           ),
@@ -93,7 +94,7 @@ class _SocialContentStateState extends State<SocialContentState> {
                             // Acción del botón
                           },
                           style: TextButton.styleFrom(
-                            backgroundColor: CustomColors.darkGreen, // Color de fondo
+                            backgroundColor: CustomColors.darkGreen,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 18.0, vertical: 8.0),
                           ),
@@ -114,34 +115,42 @@ class _SocialContentStateState extends State<SocialContentState> {
             ),
             socialProvider.isLoading
                 ? Padding(
-                padding: const EdgeInsets.symmetric(vertical: 30.0),
-                child: Center(child: CircularProgressIndicator()))
+                    padding: const EdgeInsets.symmetric(vertical: 30.0),
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
                 : Expanded(
-              child: ListView.builder(
-                itemCount: socialProvider.users.length,
-                itemBuilder: (context, index) {
-                  final member = socialProvider.users[index];
-                  final nameParts = member.name.split(' ');
-                  final firstName = nameParts.isNotEmpty ? nameParts[0] : '';
-                  final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+                    child: ListView.builder(
+                      itemCount: socialProvider.users.length,
+                      itemBuilder: (context, index) {
+                        final member = socialProvider.users[index];
+                        final nameParts = member.name.split(' ');
+                        final firstName =
+                            nameParts.isNotEmpty ? nameParts[0] : '';
+                        final lastName = nameParts.length > 1
+                            ? nameParts.sublist(1).join(' ')
+                            : '';
 
-                  return ContactCard(
-                    firstName: firstName,
-                    lastName: lastName,
-                    imageUrl: member.profileImg ?? '',
-                    email: member.email,
-                    phone: member.phone ?? '',
-                    isDirector: member.role == 'Manager',
-                    onDelete: isDirector
-                        ? () async {
-                      await socialProvider.kickMemberFromCompany(member.id!);
-                      setState(() {}); // Refresh the view
-                    }
-                        : null,
-                  );
-                },
-              ),
-            ),
+                        return ContactCard(
+                          userId: member.id!,
+                          firstName: firstName,
+                          lastName: lastName,
+                          imageUrl: member.profileImg ?? '',
+                          email: member.email,
+                          phone: member.phone ?? '',
+                          isDirector: member.role == 'Manager',
+                          onDelete: isDirector
+                              ? () async {
+                                  await socialProvider
+                                      .kickMemberFromCompany(member.id!);
+                                  setState(() {});
+                                }
+                              : null,
+                        );
+                      },
+                    ),
+                  ),
           ],
         ),
       ),

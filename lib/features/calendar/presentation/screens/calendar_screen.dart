@@ -172,7 +172,6 @@ class _CalendarContentState extends State<CalendarContent> {
                 TextButton(
                   onPressed: () {
                     final nextTaskDate = getNextTaskDate();
-                    //print(nextTaskDate.toString());
                     if (nextTaskDate != null) {
                       _onDaySelected(nextTaskDate, nextTaskDate);
                     }
@@ -188,7 +187,7 @@ class _CalendarContentState extends State<CalendarContent> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(width: 5.0), // Espacio entre el texto y el ícono
+                      SizedBox(width: 5.0),
                       Icon(
                         Icons.arrow_forward_ios,
                         color: CustomColors.darkGreen,

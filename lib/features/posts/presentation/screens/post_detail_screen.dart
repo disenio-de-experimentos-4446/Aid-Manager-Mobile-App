@@ -76,8 +76,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   height: 80,
                   child: CircularProgressIndicator(
                     strokeWidth: 8,
-                    color:
-                        CustomColors.darkGreen, // Puedes cambiar el color aquí
+                    color: CustomColors.darkGreen,
                   ),
                 ),
               ),
@@ -122,7 +121,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                             color: Colors.black,
                           ),
                           onPressed: () {
-                            // Lógica para agregar a favoritos
+                            // lógica para agregar a favoritos
                           },
                         ),
                       ],
@@ -138,8 +137,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       decoration: BoxDecoration(
                         border: Border(
                           bottom: BorderSide(
-                            color: CustomColors.grey, // Color del borde
-                            width: 2.0, // Ancho del borde
+                            color: CustomColors.grey,
+                            width: 1.5,
                           ),
                         ),
                       ),
@@ -158,6 +157,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                       radius: 30.0,
                                       child: ClipOval(
                                         child: FadeInImage.assetNetwork(
+                                          width: double.infinity,
                                           placeholder:
                                               'assets/images/profile-placeholder.jpg',
                                           image: post?.userImage ??
@@ -177,14 +177,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize
-                                          .min, // Reduce el tamaño del eje principal
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Row(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
-                                          mainAxisSize: MainAxisSize
-                                              .min, // Reduce el tamaño del eje principal del Row
+                                          mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
                                               post?.userName ?? 'No name',
@@ -194,8 +192,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                               ),
                                             ),
                                             const SizedBox(
-                                              width:
-                                                  14, // Ajusta el espacio entre el texto y el icono
+                                              width: 14,
                                             ),
                                             Row(
                                               children: [
@@ -228,7 +225,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     )
                                   ],
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(height: 15),
                                 Align(
                                   alignment: Alignment.topLeft,
                                   child: Text(
@@ -241,7 +238,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(height: 8),
                                 Align(
                                   alignment: Alignment.topLeft,
                                   child: Text(
@@ -358,16 +355,44 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     ),
                                   ),
                                 ),
-                                child: TextButton.icon(
-                                  onPressed: () {
-                                    showBottomModalComment(context);
-                                  },
-                                  icon: Icon(Icons.add, color: Colors.blue),
-                                  label: Text(
-                                    'Agregar comentario',
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                    ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20.0, vertical: 10.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Comentarios:',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          showBottomModalComment(context);
+                                        },
+                                        style: TextButton.styleFrom(
+                                          padding: EdgeInsets
+                                              .zero, // Quitar el padding por defecto
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.add_rounded,
+                                                color: CustomColors.darkGreen),
+                                            SizedBox(width: 5),
+                                            Text(
+                                              'Add new comment',
+                                              style: TextStyle(
+                                                color: CustomColors.darkGreen,
+                                                fontSize: 16.0,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),

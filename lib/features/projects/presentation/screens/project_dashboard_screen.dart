@@ -207,6 +207,7 @@ class _ProjectDashboardScreenState extends State<ProjectDashboardScreen> {
                 projectId: widget.projectId,
                 projectName: widget.projectName,
                 amountSummary: [
+                  // fea wea pero con tal q no se caiga la app XD
                   (dashboardRepository
                               .projectDashboard?.linesChartBarData.isNotEmpty ??
                           false)

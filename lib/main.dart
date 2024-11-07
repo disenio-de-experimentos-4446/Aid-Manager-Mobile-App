@@ -35,13 +35,10 @@ void main() {
   // creamos las instancias de los repositorios con sus datasources
   final userRepository = UserRepositoryImpl(datasource: UserDatasourceImpl());
   final authRepository = AuthRepositoryImpl(datasource: AuthDatasourceImpl());
-  final projectRepository =
-      ProjectsRepositoryImpl(datasource: ProjectsDatasourceImpl());
-  final tasksRepository =
-      TasksRepositoryImpl(datasource: TasksDatasourceImpl());
+  final projectRepository = ProjectsRepositoryImpl(datasource: ProjectsDatasourceImpl());
+  final tasksRepository = TasksRepositoryImpl(datasource: TasksDatasourceImpl());
   final postsRepository = PostRepositoryImpl(datasource: PostDatasourceImpl());
-  final dashboardRepository =
-      DasboardsRepositoryImpl(datasource: DashboardsDatasourceImpl());
+  final dashboardRepository = DasboardsRepositoryImpl(datasource: DashboardsDatasourceImpl());
   final commentsRepository = CommentRepositoryImpl(datasource: CommentDatasourceImpl());
 
   runApp(

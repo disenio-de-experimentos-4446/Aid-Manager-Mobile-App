@@ -15,7 +15,7 @@ class NoTasksInCompanyDialog extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               Icon(
-                Icons.task,
+                Icons.assignment,
                 color: Color.fromARGB(255, 44, 44, 44),
                 size: 72,
               ),

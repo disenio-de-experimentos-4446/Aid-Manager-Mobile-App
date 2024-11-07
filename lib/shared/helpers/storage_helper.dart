@@ -17,7 +17,6 @@ class StorageHelper {
   static Future<void> saveUser(User user) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userKey, jsonEncode(UserMapper.toJson(user)));
-    print("SAVE: ${prefs.getString(_userKey)}");
 
   }
 

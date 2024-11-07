@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
+import 'package:aidmanager_mobile/features/profile/domain/entities/company.dart';
 import 'package:aidmanager_mobile/features/profile/domain/entities/user.dart';
 import 'package:aidmanager_mobile/features/profile/domain/repositories/user_repository.dart';
 import 'package:aidmanager_mobile/features/profile/shared/exceptions/profile_exception.dart';
@@ -14,7 +15,10 @@ class ProfileProvider extends ChangeNotifier {
   List<User> users = [];
   bool isLoading = false;
 
-  ProfileProvider({required this.authProvider, required this.userRepository});
+  ProfileProvider({
+    required this.authProvider,
+    required this.userRepository,
+  });
 
   Future<void> getMembersByCompany() async {
     isLoading = true;
@@ -27,7 +31,6 @@ class ProfileProvider extends ChangeNotifier {
 
       users = teamMembers;
     } catch (e) {
-      // Manejar el error de manera adecuada
       //print('Error fetching users: $e');
       throw Exception('Failed to fetch users');
     } finally {
@@ -47,7 +50,6 @@ class ProfileProvider extends ChangeNotifier {
     final loggedUserId = authProvider.user!.id;
     final loggedRole = authProvider.user!.role;
     final currentTeamCode = authProvider.user!.teamRegisterCode;
-    //print(loggedUserId);
 
     // map to requestBody for update user
     final Map<String, dynamic> updatedUser = {
@@ -98,6 +100,39 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateCompanyInformation(
+      String companyName, String companyCountry, String companyEmail) async {
+    final currentCompanyId = authProvider.user!.companyId!;
+
+    final companyToUpdate = Company(
+        companyName: companyName, email: companyEmail, country: companyCountry);
+
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      await userRepository.updateCompanyInformation(
+          currentCompanyId, companyToUpdate);
+
+      // creamos una copia de la instancia user actualizando los campos de la compañía
+      // (mas explicado en User entity :p)
+      final updatedUser = authProvider.user!.copyWith(
+        companyName: companyName,
+        companyEmail: companyEmail,
+        companyCountry: companyCountry,
+      );
+
+      // actualizar el usuario en authProvider y en StorageHelper
+      authProvider.setUser(updatedUser);
+      await StorageHelper.saveUser(updatedUser);
+    } catch (e) {
+      throw Exception('Error to update company information');
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> updateProfileImageFromCurrentUser(File file) async {
     final loggedUserId = authProvider.user!.id!;
 
@@ -106,15 +141,18 @@ class ProfileProvider extends ChangeNotifier {
 
     try {
       final newProfileImgUrl = await userRepository.uploadImageToCloud(file);
-      await userRepository.updateProfileImageByUser(loggedUserId, newProfileImgUrl);
+      await userRepository.updateProfileImageByUser(
+          loggedUserId, newProfileImgUrl);
 
       // creamos una copia de la instancia user act el campo profileImg
-      // para no mandar toda la wea como en updatePersonalInfo :V      
-      final updatedUser = authProvider.user!.copyWith(profileImg: newProfileImgUrl);
+      // para no mandar toda la wea como en updatePersonalInfo :V (de ahi se refac lo del updateInfo)
+      final updatedUser =
+          authProvider.user!.copyWith(profileImg: newProfileImgUrl);
       authProvider.setUser(updatedUser);
       await StorageHelper.saveUser(updatedUser);
     } catch (e) {
-      throw UserProfileUpdateFailedException('Error to update profile image for user');
+      throw UserProfileUpdateFailedException(
+          'Error to update profile image for user');
     } finally {
       isLoading = false;
       notifyListeners();

@@ -2,6 +2,7 @@ import 'package:aidmanager_mobile/features/projects/domain/entities/project.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+// TODO: "implementar";
 class ProjectMapper {
   // Método para convertir JSON a un objeto Project
   static Project fromJson(Map<String, dynamic> json) {

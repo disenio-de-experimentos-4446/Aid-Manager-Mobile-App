@@ -67,8 +67,6 @@ class TaskProvider extends ChangeNotifier {
 
   Future<void> updateStatusFieldByTask(int projectId, int taskId, String newStatus) async {
 
-    //print({projectId, taskId, newStatus});
-
     updateLoading = true;
 
     try {
@@ -80,7 +78,6 @@ class TaskProvider extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      //print('Error updating task status: $e');
       throw Exception('Failed to update task status');
     }
     finally {

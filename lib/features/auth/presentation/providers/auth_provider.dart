@@ -9,6 +9,7 @@ import 'package:aidmanager_mobile/features/profile/infrastructure/mappers/user_m
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
+// TODO: "implementar";
 class AuthProvider extends ChangeNotifier {
   //DI de los repositories a utilizar
   final AuthRepository authRepository;
@@ -59,8 +60,8 @@ class AuthProvider extends ChangeNotifier {
 
       // guardamos el usuario en el estado global y en SharedPreferences
       setUser(user);
-      print("USER SAVED: ${user}");
       await StorageHelper.saveUser(user);
+      setUser(user);
 
       //print('Almacenados en el estado global: ${{token, user.id}}');
     } catch (e) {

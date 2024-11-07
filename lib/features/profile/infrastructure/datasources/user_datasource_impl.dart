@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:aidmanager_mobile/features/profile/domain/datasources/user_datasource.dart';
+import 'package:aidmanager_mobile/features/profile/domain/entities/company.dart';
 import 'package:aidmanager_mobile/features/profile/domain/entities/user.dart';
 import 'package:aidmanager_mobile/features/profile/infrastructure/mappers/user_mapper.dart';
 import 'package:aidmanager_mobile/shared/service/http_service.dart';
@@ -110,7 +111,7 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
   @override
   Future<String> uploadImageToCloud(File file) async {
     // nueva instancia de dio para no mandar el token y evitar el interceptor
-    final Dio _dio = Dio();
+    final Dio dio = Dio();
 
     final String cloudName = "dhf6g6xkf";
     final String uploadPreset = "ml_default";
@@ -122,10 +123,7 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
         'upload_preset': uploadPreset,
       });
 
-      final response = await _dio.post(cloudinaryUrl, data: formData);
-
-      print('Hola');
-      print('${response.data['secure_url']}');
+      final response = await dio.post(cloudinaryUrl, data: formData);
       
       if (response.statusCode == 200) {
         return response.data['secure_url'];
@@ -136,6 +134,35 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
       // se elimina una vez subido a la nube para lib espacio en el almacenamiento
       file.delete();
     }
+  }
+
+  @override
+  Future<void> updateCompanyInformation(int companyId, Company company) async {
+    
+    final requestBody = jsonEncode({
+      'companyName': company.companyName,
+      'country': company.country,
+      'email': company.email
+    });
+
+    try {
+      final response = await dio.put(
+        '/company/$companyId',
+        data: requestBody,
+      );  
+
+      if (response.statusCode != HttpStatus.ok) {
+        throw Exception('Failed to update company information with id: $companyId: ${response.statusCode}');
+      }
+
+      if (response.data == null || response.data.isEmpty) {
+        throw Exception('Failed to update company information for company with id: $companyId: ${response.statusCode}');
+      }
+
+    } catch (e) {
+      throw Exception("Failed to update current company with id: $companyId, $e");
+    }
+
   }
 
   @override
@@ -164,5 +191,4 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
     }
 
   }  
-
 }

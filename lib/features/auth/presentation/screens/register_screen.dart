@@ -76,14 +76,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final authProvider = context.read<AuthProvider>();
 
     try {
-      
       if (role == 0) {
         // si el rol es director, navegamos a la pantalla de organizacion
         // mandamos el objeto que contiene la informacion de los campos completados hasta ahora
         final directorInfo = DirectorData(firstName, lastName, email, password);
         context.go('/organization', extra: directorInfo);
-      } 
-      else if (role == 1) {
+      } else if (role == 1) {
         // si el rol es miembro del equipo, solicitar el codigo de acceso al equipo
         final teamRegisterCode = await showDialog<String>(
           context: context,
@@ -140,8 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     children: [
                       Container(
                         width: double.infinity,
-                        height:
-                            containerHeight, // Altura dinámica para el contenedor
+                        height: containerHeight,
                         padding: const EdgeInsets.only(
                             left: 30.0, right: 30, top: 10.0),
                         child: Row(
