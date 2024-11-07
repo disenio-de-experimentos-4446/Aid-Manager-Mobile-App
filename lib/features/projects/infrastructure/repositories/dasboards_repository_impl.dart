@@ -4,6 +4,7 @@ import 'package:aidmanager_mobile/features/projects/domain/entities/dashboard.da
 import 'package:aidmanager_mobile/features/projects/domain/entities/goals_chart.dart';
 import 'package:aidmanager_mobile/features/projects/domain/repositories/dashboards_repository.dart';
 
+// TODO: "implementar";
 class DasboardsRepositoryImpl implements DashboardsRepository {
 
   final DashboardsDatasource datasource;

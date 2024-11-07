@@ -1,5 +1,6 @@
 import 'package:aidmanager_mobile/features/projects/domain/entities/goals_chart.dart';
 
+// TODO: "implementar";
 class GoalsChartMapper {
 
   static GoalsChart fromJson(Map<String, dynamic> json) {

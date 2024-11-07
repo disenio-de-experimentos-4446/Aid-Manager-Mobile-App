@@ -8,6 +8,7 @@ class LoginResponse {
   });
 }
 
+// TODO: "implementar";
 class DirectorData {
   final String firstName;
   final String lastName;
