@@ -1,6 +1,5 @@
 import 'package:aidmanager_mobile/features/projects/domain/entities/amount_chart.dart';
 
-// TODO: "implementar";
 class AmountChartMapper {
 
   static AmountChart fromJson(Map<String, dynamic> json) {
