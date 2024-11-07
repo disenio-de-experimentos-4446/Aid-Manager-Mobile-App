@@ -1,29 +1,23 @@
-import '../../domain/entities/comment.dart';
+import 'package:aidmanager_mobile/features/posts/domain/entities/comment.dart';
 
 class CommentMapper {
   static Comment fromJson(Map<String, dynamic> json) {
     return Comment(
       id: json['id'],
-      postId: json['postId'], // Ensure this is an int
-      userId: json['userId'],
       comment: json['comment'],
+      userId: json['userId'],
       userName: json['userName'],
       userEmail: json['userEmail'],
       userImage: json['userImage'],
-      commentTime: json['commentTime'],
+      postId: json['postId'],
+      commentTime: json['commentTime'] != null ? DateTime.parse(json['commentTime']) : null,
     );
   }
 
   static Map<String, dynamic> toJson(Comment comment) {
     return {
-      'id': comment.id,
-      'postId': comment.postId, // Ensure this is an int
       'userId': comment.userId,
       'comment': comment.comment,
-      'userName': comment.userName,
-      'userEmail': comment.userEmail,
-      'userImage': comment.userImage,
-      'commentTime': comment.commentTime,
     };
   }
 }

@@ -15,7 +15,7 @@ class NoTasksInCompanyDialog extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               Icon(
-                Icons.task,
+                Icons.assignment,
                 color: Color.fromARGB(255, 44, 44, 44),
                 size: 72,
               ),
@@ -38,7 +38,7 @@ class NoTasksInCompanyDialog extends StatelessWidget {
         ],
       ),
       content: const Text(
-        'There are no tasks in the current company.',
+        'There are no tasks\nin the current company.',
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 18, height: 1.65),
       ),

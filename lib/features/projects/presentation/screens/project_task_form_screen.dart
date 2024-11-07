@@ -15,7 +15,8 @@ class ProjectTaskFormScreen extends StatefulWidget {
   final String projectName;
   static const String name = "project_task_form_screen";
 
-  const ProjectTaskFormScreen({super.key, required this.projectId, required this.projectName});
+  const ProjectTaskFormScreen(
+      {super.key, required this.projectId, required this.projectName});
 
   @override
   State<ProjectTaskFormScreen> createState() => _ProjectTaskFormScreenState();
@@ -70,11 +71,16 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
         int.parse(widget.projectId),
       );
 
-      if(!mounted) return;
-      
-      showCustomizeDialog(context, SuccessfullyCreateTaskDialog(projectId: widget.projectId, projectName: widget.projectName,));
+      if (!mounted) return;
+
+      showCustomizeDialog(
+          context,
+          SuccessfullyCreateTaskDialog(
+            projectId: widget.projectId,
+            projectName: widget.projectName,
+          ));
     } catch (e) {
-      if(!mounted) return;
+      if (!mounted) return;
       showCustomizeDialog(context, ErrorTaskCreationDialog());
       return;
     }
@@ -110,7 +116,8 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: () {
-              context.go('/projects/${widget.projectId}/tasks?name=${Uri.encodeComponent(widget.projectName)}');
+              context.go(
+                  '/projects/${widget.projectId}/tasks?name=${Uri.encodeComponent(widget.projectName)}');
             },
           ),
           toolbarHeight: 70.0,
@@ -143,12 +150,11 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
                     decoration: BoxDecoration(
                       color: Colors.green, // Fondo verde
                       shape: BoxShape
-                          .circle, // Forma circular para que se vea como un botón redondo
+                          .circle,
                     ),
                     child: IconButton(
                       icon: Icon(Icons.replay, color: Colors.white, size: 30.0),
-                      onPressed: () {
-                      },
+                      onPressed: () {},
                     ),
                   ),
                 ],
@@ -169,7 +175,7 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 8.0), // Espacio entre el texto y el input
+                  SizedBox(height: 8.0),
                   TextFormField(
                     controller: _subjectController,
                     decoration: InputDecoration(
@@ -185,11 +191,10 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
                       ),
                       filled: true,
                       fillColor: Colors.white,
-                      suffixIcon: Icon(Icons
-                          .text_fields), // Ícono a la derecha del campo de texto
+                      suffixIcon: Icon(Icons.text_fields),
                     ),
                   ),
-                  SizedBox(height: 20.0), // Espacio entre inputs
+                  SizedBox(height: 20.0),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -365,16 +370,22 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
                                   lastDate: DateTime(2101),
                                 );
                                 // Formatea la fecha y actualiza el campo de texto
-                                String formattedDate =
-                                    DateFormat('yyyy-MM-dd')
-                                        .format(pickedDate!);
-                                setState(() {
-                                  // Actualiza el controlador del campo de texto con la fecha seleccionada
-                                  _dueDateController.text = formattedDate;
-                                });
-                                                            },
-                              controller:
-                                  _dueDateController, // Controlador para el campo de fecha
+                                if (pickedDate != null) {
+                                  String formattedDate =
+                                      DateFormat('yyyy-MM-dd')
+                                          .format(pickedDate);
+                                  setState(() {
+                                    // actualiza el controlador del campo de texto con la fecha seleccionada
+                                    _dueDateController.text = formattedDate;
+                                  });
+                                } else {
+                                  // maneja el caso cuando pickedDate es nulo, si es necesario
+                                  setState(() {
+                                    _dueDateController.text = '';
+                                  });
+                                }
+                              },
+                              controller: _dueDateController,
                             ),
                           ],
                         ),
@@ -473,22 +484,22 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
                           onSubmitNewTask();
                         },
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.white, // Color del texto
+                          foregroundColor: Colors.white,
                           textStyle: TextStyle(
-                            fontSize: 20.0, // Aumenta el tamaño de la letra
+                            fontSize: 20.0,
                           ),
                         ),
                         child: Text('Create new task'),
                       ),
                     ),
                   ),
-                  SizedBox(height: 15.0), // Espacio entre los botones
+                  SizedBox(height: 15.0),
                   SizedBox(
                     height: 60,
-                    width: double.infinity, // Ocupa todo el ancho disponible
+                    width: double.infinity,
                     child: Container(
                       decoration: BoxDecoration(
-                          color: Colors.red, // Color de fondo
+                          color: Colors.red,
                           borderRadius:
                               BorderRadius.all(Radius.circular(15.0))),
                       child: TextButton(
@@ -498,7 +509,7 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white, // Color del texto
                           textStyle: TextStyle(
-                            fontSize: 20.0, // Aumenta el tamaño de la letra
+                            fontSize: 20.0,
                           ),
                         ),
                         child: Text('Cancel'),

@@ -8,28 +8,28 @@ class PostRepositoryImpl implements PostsRepository {
     PostRepositoryImpl({required this.datasource});
 
     @override
-    Future<void> createPost(Post post) {
+    Future<Post> createPost(Post post) {
         return datasource.createPost(post);
     }
 
     @override
-    Future<void> deletePostById(int id) {
-        return datasource.deletePostById(id);
+    Future<void> deletePostById(int postId) {
+        return datasource.deletePostById(postId);
     }
 
     @override
-    Future<Post> getPostById(int id) {
-        return datasource.getPostById(id);
+    Future<Post> getPostById(int postId) {
+        return datasource.getPostById(postId);
     }
 
     @override
-    Future<List<Post>> getPosts(int companyId) {
-        return datasource.getPosts(companyId);
+    Future<List<Post>> getPostsByCompanyId(int companyId) {
+        return datasource.getPostsByCompanyId(companyId);
     }
 
     @override
-    Future<void> updatePostById(int id) {
-        return datasource.updatePostById(id);
+    Future<void> updateRatingForPost(int postId) {
+        return datasource.updateRatingForPost(postId);
     }
     
 

@@ -62,8 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Scaffold(
             resizeToAvoidBottomInset: false,
-            backgroundColor:
-                CustomColors.lightGrey, // Usando el color lightGreen
+            backgroundColor: CustomColors.lightGrey,
             body: Column(
               children: [
                 LoginBanner(
@@ -88,21 +87,23 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 30),
                         EmailField(
                           emailController: _emailController,
-                        ), // widget for email field
+                        ),
                         const SizedBox(height: 25),
                         PasswordField(
                             passwordController:
-                                _passwordController), // widget for password field
+                                _passwordController),
                         const SizedBox(height: 10),
                         const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             RememberCheckbox(),
-                            Text("Forgot password?",
-                                style: TextStyle(
-                                    fontSize: 17,
-                                    fontStyle: FontStyle.normal,
-                                    color: CustomColors.darkGreen))
+                            Text(
+                              "Forgot password?",
+                              style: TextStyle(
+                                  fontSize: 17,
+                                  fontStyle: FontStyle.normal,
+                                  color: CustomColors.darkGreen),
+                            )
                           ],
                         ),
                         const SizedBox(height: 30),
@@ -158,9 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             const SizedBox(width: 16.0),
                             Expanded(
                               child: OutlinedButton.icon(
-                                onPressed: () {
-                                  // Acción a realizar cuando se presiona el botón de Google
-                                },
+                                onPressed: () {},
                                 icon: Image.asset(
                                   'assets/images/google-icon.webp', // Ruta de la imagen del logo de Google
                                   height: 24.0,

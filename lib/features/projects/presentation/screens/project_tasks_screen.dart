@@ -93,7 +93,7 @@ class _ProjectTasksScreenState extends State<ProjectTasksScreen> {
               border: Border(
                 bottom: BorderSide(
                   color: const Color.fromARGB(255, 134, 134, 134),
-                  width: 1.0, // Ancho del borde
+                  width: 1.0,
                 ),
               ),
             ),
@@ -128,7 +128,7 @@ class _ProjectTasksScreenState extends State<ProjectTasksScreen> {
                           handleButtonPress(1, 'Progress');
                         },
                       ),
-                      SizedBox(width: 20), // Espacio entre botones
+                      SizedBox(width: 20),
                       CustomButton(
                         text: 'Complete',
                         number: taskProvider.tasks
@@ -191,7 +191,8 @@ class _ProjectTasksScreenState extends State<ProjectTasksScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.go('/projects/${widget.projectId}/tasks/new?name=${Uri.encodeComponent(widget.projectName)}');
+          context.go(
+              '/projects/${widget.projectId}/tasks/new?name=${Uri.encodeComponent(widget.projectName)}');
         },
         backgroundColor: CustomColors.darkGreen,
         child: Icon(

@@ -1,4 +1,4 @@
-
+import 'dart:convert';
 import 'package:aidmanager_mobile/features/posts/infraestructure/mappers/post_mapper.dart';
 import 'package:aidmanager_mobile/shared/service/http_service.dart';
 import 'package:aidmanager_mobile/features/posts/domain/entities/post.dart';
@@ -8,77 +8,75 @@ import 'dart:io';
 
 class PostDatasourceImpl extends HttpService implements PostsDatasource{
   @override
-  Future<void> createPost(Post post) async {
+  Future<Post> createPost(Post post) async {
     final requestBody = PostMapper.toJson(post);
-    try
-    {
+    try {
       final response = await dio.post(
         '/posts',
-        data: requestBody,
+        data: jsonEncode(requestBody),
       );
 
-      if(response.statusCode != HttpStatus.ok)
-      {
+      if (response.statusCode != HttpStatus.ok) {
         throw Exception('Failed to create a new Post: ${response.statusCode}');
       }
 
-      if(response.data == null || response.data.isEmpty)
-      {
+      if (response.data == null || response.data.isEmpty) {
         throw Exception('Failed to create a new Post: Response body is empty');
       }
-    }
-    catch(e)
-    {
+
+      final createdPost = PostMapper.fromJson(response.data);
+
+      return createdPost;
+    } catch (e) {
       throw Exception('Failed to create a new Post: $e');
     }
-
   }
 
   @override
-  Future<void> deletePostById(int id) async{
+  Future<void> deletePostById(int postId) async{
      try {
-      final postFounded = await dio.get('/posts/$id');
+      final postFounded = await dio.get('/posts/$postId');
 
       if(postFounded.statusCode != HttpStatus.ok || postFounded.data == null || postFounded.data.isEmpty) {
-        throw Exception('Post with id $id does not exist');
+        throw Exception('Post with id $postId does not exist');
       }
 
-      final deleteResponse = await dio.delete('/posts/$id');
+      final deleteResponse = await dio.delete('/posts/$postId');
 
       if(deleteResponse.statusCode != HttpStatus.ok) {
-        throw Exception('Failed to delete post with id: $id ${deleteResponse.statusCode}');
+        throw Exception('Failed to delete post with id: $postId ${deleteResponse.statusCode}');
       }
 
     } catch (e) {
-      throw Exception('Failed to delete post with id: $id, $e');
+      throw Exception('Failed to delete post with id: $postId, $e');
     }
   }
 
   @override
-  Future<Post> getPostById(int id) async{
+  Future<Post> getPostById(int postId) async{
     try{
-        final response = await dio.get('/posts/$id');
+        final response = await dio.get('/posts/$postId');
 
         if(response.statusCode != HttpStatus.ok || response.data == null || response.data.isEmpty)
         {
-          throw Exception('Failed to get post with id: $id');
+          throw Exception('Failed to get post with id: $postId');
         }
 
         return PostMapper.fromJson(response.data);
     }
     catch(e)
     {
-      throw Exception('Failed to get post with id: $id, $e');
+      throw Exception('Failed to get post with id: $postId, $e');
     }
 
   }
 
   @override
-  Future<List<Post>> getPosts(int companyId) async{
+  Future<List<Post>> getPostsByCompanyId(int companyId) async{
     try{
-      final response = await dio.get('/posts/$companyId');
+      final response = await dio.get('/posts/company/$companyId');
 
-      if(response.statusCode != HttpStatus.ok || response.data == null || response.data.isEmpty)
+      if(response.statusCode != HttpStatus.ok)
       {
         throw Exception('Failed to get posts');
       }
@@ -93,10 +91,10 @@ class PostDatasourceImpl extends HttpService implements PostsDatasource{
   }
 
   @override //This updates the rating of a post
-  Future<void> updatePostById(int id) async{
+  Future<void> updateRatingForPost(int postId) async{
     try
     {
-      final response = await dio.patch('/posts/$id/rating');
+      final response = await dio.patch('/posts/$postId/rating');
       if(response.statusCode != HttpStatus.ok)
       {
         throw Exception('Failed to update posts');

@@ -3,8 +3,9 @@ import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/auth/domain/repositories/auth_repository.dart';
 import 'package:aidmanager_mobile/features/calendar/presentation/providers/calendar_provider.dart';
 import 'package:aidmanager_mobile/features/home/presentation/providers/home_provider.dart';
-import 'package:aidmanager_mobile/features/posts/domain/repositories/post_repositories.dart';
+import 'package:aidmanager_mobile/features/posts/infraestructure/datasources/comment_datasource_impl.dart';
 import 'package:aidmanager_mobile/features/posts/infraestructure/datasources/post_datasource_impl.dart';
+import 'package:aidmanager_mobile/features/posts/infraestructure/repositories/comment_repository_impl.dart';
 import 'package:aidmanager_mobile/features/posts/infraestructure/repositories/post_repository_impl.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/providers/post_provider.dart';
 import 'package:aidmanager_mobile/features/profile/domain/repositories/user_repository.dart';
@@ -26,6 +27,7 @@ import 'package:aidmanager_mobile/features/projects/infrastructure/repositories/
 import 'package:aidmanager_mobile/features/projects/presentation/providers/dashboard_provider.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/providers/project_provider.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/providers/task_provider.dart';
+import 'package:aidmanager_mobile/features/social/presentation/providers/social_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -33,13 +35,11 @@ void main() {
   // creamos las instancias de los repositorios con sus datasources
   final userRepository = UserRepositoryImpl(datasource: UserDatasourceImpl());
   final authRepository = AuthRepositoryImpl(datasource: AuthDatasourceImpl());
-  final projectRepository =
-      ProjectsRepositoryImpl(datasource: ProjectsDatasourceImpl());
-  final tasksRepository =
-      TasksRepositoryImpl(datasource: TasksDatasourceImpl());
+  final projectRepository = ProjectsRepositoryImpl(datasource: ProjectsDatasourceImpl());
+  final tasksRepository = TasksRepositoryImpl(datasource: TasksDatasourceImpl());
   final postsRepository = PostRepositoryImpl(datasource: PostDatasourceImpl());
-  final dashboardRepository =
-      DasboardsRepositoryImpl(datasource: DashboardsDatasourceImpl());
+  final dashboardRepository = DasboardsRepositoryImpl(datasource: DashboardsDatasourceImpl());
+  final commentsRepository = CommentRepositoryImpl(datasource: CommentDatasourceImpl());
 
   runApp(
     MultiProvider(
@@ -50,7 +50,7 @@ void main() {
         Provider<AuthRepository>.value(value: authRepository),
         Provider<ProjectsRepository>.value(value: projectRepository),
         Provider<TasksRepository>.value(value: tasksRepository),
-        Provider<PostsRepository>.value(value: postsRepository),
+        //Provider<PostsRepository>.value(value: postsRepository),
         Provider<DashboardsRepository>.value(value: dashboardRepository),
 
         // hay que proveer una instancia de AuthProvider
@@ -118,10 +118,19 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, PostProvider>(
           create: (context) => PostProvider(
             postsRepository: postsRepository,
+            commentRepository: commentsRepository,
             authProvider: Provider.of<AuthProvider>(context, listen: false),
           ),
           update: (context, authProvider, postProvider) =>
               postProvider!..authProvider = authProvider,
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, SocialProvider>(
+          create: (context) => SocialProvider(
+            userRepository: userRepository,
+            authProvider: Provider.of<AuthProvider>(context, listen: false),
+          ),
+          update: (context, authProvider, socialProvider) =>
+              socialProvider!..authProvider = authProvider,
         ),
       ],
       child: const MyApp(),

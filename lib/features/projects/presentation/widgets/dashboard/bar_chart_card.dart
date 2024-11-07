@@ -149,15 +149,16 @@ class BarChartCard extends StatelessWidget {
                   barGroups: myBarData.barData
                       .map((data) => BarChartGroupData(x: data.x, barRods: [
                             BarChartRodData(
-                                toY: data.y,
-                                color: Colors.green,
-                                width: 15,
-                                backDrawRodData: BackgroundBarChartRodData(
-                                    show: true,
-                                    toY: 100,
-                                    color: const Color.fromARGB(
-                                        255, 221, 220, 220)),
-                                borderRadius: BorderRadius.circular(5.0)),
+                              toY: data.y,
+                              color: Colors.green,
+                              width: 15,
+                              backDrawRodData: BackgroundBarChartRodData(
+                                show: true,
+                                toY: 100,
+                                color: const Color.fromARGB(255, 221, 220, 220),
+                              ),
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
                           ]))
                       .toList(),
                 ),

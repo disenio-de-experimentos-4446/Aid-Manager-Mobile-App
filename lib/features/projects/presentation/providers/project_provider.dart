@@ -22,8 +22,7 @@ class ProjectProvider extends ChangeNotifier {
     final companyId = authProvider.user!.companyId!;
 
     try {
-      final projectsList =
-          await projectsRepository.getProjectsByCompanyId(companyId);
+      final projectsList = await projectsRepository.getProjectsByCompanyId(companyId);
 
       projects = projectsList;
     } catch (e) {

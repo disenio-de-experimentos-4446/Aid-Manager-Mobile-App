@@ -3,12 +3,13 @@ import 'package:aidmanager_mobile/features/posts/domain/entities/comment.dart';
 import 'package:aidmanager_mobile/features/posts/domain/repositories/commen_repository.dart';
 
 class CommentRepositoryImpl implements CommentRepository {
+
   final CommentDatasource datasource;
 
   CommentRepositoryImpl({required this.datasource});
 
   @override
-  Future<void> createCommentByPostId(int postId, Comment comment) {
+  Future<Comment> createCommentByPostId(int postId, Comment comment) {
     return datasource.createCommentByPostId(postId, comment);
   }
 
@@ -21,4 +22,5 @@ class CommentRepositoryImpl implements CommentRepository {
   Future<List<Comment>> getAllCommentsFromPost(int postId) {
     return datasource.getAllCommentsFromPost(postId);
   }
+  
 }

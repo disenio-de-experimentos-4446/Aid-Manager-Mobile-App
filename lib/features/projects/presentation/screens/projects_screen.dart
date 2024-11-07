@@ -39,7 +39,8 @@ class _ProjectsContentState extends State<ProjectsContent> {
   }
 
   Future<void> _loadProjects() async {
-    final projectProvider = Provider.of<ProjectProvider>(context, listen: false);
+    final projectProvider =
+        Provider.of<ProjectProvider>(context, listen: false);
 
     await projectProvider.loadInitialProjects();
   }
@@ -129,7 +130,7 @@ class _ProjectsContentState extends State<ProjectsContent> {
                     height: 80,
                     child: CircularProgressIndicator(
                       strokeWidth: 8,
-                      color: CustomColors.darkGreen, // Puedes cambiar el color aquí
+                      color: CustomColors.darkGreen,
                     ),
                   ),
                 ),

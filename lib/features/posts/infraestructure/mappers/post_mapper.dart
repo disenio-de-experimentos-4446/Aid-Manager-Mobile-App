@@ -1,5 +1,3 @@
-import 'package:aidmanager_mobile/features/posts/domain/entities/comment.dart';
-import 'package:intl/intl.dart';
 import 'package:aidmanager_mobile/features/posts/domain/entities/post.dart';
 
 class PostMapper {
@@ -9,7 +7,8 @@ class PostMapper {
       title: json['title'],
       subject: json['subject'],
       description: json['description'],
-      postTime: DateFormat('yyyy-MM-ddTHH:mm:ss.SSSZ').parse(json['postTime']),
+      postTime:
+          json['postTime'] != null ? DateTime.parse(json['postTime']) : null,
       companyId: json['companyId'],
       userId: json['userId'],
       userName: json['userName'],
@@ -17,13 +16,17 @@ class PostMapper {
       userImage: json['userImage'],
       rating: json['rating'],
       images: List<String>.from(json['images']),
-      commentsList: List<dynamic>.from(json['userList'])
+      commentsList: json['commentsList'] != null
+          ? List<CommentPost>.from(
+              json['commentsList']
+                  .map((comment) => CommentPostMapper.fromJson(comment)),
+            )
+          : null,
     );
   }
 
-  static Map<String,dynamic> toJson(Post post){
-    final DateFormat dateFormat = DateFormat('yyyy-MM-ddTHH:mm:ss.SSSZ');
-    return{
+  static Map<String, dynamic> toJson(Post post) {
+    return {
       'title': post.title,
       'subject': post.subject,
       'description': post.description,
@@ -32,5 +35,32 @@ class PostMapper {
       'images': post.images,
     };
   }
+}
 
+class CommentPostMapper {
+  static CommentPost fromJson(Map<String, dynamic> json) {
+    return CommentPost(
+      id: json['id'],
+      userId: json['userId'],
+      authorImage: json['authorImage'],
+      authorEmail: json['authorEmail'],
+      authorName: json['authorName'],
+      comment: json['comment'],
+      postId: json['postId'],
+      timeOfComment: DateTime.parse(json['timeOfComment']),
+    );
+  }
+
+  static Map<String, dynamic> toJson(CommentPost commentPost) {
+    return {
+      'id': commentPost.id,
+      'userId': commentPost.userId,
+      'authorImage': commentPost.authorImage,
+      'authorEmail': commentPost.authorEmail,
+      'authorName': commentPost.authorName,
+      'comment': commentPost.comment,
+      'postId': commentPost.postId,
+      'timeOfComment': commentPost.timeOfComment.toIso8601String(),
+    };
+  }
 }
