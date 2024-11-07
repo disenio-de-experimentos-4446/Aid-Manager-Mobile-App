@@ -10,7 +10,6 @@ import 'package:aidmanager_mobile/features/projects/infrastructure/mappers/dashb
 import 'package:aidmanager_mobile/features/projects/infrastructure/mappers/goals_chart_mapper.dart';
 import 'package:aidmanager_mobile/shared/service/http_service.dart';
 
-// TODO: "implementar";
 class DashboardsDatasourceImpl extends HttpService implements DashboardsDatasource {
 
   @override
