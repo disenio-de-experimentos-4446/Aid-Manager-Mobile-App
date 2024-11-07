@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+
 class LoginScreen extends StatefulWidget {
   static const String name = "login_screen";
 
@@ -39,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       context.go('/home');
+
     } catch (e) {
       if (!mounted) return;
       // mostrar un dialog perzonalizado para cada exception

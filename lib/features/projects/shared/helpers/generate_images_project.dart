@@ -2,8 +2,6 @@ import 'dart:math';
 
 List<String> generateRandomImages(int numberOfImages) {
   final List<String> urls = [
-    'https://png.pngtree.com/thumb_back/fh260/background/20240715/pngtree-a-group-of-people-are-walking-through-forest-with-one-person-image_15883813.jpg',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIndW8pTv0tmztySN6W0hOnrvZ3IjYBhUjVQ&s',
     'https://images.deccanherald.com/deccanherald%2F2024-10-02%2F4wcxs0z1%2F2024newsmlRC2F2AA3DGLK1301831661.jpeg?auto=format%2Ccompress&fmt=webp&fit=max&format=webp&q=70&w=400&dpr=2',
     'https://westernfinancialgroup.ca/get/files/image/galleries/Organ_donation_Blog_Image_1200x630.jpg',
     'https://www.themarkethink.com/wp-content/uploads/2021/04/ayudar-al-projimo.jpg',
