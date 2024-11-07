@@ -3,7 +3,6 @@ import 'package:aidmanager_mobile/features/auth/domain/entities/login_response.d
 import 'package:aidmanager_mobile/features/profile/domain/entities/user.dart';
 import 'package:aidmanager_mobile/features/auth/domain/repositories/auth_repository.dart';
 
-// TODO: "borrar";
 class AuthRepositoryImpl implements AuthRepository {
   final AuthDatasource datasource;
 
