@@ -2,7 +2,6 @@ import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class EmailField extends StatelessWidget {
-
   final TextEditingController emailController;
 
   const EmailField({super.key, required this.emailController});
@@ -29,8 +28,7 @@ class EmailField extends StatelessWidget {
         hintText: 'Email Address',
         hintStyle: const TextStyle(fontSize: 18.0),
         suffixIcon: const Padding(
-          padding: EdgeInsets.only(
-              right: 18.0), // Ajusta el padding según sea necesario
+          padding: EdgeInsets.only(right: 18.0),
           child: Icon(Icons.email_rounded, size: 28),
         ),
         contentPadding:

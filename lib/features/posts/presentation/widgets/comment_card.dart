@@ -25,7 +25,7 @@ class CommentCard extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: Colors.grey, // Color del borde inferior
+            color: Colors.grey,
             width: 1.0,
           ),
         ),
@@ -76,7 +76,7 @@ class CommentCard extends StatelessWidget {
                           width: 6.0,
                           height: 6.0,
                           decoration: BoxDecoration(
-                            color: Colors.grey, // Color del punto
+                            color: Colors.grey,
                             shape: BoxShape.circle,
                           ),
                         ),

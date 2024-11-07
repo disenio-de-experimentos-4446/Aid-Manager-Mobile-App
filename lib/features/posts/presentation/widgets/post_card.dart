@@ -150,8 +150,7 @@ class PostCard extends StatelessWidget {
               height: 225,
               child: CarouselView(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                      20.0), // Ajusta el radio del borde según sea necesario
+                  borderRadius: BorderRadius.circular(20.0),
                 ),
                 itemExtent: MediaQuery.sizeOf(context).width - 96,
                 padding: const EdgeInsets.only(right: 10),

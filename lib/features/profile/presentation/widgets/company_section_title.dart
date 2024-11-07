@@ -66,7 +66,8 @@ class _CompanySectionTitleState extends State<CompanySectionTitle> {
     final profileProvider = context.read<ProfileProvider>();
 
     try {
-      await profileProvider.updateCompanyInformation(companyName, companyEmail, companyUbication);
+      await profileProvider.updateCompanyInformation(
+          companyName, companyEmail, companyUbication);
 
       if (!mounted) return;
 
@@ -111,8 +112,7 @@ class _CompanySectionTitleState extends State<CompanySectionTitle> {
                         onSubmitUpdateCompanyInformation();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Colors.red[700], // Color de fondo rojizo
+                        backgroundColor: Colors.red[700],
                       ),
                       child: Text(
                         'Update',

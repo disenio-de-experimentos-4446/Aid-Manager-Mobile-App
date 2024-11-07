@@ -170,9 +170,8 @@ class _ProfileContentState extends State<ProfileContent> {
 
     if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
       await launchUrl(Uri.parse(whatsappUrl));
-    } 
-    else {
-      if(!mounted) return;
+    } else {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Could not launch WhatsApp')),
       );
@@ -248,7 +247,7 @@ class _ProfileContentState extends State<ProfileContent> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: Colors.grey.shade300, // Borde gris suave
+                        color: Colors.grey.shade300,
                         width: 2.0,
                       ),
                     ),
@@ -541,8 +540,7 @@ class _ProfileContentState extends State<ProfileContent> {
                   height: 80,
                   child: CircularProgressIndicator(
                     strokeWidth: 8,
-                    color:
-                        CustomColors.darkGreen, // Puedes cambiar el color aquí
+                    color: CustomColors.darkGreen,
                   ),
                 ),
               ),

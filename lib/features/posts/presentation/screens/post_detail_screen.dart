@@ -76,8 +76,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   height: 80,
                   child: CircularProgressIndicator(
                     strokeWidth: 8,
-                    color:
-                        CustomColors.darkGreen, // Puedes cambiar el color aquí
+                    color: CustomColors.darkGreen,
                   ),
                 ),
               ),
@@ -122,7 +121,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                             color: Colors.black,
                           ),
                           onPressed: () {
-                            // Lógica para agregar a favoritos
+                            // lógica para agregar a favoritos
                           },
                         ),
                       ],
@@ -138,8 +137,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       decoration: BoxDecoration(
                         border: Border(
                           bottom: BorderSide(
-                            color: CustomColors.grey, // Color del borde
-                            width: 1.5, // Ancho del borde
+                            color: CustomColors.grey,
+                            width: 1.5,
                           ),
                         ),
                       ),
@@ -178,14 +177,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize
-                                          .min, // Reduce el tamaño del eje principal
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Row(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
-                                          mainAxisSize: MainAxisSize
-                                              .min, // Reduce el tamaño del eje principal del Row
+                                          mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
                                               post?.userName ?? 'No name',
@@ -195,8 +192,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                               ),
                                             ),
                                             const SizedBox(
-                                              width:
-                                                  14, // Ajusta el espacio entre el texto y el icono
+                                              width: 14,
                                             ),
                                             Row(
                                               children: [
@@ -383,7 +379,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                         ),
                                         child: Row(
                                           children: [
-                                            Icon(Icons.add_rounded, color: CustomColors.darkGreen),
+                                            Icon(Icons.add_rounded,
+                                                color: CustomColors.darkGreen),
                                             SizedBox(width: 5),
                                             Text(
                                               'Add new comment',

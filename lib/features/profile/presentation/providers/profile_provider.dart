@@ -50,7 +50,6 @@ class ProfileProvider extends ChangeNotifier {
     final loggedUserId = authProvider.user!.id;
     final loggedRole = authProvider.user!.role;
     final currentTeamCode = authProvider.user!.teamRegisterCode;
-    //print(loggedUserId);
 
     // map to requestBody for update user
     final Map<String, dynamic> updatedUser = {
