@@ -15,8 +15,8 @@ class TasksRepositoryImpl implements TasksRepository {
   }
 
   @override
-  Future<void> deleteTaskById(int id) {
-    return datasource.deleteTaskById(id);
+  Future<void> deleteTaskById(int projectId, int taskId) {
+    return datasource.deleteTaskById(projectId, taskId);
   }
 
   @override
