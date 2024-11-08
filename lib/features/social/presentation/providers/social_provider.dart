@@ -41,9 +41,8 @@ class SocialProvider extends ChangeNotifier {
         await userRepository.deleteUserById(userId);
         // Eliminar el usuario del arreglo users
         users = users.where((user) => user.id != userId).toList();
-        print(users);
     } catch (e) {
-        print('Error kicking member: $e');
+        throw Exception('Error to delete user with id: $userId');
     } finally {
         isLoading = false;
         notifyListeners();
