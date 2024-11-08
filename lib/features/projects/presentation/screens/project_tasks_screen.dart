@@ -50,6 +50,13 @@ class _ProjectTasksScreenState extends State<ProjectTasksScreen> {
     await tasksProvider.updateStatusFieldByTask(projectId, taskId, newStatus);
   }
 
+  Future<void> deleteTaskFromProject(int projectId, int taskId) async {
+    final projectId = int.parse(widget.projectId);
+    final tasksProvider = Provider.of<TaskProvider>(context, listen: false);
+
+    await tasksProvider.deleteTaskFromCurrentProject(projectId, taskId);
+  }
+
   @override
   Widget build(BuildContext context) {
     final taskProvider = context.watch<TaskProvider>();
@@ -171,18 +178,21 @@ class _ProjectTasksScreenState extends State<ProjectTasksScreen> {
                       .where((task) => task.state == 'ToDo')
                       .toList(),
                   onUpdateStatus: updateTaskStatus,
+                  onDeleteTask: deleteTaskFromProject,
                 ),
                 TaskPageView(
                   tasks: taskProvider.tasks
                       .where((task) => task.state == 'Progress')
                       .toList(),
                   onUpdateStatus: updateTaskStatus,
+                  onDeleteTask: deleteTaskFromProject,
                 ),
                 TaskPageView(
                   tasks: taskProvider.tasks
                       .where((task) => task.state == 'Done')
                       .toList(),
                   onUpdateStatus: updateTaskStatus,
+                  onDeleteTask: deleteTaskFromProject,
                 ),
               ],
             ),
