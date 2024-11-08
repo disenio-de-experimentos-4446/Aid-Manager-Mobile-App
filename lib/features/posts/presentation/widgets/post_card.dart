@@ -157,10 +157,16 @@ class PostCard extends StatelessWidget {
                 itemSnapping: true,
                 elevation: 4.0,
                 children: List.generate(
-                  10,
+                  images.length,
                   (int index) => Image.network(
-                    'https://img.freepik.com/premium-photo/woman-with-backpack-stands-mountain-top-looking-beautiful-sunset_188544-54443.jpg',
+                    images[index],
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/images/placeholder-image.webp',
+                        fit: BoxFit.cover,
+                      );
+                    },
                   ),
                 ),
               ),
