@@ -177,7 +177,6 @@ class _ProjectPaymentFormScreenState extends State<ProjectPaymentFormScreen> {
                 size: 32.0,
               ),
               onPressed: () {
-                // Acción al presionar el ícono de tres puntos
               },
             ),
           ],

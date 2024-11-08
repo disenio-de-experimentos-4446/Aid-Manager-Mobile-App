@@ -27,7 +27,7 @@ class _ProjectTaskFormScreenState extends State<ProjectTaskFormScreen> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _dueDateController = TextEditingController();
 
-  String _status = 'ToDo'; // status inicial del dropdown
+  String _status = 'ToDo';
   String? _selectedPerson;
 
   @override

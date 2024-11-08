@@ -71,7 +71,6 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      // mostrar un dialog perzonalizado para cada exception
       final dialog = getDashboardErrorDialog(context, e as Exception);
       showErrorDialog(context, dialog);
     }

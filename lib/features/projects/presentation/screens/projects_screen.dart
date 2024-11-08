@@ -51,6 +51,7 @@ class _ProjectsContentState extends State<ProjectsContent> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     final projectProvider = context.watch<ProjectProvider>();
