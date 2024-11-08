@@ -255,10 +255,18 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(10.0),
                                   child: Image.network(
-                                    'https://img.europapress.es/fotoweb/fotonoticia_20191014112917_1200.jpg',
+                                    post!.images[0],
                                     width: double.infinity,
                                     height: 200.0,
                                     fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Image.asset(
+                                        'assets/images/placeholder-image.webp',
+                                        width: double.infinity,
+                                        height: 200.0,
+                                        fit: BoxFit.cover,
+                                      );
+                                    },
                                   ),
                                 ),
                                 SizedBox(height: 18),

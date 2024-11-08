@@ -55,7 +55,6 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
         : TimeOfDay(hour: 0, minute: 0);
     final projectLocation = _projectLocation.text.trim();
 
-    // llamamos al provider para acceder almetodo submit
     final projectProvider = context.read<ProjectProvider>();
 
     try {
@@ -67,7 +66,6 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
       showCustomizeDialog(context, const SuccessfullyCreateProject());
     } catch (e) {
       if (!mounted) return;
-      // mostrar un dialog perzonalizado para cada exception
       final dialog = getProjectErrorDialog(context, e as Exception);
       showErrorDialog(context, dialog);
     }
@@ -105,7 +103,6 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
                 size: 32.0,
               ),
               onPressed: () {
-                // Acción al presionar el ícono de tres puntos
               },
             ),
           ],
@@ -303,7 +300,6 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
                                       DateFormat('yyyy-MM-dd')
                                           .format(pickedDate);
                                   setState(() {
-                                    // actualiza el controlador del campo de texto con la fecha seleccionada
                                     _projectDateController.text = formattedDate;
                                   });
                                 }

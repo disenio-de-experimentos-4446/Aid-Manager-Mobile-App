@@ -65,12 +65,13 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateStatusFieldByTask(int projectId, int taskId, String newStatus) async {
-
+  Future<void> updateStatusFieldByTask(
+      int projectId, int taskId, String newStatus) async {
     updateLoading = true;
 
     try {
-      await tasksRepository.updateStatusFieldByTask(projectId, taskId, newStatus);
+      await tasksRepository.updateStatusFieldByTask(
+          projectId, taskId, newStatus);
 
       final taskIndex = tasks.indexWhere((task) => task.id == taskId);
       if (taskIndex != -1) {
@@ -79,9 +80,29 @@ class TaskProvider extends ChangeNotifier {
       }
     } catch (e) {
       throw Exception('Failed to update task status');
-    }
-    finally {
+    } finally {
       updateLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteTaskFromCurrentProject(int projectId, int taskId) async {
+    isLoading = true;
+
+    try {
+      await tasksRepository.deleteTaskById(projectId, taskId);
+
+      // encuentra el índice de la tarea en la lista `tasks`
+      final taskIndex = tasks.indexWhere((task) => task.id == taskId);
+
+      // si la tarea existe en la lista se elimina
+      if (taskIndex != -1) {
+        tasks.removeAt(taskIndex);
+      }
+    } catch (e) {
+      throw Exception('Error to delete a task from project with id: $taskId');
+    } finally {
+      isLoading = false;
       notifyListeners();
     }
   }

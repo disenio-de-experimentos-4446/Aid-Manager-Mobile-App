@@ -2,14 +2,16 @@ import 'dart:math';
 
 List<String> generateRandomImages(int numberOfImages) {
   final List<String> urls = [
-    'https://images.deccanherald.com/deccanherald%2F2024-10-02%2F4wcxs0z1%2F2024newsmlRC2F2AA3DGLK1301831661.jpeg?auto=format%2Ccompress&fmt=webp&fit=max&format=webp&q=70&w=400&dpr=2',
+    'https://as1.ftcdn.net/v2/jpg/01/99/15/88/500_F_199158864_YOFv3JeMK7ey64xKmLZ9Ltazkaf2rZTG.jpg',
     'https://westernfinancialgroup.ca/get/files/image/galleries/Organ_donation_Blog_Image_1200x630.jpg',
     'https://www.themarkethink.com/wp-content/uploads/2021/04/ayudar-al-projimo.jpg',
     'https://www.mundounido.cl/wp-content/uploads/2018/05/AYUDA.jpg',
     'https://www.cinconoticias.com/wp-content/uploads/ayudar-a-los-dem%C3%A1s-1-1.jpg',
-    'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgpI21vKLN15Uf_VaWoXhsa4l5IA6oB8JoZAPYsmI-kzL0QQUPYb9afk6pI6VsS1g4CotRy8odXCFQtEJq2doLr6vU2hOJjXw0A4EmTiGA_IZddfsJhnFevcIYHfsTBDe_eeebZywBWS-xc/w1200-h630-p-k-no-nu/ayuda-help-fair-play-empatia-foul-solidaridad.jpg',
+    'https://st3.depositphotos.com/1017986/18755/i/450/depositphotos_187558964-stock-photo-volunteers-with-garbage-bags-cleaning.jpg',
     'https://www.cinconoticias.com/wp-content/uploads/ayudar-a-los-dem%C3%A1s-9.jpg',
-    'https://zonaj.net/imgupload/20-claves-para-caerle-bien-a-las-demas-personas_zSG4vO.jpg', // ojala salga este
+    'https://zonaj.net/imgupload/20-claves-para-caerle-bien-a-las-demas-personas_zSG4vO.jpg',
+    'https://img.freepik.com/premium-photo/volunteers-planting-trees-cleaning-up-park-highlighting-spirit-giving-back_837074-51334.jpg',
+    'https://img.freepik.com/fotos-premium/agricultor-cientifico-examinan-suelo-rico-plantas-jovenes-campo_837074-48066.jpg'
   ];
 
   final int count = min(numberOfImages, urls.length);

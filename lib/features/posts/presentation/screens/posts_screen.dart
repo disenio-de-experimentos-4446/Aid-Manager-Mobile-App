@@ -182,26 +182,33 @@ class _PostsContentState extends State<PostsContent> {
                 ),
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: postsProvider.posts.length,
-                itemBuilder: (context, index) {
-                  final post = postsProvider.posts[index];
-                  return PostCard(
-                    username: post.userName!,
-                    email: post.email!,
-                    profileImg: post.userImage!,
-                    images: post.images,
-                    rating: post.rating!,
-                    numComments: post.commentsList!.length,
-                    postTime: post.postTime!,
-                    postId: post.id!,
-                    title: post.title,
-                    description: post.description,
-                  );
-                },
-              ),
-            ),
+            postsProvider.initialLoading
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30.0),
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: postsProvider.posts.length,
+                      itemBuilder: (context, index) {
+                        final post = postsProvider.posts[index];
+                        return PostCard(
+                          username: post.userName!,
+                          email: post.email!,
+                          profileImg: post.userImage!,
+                          images: post.images,
+                          rating: post.rating!,
+                          numComments: post.commentsList!.length,
+                          postTime: post.postTime!,
+                          postId: post.id!,
+                          title: post.title,
+                          description: post.description,
+                        );
+                      },
+                    ),
+                  ),
           ],
         ),
       ),

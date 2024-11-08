@@ -28,7 +28,7 @@ class DeleteMemberDialog extends StatelessWidget {
         ],
       ),
       content: Text(
-        '¿Estás seguro de que deseas eliminar a este miembro? Esta acción es irreversible y se eliminará toda su información relevante dentro de la compañía.',
+        '¿Estás seguro de que deseas eliminar a este miembro?\n\nEsta acción es irreversible y se eliminará toda su información relevante dentro de la compañía.',
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 16.0),
       ),

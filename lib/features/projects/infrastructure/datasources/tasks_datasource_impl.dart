@@ -5,7 +5,6 @@ import 'package:aidmanager_mobile/features/projects/domain/entities/task.dart';
 import 'package:aidmanager_mobile/features/projects/infrastructure/mappers/task_mapper.dart';
 import 'package:aidmanager_mobile/shared/service/http_service.dart';
 
-// TODO: "implementar";
 class TasksDatasourceImpl extends HttpService implements TasksDatasource {
   @override
   Future<void> createTaskByProjectId(int projectId, Task task) async {
@@ -61,22 +60,16 @@ class TasksDatasourceImpl extends HttpService implements TasksDatasource {
   }
 
   @override
-  Future<void> deleteTaskById(int id) async {
+  Future<void> deleteTaskById(int projectId, int taskId) async {
     try {
-      final taskFounded = await dio.get('/task-items/$id');
+      final deleteResponse = await dio.delete('/projects/$projectId/task-items/$taskId');
 
-      if(taskFounded.statusCode != HttpStatus.ok || taskFounded.data == null || taskFounded.data.isEmpty) {
-        throw Exception('Task with id $id does not exist');
-      }
-
-      final deleteResponse = await dio.delete('/task-items/$id');
-
-      if(deleteResponse.statusCode != HttpStatus.ok) {
-        throw Exception('Failed to delete task with id: $id ${deleteResponse.statusCode}');
+      if(deleteResponse.statusCode != HttpStatus.ok || deleteResponse.data.isEmpty) {
+        throw Exception('Failed to delete task with id: $taskId ${deleteResponse.statusCode}');
       }
 
     } catch (e) {
-      throw Exception('Failed to delete task with id: $id, $e');
+      throw Exception('Failed to delete task with id: $taskId, $e');
     }
   }
 

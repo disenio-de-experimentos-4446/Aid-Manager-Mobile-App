@@ -137,6 +137,7 @@ class _SocialContentStateState extends State<SocialContentState> {
                           firstName: firstName,
                           lastName: lastName,
                           imageUrl: member.profileImg ?? '',
+                          age: member.age!,
                           email: member.email,
                           phone: member.phone ?? '',
                           isDirector: member.role == 'Manager',

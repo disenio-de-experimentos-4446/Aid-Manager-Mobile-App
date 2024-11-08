@@ -1,7 +1,6 @@
 import 'package:aidmanager_mobile/features/projects/domain/entities/task.dart';
 import 'package:intl/intl.dart';
 
-// TODO: "implementar";
 class TaskMapper {
   static Task fromJson(Map<String, dynamic> json) {
     return Task(

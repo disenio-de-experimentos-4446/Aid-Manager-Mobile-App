@@ -2,7 +2,6 @@ import 'package:aidmanager_mobile/features/projects/domain/datasources/tasks_dat
 import 'package:aidmanager_mobile/features/projects/domain/entities/task.dart';
 import 'package:aidmanager_mobile/features/projects/domain/repositories/tasks_repository.dart';
 
-// TODO: "implementar";
 class TasksRepositoryImpl implements TasksRepository {
 
   final TasksDatasource datasource;
@@ -15,8 +14,8 @@ class TasksRepositoryImpl implements TasksRepository {
   }
 
   @override
-  Future<void> deleteTaskById(int id) {
-    return datasource.deleteTaskById(id);
+  Future<void> deleteTaskById(int projectId, int taskId) {
+    return datasource.deleteTaskById(projectId, taskId);
   }
 
   @override
