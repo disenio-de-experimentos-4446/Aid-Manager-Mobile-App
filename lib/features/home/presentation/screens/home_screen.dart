@@ -14,6 +14,7 @@ class MetricItem {
 
   MetricItem({required this.icon, required this.caption, required this.title});
 }
+
 class HomeScreen extends StatelessWidget {
   static const String name = "home_screen";
 
@@ -55,9 +56,9 @@ class _HomeContentState extends State<HomeContent> {
     final homeProvider = context.watch<HomeProvider>();
     final teamMembers =
         homeProvider.users.where((user) => user.role == 'TeamMember').toList();
-        
-    final doneTasksCount = homeProvider.tasks.where((task) => task.state == 'Done').length;
 
+    final doneTasksCount =
+        homeProvider.tasks.where((task) => task.state == 'Done').length;
 
     return Scaffold(
       backgroundColor: CustomColors.lightGrey,
@@ -110,7 +111,25 @@ class _HomeContentState extends State<HomeContent> {
                         ],
                       ),
                       SizedBox(height: 20),
-                      MembersCarousel(members: teamMembers),
+                      teamMembers.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.group,
+                                      size: 40, color: Colors.grey),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'No collaborators',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : MembersCarousel(members: teamMembers),
                     ],
                   ),
                   const SizedBox(height: 30),
@@ -154,9 +173,25 @@ class _HomeContentState extends State<HomeContent> {
                         ],
                       ),
                       const SizedBox(height: 25),
-                      ProjectsCarousel(
-                        projects: homeProvider.projects,
-                      )
+                      homeProvider.projects.isEmpty
+                          ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.folder_open,
+                                    size: 40, color: Colors.grey),
+                                SizedBox(height: 8),
+                                Text(
+                                  'No projects available',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                          : ProjectsCarousel(projects: homeProvider.projects),
                     ],
                   ),
                   const SizedBox(height: 35),
@@ -216,7 +251,8 @@ class _HomeContentState extends State<HomeContent> {
                                 return MetricCard(
                                   icon: Icons.addchart_sharp,
                                   title: 'Total Projects',
-                                  caption: homeProvider.projects.length.toString(),
+                                  caption:
+                                      homeProvider.projects.length.toString(),
                                 );
                               case 2:
                                 return MetricCard(
