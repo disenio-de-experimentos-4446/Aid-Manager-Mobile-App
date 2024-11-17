@@ -37,3 +37,11 @@ class InvalidDescriptionLengthException implements Exception {
   @override
   String toString() => 'InvalidDescriptionLengthException: $message';
 }
+
+class ProjectUpdateException implements Exception {
+  final String message;
+  ProjectUpdateException(this.message);
+
+  @override
+  String toString() => 'ProjectsFetchException: $message';
+}
