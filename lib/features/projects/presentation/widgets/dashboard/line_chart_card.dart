@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 class LineChartCard extends StatelessWidget {
   final String projectId;
+  final bool isManager;
   final String projectName;
   final List<double> amountSummary;
 
@@ -15,6 +16,7 @@ class LineChartCard extends StatelessWidget {
     required this.projectId,
     required this.projectName,
     required this.amountSummary,
+    required this.isManager,
   });
 
   @override
@@ -34,7 +36,9 @@ class LineChartCard extends StatelessWidget {
     final double totalAmount = amountSummary.reduce((a, b) => a + b);
 
     // Formatea el total como una cadena con el formato de moneda
-    final String formatedAmount = NumberFormat.currency(symbol: '\$', decimalDigits: 0).format(totalAmount * 1000);
+    final String formatedAmount =
+        NumberFormat.currency(symbol: '\$', decimalDigits: 0)
+            .format(totalAmount * 1000);
 
     return Container(
       width: double.infinity,
@@ -88,39 +92,69 @@ class LineChartCard extends StatelessWidget {
                   ),
                 ],
               ),
-              TextButton(
-                onPressed: () {
-                  // le pasamos los datos del resumen de monto total en el param para recuperarlos en la otra vista de edit
-                  context.go(
-                    '/projects/$projectId/dashboard/edit-payments?name=${Uri.encodeComponent(projectName)}',
-                    extra: amountSummary,
-                  );
-                },
-                style: TextButton.styleFrom(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
-                  foregroundColor: Colors.green,
-                  backgroundColor: CustomColors.fieldGrey,
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.edit,
-                      color: Colors.green,
-                      size: 30.0,
-                    ),
-                    SizedBox(width: 5.0),
-                    Text(
-                      'Edit',
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
+              isManager
+                  ? TextButton(
+                      onPressed: () {
+                        // le pasamos los datos del resumen de monto total en el param para recuperarlos en la otra vista de edit
+                        context.go(
+                          '/projects/$projectId/dashboard/edit-payments?name=${Uri.encodeComponent(projectName)}',
+                          extra: amountSummary,
+                        );
+                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 15.0, vertical: 8.0),
+                        foregroundColor: Colors.green,
+                        backgroundColor: CustomColors.fieldGrey,
                       ),
-                    ),
-                  ],
-                ),
-              )
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.edit,
+                            color: Colors.green,
+                            size: 28.0,
+                          ),
+                          SizedBox(width: 6.0),
+                          Text(
+                            'Edit',
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : TextButton(
+                      onPressed: () {
+                        // no pasa nada xd
+                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 15.0, vertical: 8.0),
+                        foregroundColor: Colors.green,
+                        backgroundColor: CustomColors.fieldGrey,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.remove_red_eye,
+                            color: Colors.green,
+                            size: 28.0,
+                          ),
+                          SizedBox(width: 6.0),
+                          Text(
+                            'View',
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
             ],
           ),
           SizedBox(height: 30.0),
