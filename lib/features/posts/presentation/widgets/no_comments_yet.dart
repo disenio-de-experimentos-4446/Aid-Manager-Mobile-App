@@ -33,7 +33,7 @@ class NoCommentsYet extends StatelessWidget {
             onPressed: onAddComment,
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.green,
-              backgroundColor: CustomColors.lightGrey,
+              backgroundColor: CustomColors.lightGreen,
             ),
             child: Text(
               'Be the first to comment',
