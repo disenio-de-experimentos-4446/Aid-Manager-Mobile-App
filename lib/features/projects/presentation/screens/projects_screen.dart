@@ -1,6 +1,8 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
+import 'package:aidmanager_mobile/features/projects/domain/entities/project.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/providers/project_provider.dart';
-import 'package:aidmanager_mobile/features/projects/presentation/widgets/project/project_card_list.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/widgets/project/principal_project_card.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -31,18 +33,43 @@ class ProjectsContent extends StatefulWidget {
 
 class _ProjectsContentState extends State<ProjectsContent> {
   final TextEditingController searchController = TextEditingController();
+  List<Project> filteredProjects = [];
 
   @override
   void initState() {
     super.initState();
     _loadProjects();
+    searchController.addListener(_filterProjects);
   }
 
   Future<void> _loadProjects() async {
-    final projectProvider =
-        Provider.of<ProjectProvider>(context, listen: false);
+    final projectProvider = Provider.of<ProjectProvider>(context, listen: false);
 
     await projectProvider.loadInitialProjects();
+
+    // importante antes de act el estado verificar si ya se encuentra montado
+    if (!mounted) return;
+
+    setState(() {
+      filteredProjects = projectProvider.projects;
+    });
+  }
+
+  void _filterProjects() {
+    final query = searchController.text.toLowerCase();
+    final projectProvider =
+        Provider.of<ProjectProvider>(context, listen: false);
+    setState(() {
+      filteredProjects = projectProvider.projects.where((project) {
+        return project.name.toLowerCase().contains(query);
+      }).toList();
+    });
+  }
+
+  Future<void> onSubmitFavorite(int projectId) async {
+    final projectProvider = context.read<ProjectProvider>();
+
+    projectProvider.saveProjectAsFavorite(projectId);
   }
 
   @override
@@ -51,52 +78,55 @@ class _ProjectsContentState extends State<ProjectsContent> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
+    final currentUser = Provider.of<AuthProvider>(context).user;
     final projectProvider = context.watch<ProjectProvider>();
 
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: CustomColors.lightGrey,
         resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
-            SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 25.0),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: TextField(
-                              controller: searchController,
-                              decoration: InputDecoration(
-                                hintText: 'Search',
-                                prefixIcon: Icon(Icons.search),
-                                border: InputBorder.none,
-                                contentPadding:
-                                    EdgeInsets.symmetric(vertical: 15.0),
+            Padding(
+              padding: const EdgeInsets.only(
+                right: 20.0,
+                left: 20.0,
+                top: 25.0,
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: CustomColors.fieldGrey,
+                            borderRadius: BorderRadius.circular(20.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                spreadRadius: 0.5,
+                                blurRadius: 1,
+                                offset: Offset(0, 2),
                               ),
+                            ],
+                          ),
+                          child: TextField(
+                            controller: searchController,
+                            decoration: InputDecoration(
+                              hintText: 'Search',
+                              prefixIcon: Icon(Icons.search),
+                              border: InputBorder.none,
+                              contentPadding:
+                                  EdgeInsets.symmetric(vertical: 15.0),
                             ),
                           ),
                         ),
+                      ),
+                      if ((currentUser?.role ?? 'No Role') == 'Manager') ...[
                         SizedBox(width: 16.0),
                         Container(
                           decoration: BoxDecoration(
@@ -115,11 +145,84 @@ class _ProjectsContentState extends State<ProjectsContent> {
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 25.0),
-                    ProjectCardList(projects: projectProvider.projects)
-                  ],
-                ),
+                    ],
+                  ),
+                  const SizedBox(height: 25.0),
+                  Expanded(
+                      child: projectProvider.projects.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.work_off_rounded,
+                                      size: 50, color: Colors.grey),
+                                  SizedBox(height: 15),
+                                  Text(
+                                    'No projects available',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  if ((currentUser?.role ?? 'No Role') ==
+                                      'Manager') ...[
+                                    SizedBox(height: 20),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        context.go('/projects/new');
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor: Colors.green,
+                                        backgroundColor:
+                                            CustomColors.lightGreen,
+                                      ),
+                                      child: Text(
+                                        'Create new project',
+                                        style: TextStyle(
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            )
+                          : Expanded(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: filteredProjects.length,
+                                itemBuilder: (context, index) {
+                                  final project = filteredProjects[index];
+                                  return Column(
+                                    children: [
+                                      PrincipalProjectCard(
+                                        projectId: project.id!,
+                                        name: project.name,
+                                        description: project.description,
+                                        imagesUrl: project.imageUrl,
+                                        rating: project.rating!,
+                                        userList: project.userList!,
+                                        isFavorite: project.isFavorite,
+                                        onPressedCard: () {
+                                          context.go('/projects/${project.id}?isFavorite=${project.isFavorite}');
+                                        },
+                                        onSubmitFavorite: () async {
+                                          if (project.id != null) {
+                                            await onSubmitFavorite(project.id!);
+                                            setState(() {
+                                              project.isFavorite = true;
+                                            });
+                                          }
+                                        },
+                                      ),
+                                      SizedBox(height: 20.0),
+                                    ],
+                                  );
+                                },
+                              ),
+                            )),
+                ],
               ),
             ),
             if (projectProvider.initialLoading)

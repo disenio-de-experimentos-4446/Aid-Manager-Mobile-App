@@ -20,9 +20,11 @@ class SocialProvider extends ChangeNotifier {
     isLoading = true;
 
     try {
-      final loggedInUser = await userRepository.getUserById(authProvider.user!.id!);
+      final loggedInUser =
+          await userRepository.getUserById(authProvider.user!.id!);
 
-      final allUsers = await userRepository.getAllUsersByCompanyId(loggedInUser.companyId!);
+      final allUsers =
+          await userRepository.getAllUsersByCompanyId(loggedInUser.companyId!);
 
       users = allUsers.where((user) => user.id != loggedInUser.id).toList();
     } catch (e) {
@@ -38,14 +40,32 @@ class SocialProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-        await userRepository.deleteUserById(userId);
-        // Eliminar el usuario del arreglo users
-        users = users.where((user) => user.id != userId).toList();
+      await userRepository.deleteUserById(userId);
+      // Eliminar el usuario del arreglo users
+      users = users.where((user) => user.id != userId).toList();
     } catch (e) {
-        throw Exception('Error to delete user with id: $userId');
+      throw Exception('Error to delete user with id: $userId');
     } finally {
-        isLoading = false;
-        notifyListeners();
+      isLoading = false;
+      notifyListeners();
     }
-}
+  }
+
+  Future<void> loadDeletedMembersFromCompany() async {
+
+    final loggedCompanyId = authProvider.user!.companyId!;
+    isLoading = true;
+    notifyListeners();
+
+
+    try {
+      final deletedMembers = await userRepository.getMembersDeletedByCompany(loggedCompanyId);
+      users = deletedMembers;
+    } catch (e) {
+      throw Exception('Error to load past members deleted from company with id: $loggedCompanyId');
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
 }

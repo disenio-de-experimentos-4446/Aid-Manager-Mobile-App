@@ -1,4 +1,5 @@
 import 'package:aidmanager_mobile/features/projects/presentation/widgets/project/dialog/error_project_creation_dialog.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/widgets/project/dialog/error_update_project_dialog.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/widgets/project/dialog/invalid_description_length_dialog.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/widgets/project/dialog/invalid_images_lenght_dialog.dart';
 import 'package:aidmanager_mobile/features/projects/shared/exceptions/project_exceptions.dart';
@@ -14,7 +15,10 @@ Widget getProjectErrorDialog(BuildContext context, Exception e) {
   } 
   else if (e is InvalidNumberOfImagesException) {
     return const InvalidImagesLenghtDialog();
-  } 
+  }
+  else if(e is ProjectUpdateException) {
+      return const ErrorUpdateProjectDialog();
+  }
   else {
     return AlertDialog(
       title: const Text('Error'),

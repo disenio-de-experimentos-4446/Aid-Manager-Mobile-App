@@ -1,3 +1,4 @@
+import 'package:aidmanager_mobile/features/profile/domain/entities/user.dart';
 import 'package:aidmanager_mobile/features/social/presentation/providers/social_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,20 +31,65 @@ class SocialContentState extends StatefulWidget {
 }
 
 class _SocialContentStateState extends State<SocialContentState> {
+  final TextEditingController searchController = TextEditingController();
+  List<User> filteredUsers = [];
+  bool isAscending = true;
+
   @override
   void initState() {
     super.initState();
-    context.read<SocialProvider>().getMembersByCompany();
+    _loadUsers();
+    searchController.addListener(_filterUsers);
+  }
+
+  Future<void> _loadUsers() async {
+    final socialProvider = Provider.of<SocialProvider>(context, listen: false);
+    await socialProvider.getMembersByCompany();
+
+    // importante antes de act el estado verificar si ya se encuentra montado
+    if (!mounted) return;
+
+    setState(() {
+      filteredUsers = socialProvider.users;
+    });
+  }
+
+  void _filterUsers() {
+    final query = searchController.text.toLowerCase();
+    final socialProvider = Provider.of<SocialProvider>(context, listen: false);
+    setState(() {
+      filteredUsers = socialProvider.users.where((user) {
+        return user.name.toLowerCase().contains(query);
+      }).toList();
+    });
+  }
+
+  void _sortUsers() {
+    setState(() {
+      isAscending = !isAscending;
+      filteredUsers.sort((a, b) {
+        return isAscending
+            ? a.name.compareTo(b.name)
+            : b.name.compareTo(a.name);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final socialProvider = Provider.of<SocialProvider>(context, listen: true);
+    final socialProvider = Provider.of<SocialProvider>(context, listen: false);
     final isDirector = socialProvider.authProvider.user?.role == 'Manager';
 
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
+        backgroundColor: CustomColors.lightGrey,
         resizeToAvoidBottomInset: false,
         body: Column(
           children: [
@@ -51,14 +97,16 @@ class _SocialContentStateState extends State<SocialContentState> {
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                    color: Colors.grey, // Color del borde
-                    width: 1.0, // Ancho del borde
+                    color: Colors.grey,
+                    width: 1.0,
                   ),
                 ),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 25.0),
+                  horizontal: 20.0,
+                  vertical: 25.0,
+                ),
                 child: Column(
                   children: [
                     Row(
@@ -66,40 +114,41 @@ class _SocialContentStateState extends State<SocialContentState> {
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30.0),
+                              color: CustomColors.fieldGrey,
+                              borderRadius: BorderRadius.circular(20.0),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.1),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                  offset: Offset(0, 3),
+                                  spreadRadius: 0.5,
+                                  blurRadius: 1,
+                                  offset: Offset(0, 2),
                                 ),
                               ],
                             ),
                             child: TextField(
+                              controller: searchController,
                               decoration: InputDecoration(
                                 hintText: 'Search a contact',
                                 prefixIcon: Icon(Icons.search),
                                 border: InputBorder.none,
                                 contentPadding:
-                                    EdgeInsets.symmetric(vertical: 12.0),
+                                    EdgeInsets.symmetric(vertical: 15.0),
                               ),
                             ),
                           ),
                         ),
                         SizedBox(width: 16.0),
                         TextButton(
-                          onPressed: () {
-                            // Acción del botón
-                          },
+                          onPressed: _sortUsers,
                           style: TextButton.styleFrom(
                             backgroundColor: CustomColors.darkGreen,
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 18.0, vertical: 8.0),
+                              horizontal: 18.0,
+                              vertical: 8.0,
+                            ),
                           ),
                           child: Text(
-                            'A - Z',
+                            isAscending ? 'A - Z' : 'Z - A',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 20.0,
@@ -121,36 +170,54 @@ class _SocialContentStateState extends State<SocialContentState> {
                     ),
                   )
                 : Expanded(
-                    child: ListView.builder(
-                      itemCount: socialProvider.users.length,
-                      itemBuilder: (context, index) {
-                        final member = socialProvider.users[index];
-                        final nameParts = member.name.split(' ');
-                        final firstName =
-                            nameParts.isNotEmpty ? nameParts[0] : '';
-                        final lastName = nameParts.length > 1
-                            ? nameParts.sublist(1).join(' ')
-                            : '';
+                    child: socialProvider.users.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.group_off,
+                                    size: 48, color: Colors.grey),
+                                SizedBox(height: 15),
+                                Text(
+                                  'No users in the company',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: filteredUsers.length,
+                            itemBuilder: (context, index) {
+                              final member = filteredUsers[index];
+                              final nameParts = member.name.split(' ');
+                              final firstName =
+                                  nameParts.isNotEmpty ? nameParts[0] : '';
+                              final lastName = nameParts.length > 1
+                                  ? nameParts.sublist(1).join(' ')
+                                  : '';
 
-                        return ContactCard(
-                          userId: member.id!,
-                          firstName: firstName,
-                          lastName: lastName,
-                          imageUrl: member.profileImg ?? '',
-                          age: member.age!,
-                          email: member.email,
-                          phone: member.phone ?? '',
-                          isDirector: member.role == 'Manager',
-                          onDelete: isDirector
-                              ? () async {
-                                  await socialProvider
-                                      .kickMemberFromCompany(member.id!);
-                                  setState(() {});
-                                }
-                              : null,
-                        );
-                      },
-                    ),
+                              return ContactCard(
+                                userId: member.id!,
+                                firstName: firstName,
+                                lastName: lastName,
+                                imageUrl: member.profileImg ?? '',
+                                age: member.age!,
+                                email: member.email,
+                                phone: member.phone ?? '',
+                                isDirector: member.role == 'Manager',
+                                onDelete: isDirector
+                                    ? () async {
+                                        await socialProvider
+                                            .kickMemberFromCompany(member.id!);
+                                        setState(() {});
+                                      }
+                                    : null,
+                              );
+                            },
+                          ),
                   ),
           ],
         ),

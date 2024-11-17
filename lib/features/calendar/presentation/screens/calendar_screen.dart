@@ -94,6 +94,7 @@ class _CalendarContentState extends State<CalendarContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: CustomColors.lightGrey,
       body: Stack(
         children: [
           Padding(

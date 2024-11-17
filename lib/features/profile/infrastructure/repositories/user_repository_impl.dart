@@ -55,4 +55,9 @@ class UserRepositoryImpl implements UserRepository {
   Future<String> uploadImageToCloud(File file) {
     return datasource.uploadImageToCloud(file);
   }
+  
+  @override
+  Future<List<User>> getMembersDeletedByCompany(int companyId) {
+    return datasource.getMembersDeletedByCompany(companyId);
+  }
 }

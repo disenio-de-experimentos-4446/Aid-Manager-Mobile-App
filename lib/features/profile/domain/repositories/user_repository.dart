@@ -12,5 +12,6 @@ abstract class UserRepository {
   Future<void> updateUserInformationById(int userId, Map<String, dynamic> user);
   Future<void> updateProfileImageByUser(int userId, String imageUrl);
   Future<void> updateCompanyInformation(int companyId, Company company);
+  Future<List<User>> getMembersDeletedByCompany(int companyId);
   Future<String> uploadImageToCloud(File file);
 }

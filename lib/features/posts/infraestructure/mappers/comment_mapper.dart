@@ -4,20 +4,22 @@ class CommentMapper {
   static Comment fromJson(Map<String, dynamic> json) {
     return Comment(
       id: json['id'],
-      comment: json['comment'],
       userId: json['userId'],
-      userName: json['userName'],
-      userEmail: json['userEmail'],
       userImage: json['userImage'],
+      userEmail: json['userEmail'],
+      userName: json['userName'],
+      comment: json['comment'],
       postId: json['postId'],
-      commentTime: json['commentTime'] != null ? DateTime.parse(json['commentTime']) : null,
+      commentTime: json['commentTime'] != null
+          ? DateTime.parse(json['commentTime'])
+          : null,
     );
   }
 
-  static Map<String, dynamic> toJson(Comment comment) {
+  static Map<String, dynamic> toJson(Comment commentPost) {
     return {
-      'userId': comment.userId,
-      'comment': comment.comment,
+      'userId': commentPost.userId,
+      'comment': commentPost.comment,
     };
   }
 }

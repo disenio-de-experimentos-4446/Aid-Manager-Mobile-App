@@ -2,6 +2,7 @@ import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/auth/shared/widgets/is_empty_dialog.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/providers/post_provider.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/widgets/comment_card.dart';
+import 'package:aidmanager_mobile/features/posts/presentation/widgets/dialog/successfully_post_submit_saved_dialog.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/widgets/new_comment_bottom_modal.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/widgets/no_comments_yet.dart';
 import 'package:aidmanager_mobile/features/posts/shared/widgets/custom_error_posts_dialog.dart';
@@ -13,15 +14,23 @@ import 'package:provider/provider.dart';
 
 class PostDetailScreen extends StatefulWidget {
   final String postId;
+  final bool isFavorite;
   static const String name = "posts_detail_screen";
 
-  const PostDetailScreen({super.key, required this.postId});
+  const PostDetailScreen({
+    super.key,
+    required this.postId,
+    required this.isFavorite,
+  });
 
   @override
   State<PostDetailScreen> createState() => _PostDetailScreenState();
 }
 
 class _PostDetailScreenState extends State<PostDetailScreen> {
+  // esto es para simular el efecto de pintado del corazon solo es superficial su efecto
+  bool clickedFavorite = false;
+
   final TextEditingController _commentController = TextEditingController();
 
   @override
@@ -33,6 +42,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   Future<void> _loadThreadInformation() async {
     final postId = int.parse(widget.postId);
     await context.read<PostProvider>().loadThreadByPost(postId);
+  }
+
+  Future<void> onSubmitSaved(int postId) async {
+    final postProvider = context.read<PostProvider>();
+
+    postProvider.addPostAsSaved(postId);
   }
 
   Future<void> onSubmitnewComment() async {
@@ -82,10 +97,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
               ),
             )
           : Scaffold(
+              backgroundColor: Colors.white,
               appBar: AppBar(
                 toolbarHeight: 70.0,
                 automaticallyImplyLeading: false,
-                backgroundColor: Colors.white,
+                backgroundColor: CustomColors.white,
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -103,25 +119,41 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       children: [
                         IconButton(
                           icon: Icon(
-                            Icons.bookmark_border_outlined,
+                            clickedFavorite || post!.isFavorite || widget.isFavorite
+                                ? Icons.bookmark
+                                : Icons.bookmark_border_outlined,
+                            color: clickedFavorite || post!.isFavorite || widget.isFavorite
+                                ? Colors.black87
+                                : Colors.black87,
                             size: 32.0,
-                            color: Colors.black,
                           ),
-                          onPressed: () {
-                            // Lógica para guardar
-                          },
+                          onPressed: clickedFavorite || post!.isFavorite || widget.isFavorite
+                              ? null
+                              : () {
+                                  setState(() {
+                                    clickedFavorite = true;
+                                  });
+                                  onSubmitSaved(post.id!);
+                                  if (!mounted) return;
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return SuccessfullyPostSubmitSavedDialog();
+                                    },
+                                  );
+                                },
                         ),
                         SizedBox(
                           width: 10,
                         ),
                         IconButton(
                           icon: Icon(
-                            Icons.favorite_border,
+                            Icons.favorite_border_outlined,
                             size: 32.0,
                             color: Colors.black,
                           ),
                           onPressed: () {
-                            // lógica para agregar a favoritos
+                            // Lógica para guardar
                           },
                         ),
                       ],
@@ -285,7 +317,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                     255, 114, 114, 114)),
                                             SizedBox(width: 5),
                                             Text(
-                                              '${post?.commentsList?.length.toString() ?? ''} reviews',
+                                              '${post.commentsList?.length.toString() ?? ''} reviews',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16.0,
@@ -306,7 +338,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                     255, 114, 114, 114)),
                                             SizedBox(width: 5),
                                             Text(
-                                              '${post?.rating.toString() ?? '0'} likes',
+                                              '${post.rating.toString()} likes',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16.0,
@@ -348,7 +380,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                         ),
                       ),
                     ),
-                    post?.commentsList?.isEmpty ?? true
+                    post.commentsList?.isEmpty ?? true
                         ? NoCommentsYet(
                             onAddComment: () => showBottomModalComment(context),
                           )
@@ -407,16 +439,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                               ListView.builder(
                                 shrinkWrap: true,
                                 physics: NeverScrollableScrollPhysics(),
-                                itemCount: post?.commentsList?.length ?? 0,
+                                itemCount: post.commentsList?.length ?? 0,
                                 itemBuilder: (context, index) {
-                                  final comment = post?.commentsList![index];
+                                  final comment = post.commentsList![index];
                                   return CommentCard(
-                                    userImage: comment!.authorImage,
-                                    userEmail: comment.authorEmail,
-                                    userName: comment.authorName,
+                                    userImage: comment.userImage!,
+                                    userEmail: comment.userEmail!,
+                                    userName: comment.userName!,
                                     comment: comment.comment,
-                                    postId: comment.postId,
-                                    timeOfComment: comment.timeOfComment,
+                                    postId: comment.postId!,
+                                    timeOfComment: comment.commentTime!,
                                   );
                                 },
                               ),

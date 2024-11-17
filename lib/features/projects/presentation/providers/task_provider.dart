@@ -2,6 +2,7 @@ import 'package:aidmanager_mobile/features/profile/domain/repositories/user_repo
 import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
 import 'package:aidmanager_mobile/features/projects/domain/entities/task.dart';
 import 'package:aidmanager_mobile/features/projects/domain/repositories/tasks_repository.dart';
+import 'package:aidmanager_mobile/features/projects/shared/exceptions/project_exceptions.dart';
 import 'package:aidmanager_mobile/features/projects/shared/exceptions/task_exceptions.dart';
 import 'package:flutter/foundation.dart';
 
@@ -10,15 +11,18 @@ class TaskProvider extends ChangeNotifier {
   final UserRepository userRepository;
   AuthProvider authProvider;
 
-  TaskProvider(
-      {required this.authProvider,
-      required this.userRepository,
-      required this.tasksRepository});
+  TaskProvider({
+    required this.authProvider,
+    required this.userRepository,
+    required this.tasksRepository,
+  });
 
   bool initialLoading = false;
   bool isLoading = false;
   bool updateLoading = false;
   List<Task> tasks = [];
+  // exclusive state for manage tasks assigned for user
+  List<Task> userTasks = [];
 
   Future<void> loadInitialTasksByProjectId(int projectId) async {
     initialLoading = true;
@@ -66,7 +70,10 @@ class TaskProvider extends ChangeNotifier {
   }
 
   Future<void> updateStatusFieldByTask(
-      int projectId, int taskId, String newStatus) async {
+    int projectId,
+    int taskId,
+    String newStatus,
+  ) async {
     updateLoading = true;
 
     try {
@@ -105,5 +112,57 @@ class TaskProvider extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> getTasksAssignedToUserInCompany(int userId) async {
+    final loggedCompanyId = authProvider.user!.companyId!;
+    isLoading = true;
+
+    try {
+      final tasksList = await tasksRepository.getAllTasksAssignedToUser(loggedCompanyId, userId);
+      userTasks = tasksList;
+    } catch (e) {
+      throw Exception(
+          'Error to get tasks assigned for user with id: $userId, $e');
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateTaskFromProject(
+    int projectId,
+    int taskId,
+    String title,
+    String description,
+    DateTime dueDate,
+    String state,
+    int assigneeId
+  ) async {
+
+    if (description.length > 100) {
+      throw InvalidDescriptionLengthException(
+          'The project description must be less than 150 characters');
+    }
+
+    final taskToUpdate = Task(
+      title: title,
+      description: description,
+      dueDate: dueDate,
+      state: state,
+      assigneeId: assigneeId,
+    );
+
+    isLoading = true;
+
+    try {
+      await tasksRepository.updateTaskById(taskId, projectId, taskToUpdate);
+    } catch (e) {
+      throw Exception('Error to update task with id: $taskId, $e');
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+
   }
 }

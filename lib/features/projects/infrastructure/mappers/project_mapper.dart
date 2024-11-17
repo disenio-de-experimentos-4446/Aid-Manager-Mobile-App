@@ -18,6 +18,7 @@ class ProjectMapper {
       ),
       projectLocation: json['projectLocation'],
       userList: List<dynamic>.from(json['userList']),
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
     );
   }
 

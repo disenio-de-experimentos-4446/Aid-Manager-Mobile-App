@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 class BarChartCard extends StatelessWidget {
   final String projectId;
+  final bool isManager;
   final String projectName;
   final List<double> summary;
 
@@ -14,6 +15,7 @@ class BarChartCard extends StatelessWidget {
     required this.summary,
     required this.projectId,
     required this.projectName,
+    required this.isManager,
   });
 
   @override
@@ -84,38 +86,68 @@ class BarChartCard extends StatelessWidget {
                   ),
                 ],
               ),
-              TextButton(
-                onPressed: () {
-                  context.go(
-                    '/projects/$projectId/dashboard/edit-goals?name=${Uri.encodeComponent(projectName)}',
-                    extra: summary,
-                  );
-                },
-                style: TextButton.styleFrom(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
-                  foregroundColor: Colors.green,
-                  backgroundColor: CustomColors.fieldGrey,
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.edit,
-                      color: Colors.green,
-                      size: 30.0,
-                    ),
-                    SizedBox(width: 5.0),
-                    Text(
-                      'Edit',
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
+              isManager
+                  ? TextButton(
+                      onPressed: () {
+                        context.go(
+                          '/projects/$projectId/dashboard/edit-goals?name=${Uri.encodeComponent(projectName)}',
+                          extra: summary,
+                        );
+                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 15.0, vertical: 8.0),
+                        foregroundColor: Colors.green,
+                        backgroundColor: CustomColors.fieldGrey,
                       ),
-                    ),
-                  ],
-                ),
-              )
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.edit,
+                            color: Colors.green,
+                            size: 28.0,
+                          ),
+                          SizedBox(width: 6.0),
+                          Text(
+                            'Edit',
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : TextButton(
+                      onPressed: () {
+                        // no pasa nada xd
+                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 15.0, vertical: 8.0),
+                        foregroundColor: Colors.green,
+                        backgroundColor: CustomColors.fieldGrey,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.remove_red_eye,
+                            color: Colors.green,
+                            size: 28.0,
+                          ),
+                          SizedBox(width: 6.0),
+                          Text(
+                            'View',
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
             ],
           ),
           SizedBox(height: 40.0),
