@@ -1,4 +1,5 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/providers/dashboard_provider.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/widgets/dashboard/bar_chart_card.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/widgets/dashboard/line_chart_card.dart';
@@ -81,6 +82,7 @@ class _ProjectDashboardScreenState extends State<ProjectDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = Provider.of<AuthProvider>(context).user;
     final dashboardRepository = context.watch<DashboardProvider>();
     final doneTasksCount =
         dashboardRepository.tasks.where((task) => task.state == 'Done').length;
@@ -131,188 +133,217 @@ class _ProjectDashboardScreenState extends State<ProjectDashboardScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 25.0),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Statistics',
-                    style: TextStyle(
-                        fontSize: 22.0,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.05),
+      body: dashboardRepository.initialLoading
+          ? Container(
+              color: Colors.black.withOpacity(0.3),
+              child: const Center(
+                child: SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 8,
+                    color: CustomColors.darkGreen,
                   ),
-                  ToggleButtons(
-                    isSelected: isSelected,
-                    onPressed: (int index) {
-                      setState(() {
-                        for (int i = 0; i < isSelected.length; i++) {
-                          isSelected[i] = i == index;
-                        }
-                      });
-                    },
-                    borderRadius: BorderRadius.circular(30.0),
-                    selectedBorderColor: CustomColors.darkGreen,
-                    selectedColor: Colors.white,
-                    fillColor: CustomColors.darkGreen,
-                    borderColor: CustomColors.darkGreen,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          'Weekly',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            color: isSelected[0]
-                                ? Colors.white
-                                : CustomColors.darkGreen,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          'Monthly',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            color: isSelected[1]
-                                ? Colors.white
-                                : CustomColors.darkGreen,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 25,
-              ),
-              PieChartCard(
-                tasks: dashboardRepository.tasks,
-                getSections: getSections(
-                  donePercentage,
-                  progressPercentage,
-                  toDoPercentage,
                 ),
               ),
-              SizedBox(
-                height: 25,
+            )
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 25.0),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Statistics',
+                          style: TextStyle(
+                              fontSize: 22.0,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.05),
+                        ),
+                        ToggleButtons(
+                          isSelected: isSelected,
+                          onPressed: (int index) {
+                            setState(() {
+                              for (int i = 0; i < isSelected.length; i++) {
+                                isSelected[i] = i == index;
+                              }
+                            });
+                          },
+                          borderRadius: BorderRadius.circular(30.0),
+                          selectedBorderColor: CustomColors.darkGreen,
+                          selectedColor: Colors.white,
+                          fillColor: CustomColors.darkGreen,
+                          borderColor: CustomColors.darkGreen,
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Text(
+                                'Weekly',
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  color: isSelected[0]
+                                      ? Colors.white
+                                      : CustomColors.darkGreen,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Text(
+                                'Monthly',
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  color: isSelected[1]
+                                      ? Colors.white
+                                      : CustomColors.darkGreen,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    PieChartCard(
+                      projectId: widget.projectId,
+                      projectName: widget.projectName,
+                      isManager: currentUser!.role == 'Manager',
+                      tasks: dashboardRepository.tasks,
+                      getSections: getSections(
+                        donePercentage,
+                        progressPercentage,
+                        toDoPercentage,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    LineChartCard(
+                      projectId: widget.projectId,
+                      isManager: currentUser.role == 'Manager',
+                      projectName: widget.projectName,
+                      amountSummary: [
+                        (dashboardRepository.projectDashboard?.linesChartBarData
+                                    .isNotEmpty ??
+                                false)
+                            ? dashboardRepository
+                                .projectDashboard!.linesChartBarData[0].data1
+                                .toDouble()
+                            : 0.0,
+                        (dashboardRepository.projectDashboard?.linesChartBarData
+                                    .isNotEmpty ??
+                                false)
+                            ? dashboardRepository
+                                .projectDashboard!.linesChartBarData[0].data2
+                                .toDouble()
+                            : 0.0,
+                        (dashboardRepository.projectDashboard?.linesChartBarData
+                                    .isNotEmpty ??
+                                false)
+                            ? dashboardRepository
+                                .projectDashboard!.linesChartBarData[0].data3
+                                .toDouble()
+                            : 0.0,
+                        (dashboardRepository.projectDashboard?.linesChartBarData
+                                    .isNotEmpty ??
+                                false)
+                            ? dashboardRepository
+                                .projectDashboard!.linesChartBarData[0].data4
+                                .toDouble()
+                            : 0.0,
+                        (dashboardRepository.projectDashboard?.linesChartBarData
+                                    .isNotEmpty ??
+                                false)
+                            ? dashboardRepository
+                                .projectDashboard!.linesChartBarData[0].data5
+                                .toDouble()
+                            : 0.0,
+                        (dashboardRepository.projectDashboard?.linesChartBarData
+                                    .isNotEmpty ??
+                                false)
+                            ? dashboardRepository
+                                .projectDashboard!.linesChartBarData[0].data6
+                                .toDouble()
+                            : 0.0,
+                        (dashboardRepository.projectDashboard?.linesChartBarData
+                                    .isNotEmpty ??
+                                false)
+                            ? dashboardRepository
+                                .projectDashboard!.linesChartBarData[0].data7
+                                .toDouble()
+                            : 0.0,
+                      ],
+                    ),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    BarChartCard(
+                      projectId: widget.projectId,
+                      isManager: currentUser.role == 'Manager',
+                      projectName: widget.projectName,
+                      summary: [
+                        (dashboardRepository
+                                    .projectDashboard?.barData.isNotEmpty ??
+                                false)
+                            ? dashboardRepository
+                                .projectDashboard!.barData[0].sunAmmount
+                                .toDouble()
+                            : 0.0,
+                        (dashboardRepository
+                                    .projectDashboard?.barData.isNotEmpty ??
+                                false)
+                            ? dashboardRepository
+                                .projectDashboard!.barData[0].monAmmount
+                                .toDouble()
+                            : 0.0,
+                        (dashboardRepository
+                                    .projectDashboard?.barData.isNotEmpty ??
+                                false)
+                            ? dashboardRepository
+                                .projectDashboard!.barData[0].tueAmmount
+                                .toDouble()
+                            : 0.0,
+                        (dashboardRepository
+                                    .projectDashboard?.barData.isNotEmpty ??
+                                false)
+                            ? dashboardRepository
+                                .projectDashboard!.barData[0].wedAmmount
+                                .toDouble()
+                            : 0.0,
+                        (dashboardRepository
+                                    .projectDashboard?.barData.isNotEmpty ??
+                                false)
+                            ? dashboardRepository
+                                .projectDashboard!.barData[0].thuAmmount
+                                .toDouble()
+                            : 0.0,
+                        (dashboardRepository
+                                    .projectDashboard?.barData.isNotEmpty ??
+                                false)
+                            ? dashboardRepository
+                                .projectDashboard!.barData[0].friAmmount
+                                .toDouble()
+                            : 0.0,
+                        (dashboardRepository
+                                    .projectDashboard?.barData.isNotEmpty ??
+                                false)
+                            ? dashboardRepository
+                                .projectDashboard!.barData[0].satAmmount
+                                .toDouble()
+                            : 0.0,
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              LineChartCard(
-                projectId: widget.projectId,
-                projectName: widget.projectName,
-                amountSummary: [
-                  (dashboardRepository
-                              .projectDashboard?.linesChartBarData.isNotEmpty ??
-                          false)
-                      ? dashboardRepository
-                          .projectDashboard!.linesChartBarData[0].data1
-                          .toDouble()
-                      : 0.0,
-                  (dashboardRepository
-                              .projectDashboard?.linesChartBarData.isNotEmpty ??
-                          false)
-                      ? dashboardRepository
-                          .projectDashboard!.linesChartBarData[0].data2
-                          .toDouble()
-                      : 0.0,
-                  (dashboardRepository
-                              .projectDashboard?.linesChartBarData.isNotEmpty ??
-                          false)
-                      ? dashboardRepository
-                          .projectDashboard!.linesChartBarData[0].data3
-                          .toDouble()
-                      : 0.0,
-                  (dashboardRepository
-                              .projectDashboard?.linesChartBarData.isNotEmpty ??
-                          false)
-                      ? dashboardRepository
-                          .projectDashboard!.linesChartBarData[0].data4
-                          .toDouble()
-                      : 0.0,
-                  (dashboardRepository
-                              .projectDashboard?.linesChartBarData.isNotEmpty ??
-                          false)
-                      ? dashboardRepository
-                          .projectDashboard!.linesChartBarData[0].data5
-                          .toDouble()
-                      : 0.0,
-                  (dashboardRepository
-                              .projectDashboard?.linesChartBarData.isNotEmpty ??
-                          false)
-                      ? dashboardRepository
-                          .projectDashboard!.linesChartBarData[0].data6
-                          .toDouble()
-                      : 0.0,
-                  (dashboardRepository
-                              .projectDashboard?.linesChartBarData.isNotEmpty ??
-                          false)
-                      ? dashboardRepository
-                          .projectDashboard!.linesChartBarData[0].data7
-                          .toDouble()
-                      : 0.0,
-                ],
-              ),
-              SizedBox(
-                height: 25,
-              ),
-              BarChartCard(
-                projectId: widget.projectId,
-                projectName: widget.projectName,
-                summary: [
-                  (dashboardRepository.projectDashboard?.barData.isNotEmpty ??
-                          false)
-                      ? dashboardRepository
-                          .projectDashboard!.barData[0].sunAmmount
-                          .toDouble()
-                      : 0.0,
-                  (dashboardRepository.projectDashboard?.barData.isNotEmpty ??
-                          false)
-                      ? dashboardRepository
-                          .projectDashboard!.barData[0].monAmmount
-                          .toDouble()
-                      : 0.0,
-                  (dashboardRepository.projectDashboard?.barData.isNotEmpty ??
-                          false)
-                      ? dashboardRepository
-                          .projectDashboard!.barData[0].tueAmmount
-                          .toDouble()
-                      : 0.0,
-                  (dashboardRepository.projectDashboard?.barData.isNotEmpty ??
-                          false)
-                      ? dashboardRepository
-                          .projectDashboard!.barData[0].wedAmmount
-                          .toDouble()
-                      : 0.0,
-                  (dashboardRepository.projectDashboard?.barData.isNotEmpty ??
-                          false)
-                      ? dashboardRepository
-                          .projectDashboard!.barData[0].thuAmmount
-                          .toDouble()
-                      : 0.0,
-                  (dashboardRepository.projectDashboard?.barData.isNotEmpty ??
-                          false)
-                      ? dashboardRepository
-                          .projectDashboard!.barData[0].friAmmount
-                          .toDouble()
-                      : 0.0,
-                  (dashboardRepository.projectDashboard?.barData.isNotEmpty ??
-                          false)
-                      ? dashboardRepository
-                          .projectDashboard!.barData[0].satAmmount
-                          .toDouble()
-                      : 0.0,
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

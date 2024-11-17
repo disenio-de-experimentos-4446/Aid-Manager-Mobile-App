@@ -2,6 +2,10 @@ import 'dart:ui';
 import 'package:aidmanager_mobile/config/helpers/date_format.dart';
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/providers/project_provider.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/widgets/project/dialog/rating_project_dialog.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/widgets/project/dialog/successfully_project_submit_favorite_dialog.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/widgets/project/dialog/successfully_rating_project_dialog.dart';
+import 'package:aidmanager_mobile/shared/helpers/show_customize_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -12,10 +16,12 @@ import 'package:intl/intl.dart';
 class ProjectDetailScreen extends StatefulWidget {
   static const String name = "project_detail_screen";
   final String projectId;
+  final bool isFavorite;
 
   const ProjectDetailScreen({
     super.key,
     required this.projectId,
+    required this.isFavorite,
   });
 
   @override
@@ -23,6 +29,9 @@ class ProjectDetailScreen extends StatefulWidget {
 }
 
 class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
+  // esto es para simular el efecto de pintado del corazon solo es superficial su efecto
+  bool clickedFavorite = false;
+
   @override
   void initState() {
     super.initState();
@@ -32,6 +41,26 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
   Future<void> _loadProjectDetail() async {
     final projectId = int.parse(widget.projectId);
     await context.read<ProjectProvider>().loadProjectDetail(projectId);
+  }
+
+  Future<void> onSubmitFavorite(int projectId) async {
+    final projectProvider = context.read<ProjectProvider>();
+
+    projectProvider.saveProjectAsFavorite(projectId);
+  }
+
+  Future<void> onUpdateRatingProject(double rating) async {
+    final projectProvider = context.read<ProjectProvider>();
+
+    try {
+      await projectProvider.updateProjectRating(int.parse(widget.projectId), rating);
+
+      if(!mounted) return;
+
+      showCustomizeDialog(context, SuccessfullyRatingProjectDialog());
+    } catch (e) {
+      throw Exception('Error to update rating from project $e');
+    }
   }
 
   @override
@@ -87,17 +116,15 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(50),
                       child: BackdropFilter(
-                        filter: ImageFilter.blur(
-                            sigmaX: 20, sigmaY: 20),
-                        child: Container(
-                          color: Colors.black.withOpacity(0.3), // Menos oscuro
-                          padding: EdgeInsets.all(
-                              10.0), // Añadir padding para centrar el icono
-                          child: Center(
-                            child: GestureDetector(
-                              onTap: () {
-                                context.go('/projects');
-                              },
+                        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                        child: GestureDetector(
+                          onTap: () {
+                            context.go('/projects');
+                          },
+                          child: Container(
+                            color: Colors.black.withOpacity(0.3),
+                            padding: EdgeInsets.all(10.0),
+                            child: Center(
                               child: Icon(
                                 Icons.arrow_back,
                                 color: Colors.white,
@@ -114,18 +141,34 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                     right: 20.0,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white, // Fondo blanco para el botón
+                        color: Colors.white,
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
                         icon: Icon(
-                          Icons.favorite_border_rounded,
-                          color: Colors.black87,
-                          size: 34.0,
+                          clickedFavorite || widget.isFavorite
+                              ? Icons.favorite
+                              : Icons.favorite_border_rounded,
+                          color: clickedFavorite || widget.isFavorite
+                              ? Colors.red
+                              : Colors.black87,
+                          size: 32.0,
                         ),
-                        onPressed: () {
-                          // Acción del botón
-                        },
+                        onPressed: clickedFavorite || widget.isFavorite
+                            ? null
+                            : () {
+                                setState(() {
+                                  clickedFavorite = true;
+                                });
+                                onSubmitFavorite(project.id!);
+                                if (!mounted) return;
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return SuccessfullyProjectSubmitFavoriteDialog();
+                                  },
+                                );
+                              },
                       ),
                     ),
                   ),
@@ -172,29 +215,58 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                         fontSize: 24.0,
                                         fontWeight: FontWeight.bold,
                                       ),
-                                      overflow: TextOverflow
-                                          .ellipsis, // Añadir elipsis si el texto es demasiado largo
-                                      maxLines: 2, // Permitir hasta 2 líneas
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
                                     ),
                                   ),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.star,
-                                        color: Colors.yellow[800],
-                                        size: 28.0,
-                                      ),
-                                      SizedBox(
-                                          width:
-                                              5.0), // Espacio entre el icono y el texto
-                                      Text(
-                                        '4.5', // Número de puntuación
-                                        style: TextStyle(
-                                          fontSize: 18.0,
-                                          fontWeight: FontWeight.bold,
+                                  Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      onTap: () async {
+                                        final selectedRating =
+                                            await showDialog<double>(
+                                          context: context,
+                                          builder: (context) =>
+                                              RatingProjectDialog(
+                                            initialRating: project.rating!,
+                                          ),
+                                        );
+
+                                        if (selectedRating != null) {
+                                          onUpdateRatingProject(selectedRating);
+                                        }
+                                      },
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      child: Ink(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 2.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            Icon(
+                                              Icons.star,
+                                              color: Colors.yellow[800],
+                                              size: 28.0,
+                                            ),
+                                            SizedBox(width: 8.0),
+                                            Text(
+                                              project.rating == 0 || project.rating == 0.0 ? 'N/A' : project.rating.toString(),
+                                              style: TextStyle(
+                                                fontSize: 18.0,
+                                                fontWeight: FontWeight.bold,
+                                                letterSpacing: 1.65,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -528,7 +600,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                       text: TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: '123 ', // Número
+                                            text: '123 ',
                                             style: TextStyle(
                                               color: Colors
                                                   .green, // Color del número
@@ -639,27 +711,41 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 15),
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: [
-                                    _CollaboratorShape(
-                                        'assets/images/hotman-placeholder.jpg'),
-                                    _CollaboratorShape(
-                                        'assets/images/hotman-placeholder.jpg'),
-                                    _CollaboratorShape(
-                                        'assets/images/hotman-placeholder.jpg'),
-                                    _CollaboratorShape(
-                                        'assets/images/hotman-placeholder.jpg'),
-                                    _CollaboratorShape(
-                                        'assets/images/hotman-placeholder.jpg'),
-                                    _CollaboratorShape(
-                                        'assets/images/hotman-placeholder.jpg'),
-                                    _CollaboratorShape(
-                                        'assets/images/hotman-placeholder.jpg'),
-                                  ],
-                                ),
+                              SizedBox(height: 12),
+                              SizedBox(
+                                height: 75,
+                                child: project.userList?.isEmpty ?? true
+                                    ? Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.group,
+                                                size: 40, color: Colors.grey),
+                                            SizedBox(height: 8),
+                                            Text(
+                                              'No collaborators',
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount:
+                                            project.userList?.length ?? 0,
+                                        itemBuilder: (context, index) {
+                                          final collaborator =
+                                              project.userList![index]
+                                                  as Map<String, dynamic>;
+                                          return _CollaboratorShape(
+                                            collaborator['profileImg'],
+                                          );
+                                        },
+                                      ),
                               ),
                               SizedBox(
                                 height: 15,
@@ -806,7 +892,7 @@ class _CollaboratorShape extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(right: 15.0),
+      padding: EdgeInsets.only(right: 20.0),
       child: Container(
         width: 75.0,
         height: 75.0,
@@ -820,12 +906,22 @@ class _CollaboratorShape extends StatelessWidget {
         child: ClipOval(
           child: ColorFiltered(
             colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(0.10), // Fondo opaco
+              Colors.black.withOpacity(0.10),
               BlendMode.darken,
             ),
-            child: Image.asset(
+            child: Image.network(
               imagePath,
+              width: 75.0,
+              height: 75.0,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  'assets/images/profile-placeholder.jpg',
+                  width: 75.0,
+                  height: 75.0,
+                  fit: BoxFit.cover,
+                );
+              },
             ),
           ),
         ),
