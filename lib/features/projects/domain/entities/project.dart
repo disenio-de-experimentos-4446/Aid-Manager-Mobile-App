@@ -11,11 +11,14 @@ class Project {
   final TimeOfDay projectTime;
   final String projectLocation;
   final List<dynamic>? userList;
+  double? rating;
+  bool isFavorite;
 
   Project({
     this.id,
     this.audit,
     this.userList,
+    this.rating = 0.0,
     required this.name,
     required this.description,
     required this.imageUrl,
@@ -23,5 +26,6 @@ class Project {
     required this.projectDate,
     required this.projectTime,
     required this.projectLocation,
-  });
+    bool? isFavorite,
+  }) : isFavorite = isFavorite ?? false;
 }
