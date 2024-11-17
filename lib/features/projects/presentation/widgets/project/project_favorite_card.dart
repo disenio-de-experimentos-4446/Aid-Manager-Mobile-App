@@ -1,53 +1,23 @@
-import 'package:aidmanager_mobile/features/projects/domain/entities/project.dart';
+import 'package:aidmanager_mobile/config/theme/app_theme.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/widgets/project/dialog/delete_project_favorite_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
-class ProjectCardList extends StatelessWidget {
-  final List<Project> projects;
-
-  const ProjectCardList({super.key, required this.projects});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: projects.length,
-      itemBuilder: (context, index) {
-        final project = projects[index];
-        return Column(
-          children: [
-            PrincipalProjectCard(
-              name: project.name,
-              description: project.description,
-              imagesUrl: project.imageUrl,
-              userList: project.userList!,
-              onPressedCard: () {
-                context.go('/projects/${project.id}');
-              },
-            ),
-            if (index < projects.length - 1) SizedBox(height: 20.0),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class PrincipalProjectCard extends StatelessWidget {
+class ProjectFavoriteCard extends StatelessWidget {
   final String name;
   final String description;
   final List<String> imagesUrl;
   final List<dynamic> userList;
   final VoidCallback onPressedCard;
+  final VoidCallback onDeleteFavorite;
 
-  const PrincipalProjectCard({
+  const ProjectFavoriteCard({
     super.key,
     required this.onPressedCard,
     required this.name,
     required this.description,
     required this.imagesUrl,
     required this.userList,
+    required this.onDeleteFavorite,
   });
 
   @override
@@ -57,7 +27,7 @@ class PrincipalProjectCard extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(25.0),
         child: Card(
-          color: const Color.fromARGB(255, 247, 247, 247),
+          color: const Color.fromARGB(255, 241, 241, 241),
           elevation: 1.5,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,17 +53,30 @@ class PrincipalProjectCard extends StatelessWidget {
                     right: 15.0,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: CustomColors.lightGrey,
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
                         icon: Icon(
-                          Icons.favorite_border_rounded,
-                          color: Colors.black87,
-                          size: 30.0,
+                          Icons.delete,
+                          color: Colors.red,
+                          size: 32.0,
                         ),
-                        onPressed: () {
-                          // Acción del botón
+                        onPressed: () async {
+                          final result = await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return DeleteProjectFavoriteDialog(
+                                onConfirm: () {
+                                  Navigator.of(context).pop(true);
+                                },
+                              );
+                            },
+                          );
+
+                          if (result == true) {
+                            onDeleteFavorite();
+                          }
                         },
                       ),
                     ),
@@ -117,6 +100,7 @@ class PrincipalProjectCard extends StatelessWidget {
                       description,
                       style: TextStyle(
                         fontSize: 16.0,
+                        height: 1.65,
                         color: Colors.grey[600],
                       ),
                     ),
@@ -144,7 +128,7 @@ class PrincipalProjectCard extends StatelessWidget {
                           decoration: BoxDecoration(
                             border: Border.all(
                               color: Colors.black12,
-                              width: 1.0
+                              width: 1.0,
                             ),
                             color: const Color.fromARGB(255, 255, 255, 255),
                             borderRadius: BorderRadius.circular(20.0),
