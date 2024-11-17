@@ -55,7 +55,9 @@ class _ContactCardState extends State<ContactCard> {
   Widget build(BuildContext context) {
     return Dismissible(
       key: Key(widget.userId.toString()),
-      direction: widget.isDirector ? DismissDirection.none : DismissDirection.endToStart,
+      direction: widget.isDirector
+          ? DismissDirection.none
+          : DismissDirection.endToStart,
       confirmDismiss: (direction) async {
         return await showDialog(
           context: context,
@@ -69,9 +71,7 @@ class _ContactCardState extends State<ContactCard> {
         );
       },
       onDismissed: (direction) {
-        if (widget.onDelete != null) {
-          widget.onDelete!();
-        }
+        widget.onDelete?.call();
       },
       background: Container(
         color: Colors.red,
@@ -87,11 +87,10 @@ class _ContactCardState extends State<ContactCard> {
         padding: const EdgeInsets.all(20.0),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(10.0),
           border: Border(
             bottom: BorderSide(
               color: const Color.fromARGB(255, 201, 200, 200),
-              width: 1.0,
+              width: 1.0, // Ancho del borde inferior
             ),
           ),
         ),
@@ -158,7 +157,7 @@ class _ContactCardState extends State<ContactCard> {
                           ),
                       ],
                     ),
-                    SizedBox(height: 1),
+                    SizedBox(height: 2),
                     Text(
                       widget.email,
                       style: TextStyle(
