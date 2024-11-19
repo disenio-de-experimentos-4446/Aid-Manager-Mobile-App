@@ -1,11 +1,13 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/widgets/register/dialog/terms_and_conditions_dialog.dart';
 import 'package:aidmanager_mobile/features/auth/shared/widgets/custom_dialog_error.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/checkbox_remember.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/email_field.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/login_banner.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/password_field.dart';
 import 'package:aidmanager_mobile/features/auth/shared/widgets/text_divider.dart';
+import 'package:aidmanager_mobile/shared/helpers/show_customize_dialog.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -137,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Expanded(
                               child: OutlinedButton.icon(
                                 onPressed: () {
-                                  // hacer algo aqui (nekomensaje)
+                                  showCustomizeDialog(context, TermsAndConditionsDialog());
                                 },
                                 icon: const Icon(Icons.facebook,
                                     color: Colors.blue),

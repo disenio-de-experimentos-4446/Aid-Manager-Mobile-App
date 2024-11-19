@@ -1,6 +1,7 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/auth/domain/entities/login_response.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/widgets/register/dialog/terms_and_conditions_dialog.dart';
 import 'package:aidmanager_mobile/features/auth/shared/widgets/custom_dialog_error.dart';
 import 'package:aidmanager_mobile/features/auth/shared/widgets/invalid_email_dialog.dart';
 import 'package:aidmanager_mobile/features/auth/shared/widgets/is_empty_dialog.dart';
@@ -91,6 +92,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
 
         if (teamRegisterCode == null || teamRegisterCode.isEmpty) return;
+
+        if(!mounted) return;
+
+        showCustomizeDialog(context, TermsAndConditionsDialog());
 
         await authProvider.submitRegisterUser(
           firstName,
