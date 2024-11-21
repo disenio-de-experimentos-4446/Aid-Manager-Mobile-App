@@ -27,7 +27,7 @@ class _AccessCodeVisibilityDialogState extends State<AccessCodeVisibilityDialog>
           SizedBox(height: 20),
           Text(
             textAlign: TextAlign.center,
-            'Password is required to view the access code',
+            'Enter your password',
             style: TextStyle(
                 fontSize: 24, fontWeight: FontWeight.bold, height: 1.5),
           ),
@@ -37,9 +37,9 @@ class _AccessCodeVisibilityDialogState extends State<AccessCodeVisibilityDialog>
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
-            'Enter your password to view the team access code',
+            'Password is required to view the team code',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18),
+            style: TextStyle(fontSize: 18, height: 1.5),
           ),
           const SizedBox(height: 20),
           TextField(

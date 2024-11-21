@@ -9,8 +9,10 @@ import 'package:provider/provider.dart';
 class PostCreatedByUserScreen extends StatefulWidget {
   static const String name = "post_created_by_user_screen";
   final String userId;
+  final String userName;
 
-  const PostCreatedByUserScreen({super.key, required this.userId});
+  const PostCreatedByUserScreen(
+      {super.key, required this.userId, required this.userName});
 
   @override
   State<PostCreatedByUserScreen> createState() =>
@@ -114,7 +116,7 @@ class _PostCreatedByUserScreenState extends State<PostCreatedByUserScreen> {
                         ),
                         children: <TextSpan>[
                           TextSpan(
-                            text: 'Nicolas',
+                            text: widget.userName,
                             style: TextStyle(
                               color: CustomColors.darkGreen,
                               fontWeight: FontWeight.bold,

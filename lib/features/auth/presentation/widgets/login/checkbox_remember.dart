@@ -27,7 +27,7 @@ class RemeberCheckboxState extends State<RememberCheckbox> {
           ),
           const Text(
             'Remember me',
-            style: TextStyle(fontSize: 17),
+            style: TextStyle(fontSize: 16),
           ),
         ],
       ),

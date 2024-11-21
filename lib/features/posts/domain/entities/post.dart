@@ -15,6 +15,7 @@ class Post {
   List<String> images;
   List<Comment>? commentsList;
   bool isFavorite;
+  bool hasLiked;
 
   Post({
     this.id,
@@ -31,7 +32,9 @@ class Post {
     required this.images,
     this.commentsList,
     bool? isFavorite,
-  }) : isFavorite = isFavorite ?? false;
+    bool? hasLiked,
+  })  : isFavorite = isFavorite ?? false,
+        hasLiked = hasLiked ?? false;
 
   // copy to update only necessary fields (pa no mandar toda la wea pa updatear)
   Post copyWith({
@@ -64,6 +67,5 @@ class Post {
       images: images ?? this.images,
       commentsList: commentsList ?? this.commentsList,
     );
-  }  
-
+  }
 }

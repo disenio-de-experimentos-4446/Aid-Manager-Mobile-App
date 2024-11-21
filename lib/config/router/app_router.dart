@@ -25,6 +25,7 @@ import 'package:aidmanager_mobile/features/projects/presentation/screens/project
 import 'package:aidmanager_mobile/features/projects/presentation/screens/tasks_assigned_by_user_screen.dart';
 import 'package:aidmanager_mobile/features/social/presentation/screens/members_deleted_screen.dart';
 import 'package:aidmanager_mobile/features/social/presentation/screens/social_screen.dart';
+import 'package:aidmanager_mobile/features/social/presentation/screens/terms_conditions_screen.dart';
 import 'package:aidmanager_mobile/shared/main_wrapper.dart';
 import 'package:go_router/go_router.dart';
 
@@ -248,9 +249,14 @@ final appRouter = GoRouter(
           name: TasksAssignedByUserScreen.name,
           pageBuilder: (context, state) {
             final userId = state.pathParameters['userId']!;
+            final userName =
+                state.uri.queryParameters['userName'] ?? 'DefaultUser';
             return NoTransitionPage(
               key: state.pageKey,
-              child: TasksAssignedByUserScreen(userId: userId),
+              child: TasksAssignedByUserScreen(
+                userId: userId,
+                userName: userName,
+              ),
             );
           },
         ),
@@ -259,9 +265,15 @@ final appRouter = GoRouter(
           name: PostCreatedByUserScreen.name,
           pageBuilder: (context, state) {
             final userId = state.pathParameters['userId']!;
+            final userName =
+                state.uri.queryParameters['userName'] ?? 'DefaultUser';
+
             return NoTransitionPage(
               key: state.pageKey,
-              child: PostCreatedByUserScreen(userId: userId),
+              child: PostCreatedByUserScreen(
+                userId: userId,
+                userName: userName,
+              ),
             );
           },
         ),
@@ -270,9 +282,15 @@ final appRouter = GoRouter(
           name: ProjectsCreatedByUserScreen.name,
           pageBuilder: (context, state) {
             final userId = state.pathParameters['userId']!;
+            final userName =
+                state.uri.queryParameters['userName'] ?? 'DefaultUser';
+
             return NoTransitionPage(
               key: state.pageKey,
-              child: ProjectsCreatedByUserScreen(userId: userId),
+              child: ProjectsCreatedByUserScreen(
+                userId: userId,
+                userName: userName,
+              ),
             );
           },
         ),
@@ -281,9 +299,15 @@ final appRouter = GoRouter(
           name: SavedPostsScreen.name,
           pageBuilder: (context, state) {
             final userId = state.pathParameters['userId']!;
+            final userName =
+                state.uri.queryParameters['userName'] ?? 'DefaultUser';
+
             return NoTransitionPage(
               key: state.pageKey,
-              child: SavedPostsScreen(userId: userId),
+              child: SavedPostsScreen(
+                userId: userId,
+                userName: userName,
+              ),
             );
           },
         ),
@@ -292,9 +316,15 @@ final appRouter = GoRouter(
           name: FavoriteProjectsScreen.name,
           pageBuilder: (context, state) {
             final userId = state.pathParameters['userId']!;
+            final userName =
+                state.uri.queryParameters['userName'] ?? 'DefaultUser';
+
             return NoTransitionPage(
               key: state.pageKey,
-              child: FavoriteProjectsScreen(userId: userId),
+              child: FavoriteProjectsScreen(
+                userId: userId,
+                userName: userName,
+              ),
             );
           },
         ),
@@ -302,9 +332,22 @@ final appRouter = GoRouter(
           path: '/social/members-deleted',
           name: MembersDeletedScreen.name,
           pageBuilder: (context, state) {
+            final userName =
+                state.uri.queryParameters['userName'] ?? 'DefaultUser';
+
             return NoTransitionPage(
               key: state.pageKey,
-              child: MembersDeletedScreen(),
+              child: MembersDeletedScreen(userName: userName),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/terms-conditions',
+          name: TermsConditionsScreen.name,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: TermsConditionsScreen(),
             );
           },
         ),

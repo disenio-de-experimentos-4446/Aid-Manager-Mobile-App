@@ -12,6 +12,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProjectDetailScreen extends StatefulWidget {
   static const String name = "project_detail_screen";
@@ -53,14 +54,58 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
     final projectProvider = context.read<ProjectProvider>();
 
     try {
-      await projectProvider.updateProjectRating(int.parse(widget.projectId), rating);
+      await projectProvider.updateProjectRating(
+          int.parse(widget.projectId), rating);
 
-      if(!mounted) return;
+      if (!mounted) return;
 
       showCustomizeDialog(context, SuccessfullyRatingProjectDialog());
     } catch (e) {
       throw Exception('Error to update rating from project $e');
     }
+  }
+
+  Future<void> _launchURLLandingPage() async {
+    const url = 'https://landing-page-aid-manager-37nb.vercel.app/';
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Could not launch $url'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _sendEmail() async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'yesi@aidmanager.com',
+      queryParameters: {'subject': 'Information about AidManager'},
+    );
+
+    if (await canLaunchUrl(emailUri)) {
+      await launchUrl(emailUri);
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Could not send email to aidmanager@example.com'),
+        ),
+      );
+    }
+  }
+
+  double _calculateCompletionPercentage(List<dynamic>? userList) {
+    if (userList == null || userList.isEmpty) {
+      return 0.0;
+    }
+    final completedTasks =
+        userList.where((user) => user['completed'] == true).length;
+    final totalTasks = userList.length;
+    return (completedTasks / totalTasks) * 100;
   }
 
   @override
@@ -70,8 +115,15 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
     ));
 
     final projectProvider = context.watch<ProjectProvider>();
+
     final project = projectProvider.projectDetail;
     final detailLoading = projectProvider.detailLoading;
+
+    final now = DateTime.now();
+    final difference = project?.projectDate.difference(now).inDays ?? 0;
+
+    final completionPercentage =
+        _calculateCompletionPercentage(project?.userList);
 
     return SafeArea(
       child: Scaffold(
@@ -212,7 +264,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                     child: Text(
                                       project.name ?? 'Project PlaceHolder',
                                       style: TextStyle(
-                                        fontSize: 24.0,
+                                        fontSize: 22.0,
                                         fontWeight: FontWeight.bold,
                                       ),
                                       overflow: TextOverflow.ellipsis,
@@ -256,7 +308,10 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                             ),
                                             SizedBox(width: 8.0),
                                             Text(
-                                              project.rating == 0 || project.rating == 0.0 ? 'N/A' : project.rating.toString(),
+                                              project.rating == 0 ||
+                                                      project.rating == 0.0
+                                                  ? 'N/A'
+                                                  : project.rating.toString(),
                                               style: TextStyle(
                                                 fontSize: 18.0,
                                                 fontWeight: FontWeight.bold,
@@ -273,74 +328,78 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                               SizedBox(
                                 height: 12,
                               ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.location_on_outlined,
-                                    color: Colors.black.withOpacity(0.6),
-                                    size: 18.0,
-                                  ),
-                                  SizedBox(width: 5.0),
-                                  Text(
-                                    'Lima, Perú',
-                                    style: TextStyle(
-                                      fontSize: 16.0,
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.location_on_outlined,
                                       color: Colors.black.withOpacity(0.6),
+                                      size: 18.0,
                                     ),
-                                  ),
-                                  SizedBox(width: 14.0),
-                                  Container(
-                                    width: 6.0,
-                                    height: 6.0,
-                                    decoration: BoxDecoration(
+                                    SizedBox(width: 5.0),
+                                    Text(
+                                      project.projectLocation,
+                                      style: TextStyle(
+                                        fontSize: 15.0,
+                                        letterSpacing: 0.35,
+                                        color: Colors.black.withOpacity(0.6),
+                                      ),
+                                    ),
+                                    SizedBox(width: 14.0),
+                                    Container(
+                                      width: 6.0,
+                                      height: 6.0,
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withOpacity(0.6),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    SizedBox(width: 14.0),
+                                    Icon(
+                                      Icons.calendar_today,
                                       color: Colors.black.withOpacity(0.6),
-                                      shape: BoxShape.circle,
+                                      size: 16.0,
                                     ),
-                                  ),
-                                  SizedBox(width: 14.0),
-                                  Icon(
-                                    Icons.calendar_today,
-                                    color: Colors.black.withOpacity(0.6),
-                                    size: 18.0,
-                                  ),
-                                  SizedBox(width: 8.0),
-                                  Text(
-                                    project.projectDate != null
-                                        ? DateFormat('yyyy-MM-dd')
-                                            .format(project.projectDate)
-                                        : 'No date',
-                                    style: TextStyle(
-                                      fontSize: 16.0,
+                                    SizedBox(width: 8.0),
+                                    Text(
+                                      project.projectDate != null
+                                          ? DateFormat('yyyy-MM-dd')
+                                              .format(project.projectDate)
+                                          : 'No date',
+                                      style: TextStyle(
+                                        fontSize: 15.0,
+                                        color: Colors.black.withOpacity(0.6),
+                                      ),
+                                    ),
+                                    SizedBox(width: 14.0),
+                                    Container(
+                                      width: 6.0,
+                                      height: 6.0,
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withOpacity(0.6),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    SizedBox(width: 14.0),
+                                    Icon(
+                                      Icons.timer_sharp,
                                       color: Colors.black.withOpacity(0.6),
+                                      size: 16.0,
                                     ),
-                                  ),
-                                  SizedBox(width: 14.0),
-                                  Container(
-                                    width: 6.0,
-                                    height: 6.0,
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.6),
-                                      shape: BoxShape.circle,
+                                    SizedBox(width: 8.0),
+                                    Text(
+                                      project.projectTime != null
+                                          ? formatTimeOfDay(project.projectTime)
+                                          : 'No Time',
+                                      style: TextStyle(
+                                        fontSize: 15.0,
+                                        color: Colors.black.withOpacity(0.6),
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 14.0),
-                                  Icon(
-                                    Icons.timer_sharp,
-                                    color: Colors.black.withOpacity(0.6),
-                                    size: 18.0,
-                                  ),
-                                  SizedBox(width: 8.0),
-                                  Text(
-                                    project.projectTime != null
-                                        ? formatTimeOfDay(project.projectTime)
-                                        : 'No Time',
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      color: Colors.black.withOpacity(0.6),
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                               SizedBox(
                                 height: 25,
@@ -369,7 +428,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(width: 12.0),
+                                      SizedBox(width: 10.0),
                                       Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -377,7 +436,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                           Text(
                                             'Auspiced By',
                                             style: TextStyle(
-                                              fontSize: 16.0,
+                                              fontSize: 14.0,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.black54,
                                             ),
@@ -386,7 +445,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                           Text(
                                             'AidManager',
                                             style: TextStyle(
-                                              fontSize: 20.0,
+                                              fontSize: 18.0,
                                               fontWeight: FontWeight.bold,
                                               color: CustomColors.darkGreen,
                                             ),
@@ -399,10 +458,9 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                     children: [
                                       Container(
                                         decoration: BoxDecoration(
-                                          color: Colors.blue.withOpacity(
-                                              0.1), // Color de fondo con opacidad
-                                          borderRadius: BorderRadius.circular(
-                                              12.0), // Bordes suaves
+                                          color: Colors.blue.withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
                                           border: Border.all(
                                             color: Colors.blue.withOpacity(
                                                 0.5), // Color del borde
@@ -416,22 +474,18 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                           ),
                                           color: Colors.blue,
                                           onPressed: () {
-                                            // Acción del botón de sitio web
+                                            _launchURLLandingPage();
                                           },
                                         ),
                                       ),
-                                      SizedBox(
-                                          width:
-                                              12.0), // Espacio entre los botones
+                                      SizedBox(width: 12.0),
                                       Container(
                                         decoration: BoxDecoration(
-                                          color: Colors.red.withOpacity(
-                                              0.1), // Color de fondo con opacidad
-                                          borderRadius: BorderRadius.circular(
-                                              12.0), // Bordes suaves
+                                          color: Colors.red.withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
                                           border: Border.all(
-                                            color: Colors.red.withOpacity(
-                                                0.5), // Color del borde
+                                            color: Colors.red.withOpacity(0.5),
                                             width: 1.0,
                                           ),
                                         ),
@@ -442,7 +496,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                           ),
                                           color: Colors.red,
                                           onPressed: () {
-                                            // Acción del botón de correo
+                                            _sendEmail();
                                           },
                                         ),
                                       ),
@@ -463,7 +517,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                   Text(
                                     'About Project',
                                     style: TextStyle(
-                                      fontSize: 20.0,
+                                      fontSize: 18.0,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.black,
                                     ),
@@ -478,7 +532,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                         child: Text(
                                           'See Metrics',
                                           style: TextStyle(
-                                            fontSize: 18.0,
+                                            fontSize: 16.0,
                                             color: CustomColors.darkGreen,
                                           ),
                                         ),
@@ -486,7 +540,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                       SizedBox(width: 5),
                                       Icon(
                                         Icons.arrow_forward_ios_outlined,
-                                        size: 18.0,
+                                        size: 16.0,
                                         color: CustomColors.darkGreen,
                                       ),
                                     ],
@@ -498,7 +552,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                               ),
                               Text(
                                 project.description ?? 'No description',
-                                style: TextStyle(fontSize: 18.0, height: 1.65),
+                                style: TextStyle(fontSize: 16.0, height: 1.65),
                               ),
                               SizedBox(
                                 height: 20,
@@ -511,12 +565,14 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                   boxShadow: [
                                     BoxShadow(
                                       color: const Color.fromARGB(
-                                              255, 187, 185, 185)
-                                          .withOpacity(0.5),
+                                        255,
+                                        187,
+                                        185,
+                                        185,
+                                      ).withOpacity(0.5),
                                       spreadRadius: 1.5,
                                       blurRadius: 2,
-                                      offset: Offset(
-                                          0, 1), // Desplazamiento de la sombra
+                                      offset: Offset(0, 1),
                                     ),
                                   ],
                                 ),
@@ -536,14 +592,15 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                                 Icon(
                                                   Icons.maps_home_work_sharp,
                                                   color: Colors.indigo[600],
-                                                  size: 32.0,
+                                                  size: 24.0,
                                                 ),
                                                 SizedBox(width: 12.0),
                                                 Text(
                                                   project.projectLocation ??
                                                       'No location',
-                                                  style:
-                                                      TextStyle(fontSize: 18.0),
+                                                  style: TextStyle(
+                                                    fontSize: 16.0,
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -568,13 +625,13 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                             Icon(
                                               Icons.date_range_sharp,
                                               color: Colors.blue[700],
-                                              size: 32.0,
+                                              size: 24.0,
                                             ),
                                             SizedBox(width: 12.0),
                                             Text(
-                                              'From: ${project.audit != null ? DateFormat('MMM d, yyyy').format(project.audit!) : 'No date'} - To: ${DateFormat('MMM d, yyyy').format(project.projectDate)}',
+                                              '${project.audit != null ? DateFormat('MMM d, yyyy').format(project.audit!) : 'No date'} - To: ${DateFormat('MMM d, yyyy').format(project.projectDate)}',
                                               style: TextStyle(
-                                                fontSize: 18.0,
+                                                fontSize: 16.0,
                                                 color: const Color.fromARGB(
                                                     200, 0, 0, 0),
                                               ),
@@ -600,7 +657,9 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                       text: TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: '123 ',
+                                            text: NumberFormat("0")
+                                                .format(difference)
+                                                .toString(),
                                             style: TextStyle(
                                               color: Colors
                                                   .green, // Color del número
@@ -609,7 +668,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: ' interested', // Texto
+                                            text: ' days left', // Texto
                                             style: TextStyle(
                                               color: const Color.fromARGB(
                                                   255, 53, 52, 52),
@@ -650,16 +709,16 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                       text: TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: '75%', // Número
+                                            text:
+                                                '${completionPercentage.toStringAsFixed(0) ?? 0}%',
                                             style: TextStyle(
-                                              color: Colors
-                                                  .green, // Color del número
+                                              color: Colors.green,
                                               fontSize: 20.0,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                           TextSpan(
-                                            text: ' recaudation', // Texto
+                                            text: ' activities', // Texto
                                             style: TextStyle(
                                               color: const Color.fromARGB(
                                                   255, 53, 52, 52),
@@ -757,7 +816,11 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                               SizedBox(
                                 height: 15,
                               ),
-                              _ProjectHighlights(),
+                              _ProjectHighlights(
+                                createdAt: project.audit!,
+                                projectDate: project.projectDate,
+                                projectTime: project.projectTime,
+                              ),
                               SizedBox(
                                 height: 25,
                               ),
@@ -775,10 +838,21 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
 }
 
 class _ProjectHighlights extends StatelessWidget {
-  const _ProjectHighlights();
+  final DateTime createdAt;
+  final DateTime projectDate;
+  final TimeOfDay projectTime;
+
+  const _ProjectHighlights({
+    required this.projectDate,
+    required this.projectTime,
+    required this.createdAt,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+    final DateFormat timeFormat = DateFormat('HH:mm');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -792,23 +866,6 @@ class _ProjectHighlights extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Row(
-              children: [
-                Text(
-                  'More Details',
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    color: CustomColors.darkGreen,
-                  ),
-                ),
-                SizedBox(width: 5),
-                Icon(
-                  Icons.arrow_forward_ios_outlined,
-                  size: 18.0,
-                  color: CustomColors.darkGreen,
-                ),
-              ],
-            ),
           ],
         ),
         SizedBox(height: 20),
@@ -820,17 +877,17 @@ class _ProjectHighlights extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Tasks Completed:',
+                    'Started Date:',
                     style: TextStyle(fontSize: 20.0, color: Colors.grey),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'Amount Raised:',
+                    'Finish Date:',
                     style: TextStyle(fontSize: 20.0, color: Colors.grey),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'Volunteers:',
+                    'Started hour:',
                     style: TextStyle(fontSize: 20.0, color: Colors.grey),
                   ),
                   SizedBox(height: 10),
@@ -851,17 +908,22 @@ class _ProjectHighlights extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '25 per month',
+                    dateFormat.format(createdAt),
                     style: TextStyle(fontSize: 20.0, color: Colors.black),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    '\$10,000 dollars',
+                    dateFormat.format(projectDate),
                     style: TextStyle(fontSize: 20.0, color: Colors.black),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    '150',
+                    timeFormat.format(DateTime(
+                        projectDate.year,
+                        projectDate.month,
+                        projectDate.day,
+                        projectTime.hour,
+                        projectTime.minute)),
                     style: TextStyle(fontSize: 20.0, color: Colors.black),
                   ),
                   SizedBox(height: 10),

@@ -102,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Text(
                               "Forgot password?",
                               style: TextStyle(
-                                  fontSize: 17,
+                                  fontSize: 14.5,
                                   fontStyle: FontStyle.normal,
                                   color: CustomColors.darkGreen),
                             )
@@ -131,58 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 letterSpacing: 1.8),
                           ),
                         ),
-                        const SizedBox(height: 25),
-                        const TextDivider(text: 'or continue with'),
                         const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () {
-                                  showCustomizeDialog(context, TermsAndConditionsDialog());
-                                },
-                                icon: const Icon(Icons.facebook,
-                                    color: Colors.blue),
-                                label: const Text(
-                                  'Facebook',
-                                  style: TextStyle(
-                                      color: Colors.blue, fontSize: 18),
-                                ),
-                                style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: Colors.blue),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0, horizontal: 16.0),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16.0),
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () {},
-                                icon: Image.asset(
-                                  'assets/images/google-icon.webp', // Ruta de la imagen del logo de Google
-                                  height: 24.0,
-                                ),
-                                label: const Text(
-                                  'Google',
-                                  style: TextStyle(
-                                      color: Colors.red, fontSize: 18),
-                                ),
-                                style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: Colors.red),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0, horizontal: 16.0),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                         Expanded(
                           child: Container(color: Colors.transparent),
                         ),

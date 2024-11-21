@@ -121,6 +121,11 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> isUserLogged() async {
+    final token = await StorageHelper.getToken();
+    return token != null;
+  }
+
   // cargamos las credenciales desde shrprefs (para mantener sesion activa :p)
   Future<bool> loadCredentials() async {
     final token = await StorageHelper.getToken();

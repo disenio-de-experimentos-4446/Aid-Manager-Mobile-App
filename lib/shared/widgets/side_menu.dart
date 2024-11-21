@@ -34,6 +34,7 @@ class _SideMenuState extends State<SideMenu> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
+    final firstName = user?.name.split(' ').first ?? 'Default';
 
     return Drawer(
       child: Container(
@@ -86,7 +87,7 @@ class _SideMenuState extends State<SideMenu> {
                     },
                     child: Padding(
                       padding: EdgeInsets.only(
-                          left: 20.0, top: 25.0, bottom: 25.0, right: 15.0),
+                          left: 20.0, top: 20.0, bottom: 20.0, right: 15.0),
                       child: Row(
                         children: [
                           CircleAvatar(
@@ -136,7 +137,7 @@ class _SideMenuState extends State<SideMenu> {
               color: Colors.black26,
             ),
             const Padding(
-              padding: EdgeInsets.fromLTRB(18, 26, 16, 10),
+              padding: EdgeInsets.fromLTRB(18, 20, 16, 10),
               child: Row(
                 children: [
                   Align(
@@ -164,7 +165,7 @@ class _SideMenuState extends State<SideMenu> {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        context.push('/projects/user/${user!.id}');
+                        context.push('/projects/user/${user!.id}?userName=$firstName');
                       },
                       child: ListTile(
                         contentPadding: const EdgeInsets.only(left: 20.0),
@@ -180,7 +181,7 @@ class _SideMenuState extends State<SideMenu> {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        context.push('/projects/user/${user!.id}/tasks');
+                        context.push('/projects/user/${user!.id}/tasks?userName=$firstName');
                       },
                       child: ListTile(
                         contentPadding: const EdgeInsets.only(left: 20.0),
@@ -196,7 +197,7 @@ class _SideMenuState extends State<SideMenu> {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
-                  context.push('/posts/user/${user!.id}');
+                  context.push('/posts/user/${user!.id}?userName=$firstName');
                 },
                 child: ListTile(
                   contentPadding: const EdgeInsets.only(left: 20.0),
@@ -209,7 +210,7 @@ class _SideMenuState extends State<SideMenu> {
               ),
             ),
             const Padding(
-              padding: EdgeInsets.fromLTRB(18, 16, 28, 10),
+              padding: EdgeInsets.fromLTRB(18, 0, 28, 10),
               child: Divider(),
             ),
             const Padding(
@@ -241,7 +242,7 @@ class _SideMenuState extends State<SideMenu> {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
-                  context.push('/projects/favorites/user/${user!.id}');
+                  context.go('/projects/favorites/user/${user!.id}?userName=$firstName');
                 },
                 child: ListTile(
                   contentPadding: const EdgeInsets.only(left: 20.0),
@@ -257,7 +258,7 @@ class _SideMenuState extends State<SideMenu> {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
-                  context.push('/posts/saved/user/${user!.id}');
+                  context.go('/posts/saved/user/${user!.id}?userName=$firstName');
                 },
                 child: ListTile(
                   contentPadding: const EdgeInsets.only(left: 20.0),
@@ -270,11 +271,11 @@ class _SideMenuState extends State<SideMenu> {
               ),
             ),
             const Padding(
-              padding: EdgeInsets.fromLTRB(18, 16, 28, 10),
+              padding: EdgeInsets.fromLTRB(18, 0, 28, 10),
               child: Divider(),
             ),
             const Padding(
-              padding: EdgeInsets.fromLTRB(18, 10, 16, 10),
+              padding: EdgeInsets.fromLTRB(18, 5, 16, 10),
               child: Row(
                 children: [
                   Align(
@@ -302,7 +303,7 @@ class _SideMenuState extends State<SideMenu> {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
-                  context.go('/social/members-deleted');
+                  context.go('/social/members-deleted?userName=$firstName');
                 },
                 child: ListTile(
                   contentPadding: const EdgeInsets.only(left: 20.0),
@@ -324,7 +325,7 @@ class _SideMenuState extends State<SideMenu> {
               ),
               title: const Text('Terms & Conditions'),
               onTap: () {
-                // Acción al hacer clic en Settings
+                context.push('/terms-conditions');
               },
             ),
             ListTile(

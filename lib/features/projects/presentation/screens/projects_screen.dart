@@ -2,7 +2,9 @@ import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
 import 'package:aidmanager_mobile/features/projects/domain/entities/project.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/providers/project_provider.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/widgets/project/dialog/error_fetch_projects_dialog.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/widgets/project/principal_project_card.dart';
+import 'package:aidmanager_mobile/shared/helpers/show_customize_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -43,16 +45,20 @@ class _ProjectsContentState extends State<ProjectsContent> {
   }
 
   Future<void> _loadProjects() async {
-    final projectProvider = Provider.of<ProjectProvider>(context, listen: false);
+    try {
+      final projectProvider = Provider.of<ProjectProvider>(context, listen: false);
+      await projectProvider.loadInitialProjects();
 
-    await projectProvider.loadInitialProjects();
+      // importante antes de act el estado verificar si ya se encuentra montado
+      if (!mounted) return;
 
-    // importante antes de act el estado verificar si ya se encuentra montado
-    if (!mounted) return;
-
-    setState(() {
-      filteredProjects = projectProvider.projects;
-    });
+      setState(() {
+        filteredProjects = projectProvider.projects;
+      });
+    } catch (e) {
+      if(!mounted) return;
+      ErrorFetchProjectsDialog.show(context);
+    }
   }
 
   void _filterProjects() {
@@ -74,6 +80,7 @@ class _ProjectsContentState extends State<ProjectsContent> {
 
   @override
   void dispose() {
+    searchController.removeListener(_filterProjects);
     searchController.dispose();
     super.dispose();
   }

@@ -160,44 +160,48 @@ class _CalendarContentState extends State<CalendarContent> {
                   // cargar los eventos para un dia en especifico
                   eventLoader: _getTasksForDay,
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Tasks for ${today.day} de ${DateFormat('MMMM').format(today)} - ${today.year}',
+                        '${today.day} de ${DateFormat('MMMM').format(today)} - ${today.year}',
                         style: const TextStyle(
-                          fontSize: 18.0,
+                          fontSize: 16.0,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          final nextTaskDate = getNextTaskDate();
-                          if (nextTaskDate != null) {
-                            _onDaySelected(nextTaskDate, nextTaskDate);
-                          }
-                        },
-                        child: const Row(
-                          children: [
-                            Text(
-                              'Next',
-                              style: TextStyle(
-                                fontSize: 17.0,
-                                color: CustomColors.darkGreen,
-                                letterSpacing: 0.65,
-                                fontWeight: FontWeight.bold,
+                      Transform.translate(
+                        offset: Offset(0, -2),
+                        child: TextButton(
+                          onPressed: () {
+                            final nextTaskDate = getNextTaskDate();
+                            if (nextTaskDate != null) {
+                              _onDaySelected(nextTaskDate, nextTaskDate);
+                            }
+                          },
+                          child: const Row(
+                            children: [
+                              Text(
+                                'Next',
+                                style: TextStyle(
+                                  fontSize: 17.0,
+                                  color: CustomColors.darkGreen,
+                                  letterSpacing: 0.65,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 5.0),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: CustomColors.darkGreen,
-                              size: 16.0,
-                            ),
-                          ],
+                              SizedBox(width: 5.0),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                color: CustomColors.darkGreen,
+                                size: 16.0,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],

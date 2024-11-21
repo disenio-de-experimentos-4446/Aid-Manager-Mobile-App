@@ -49,7 +49,11 @@ class _MainWrapperState extends State<MainWrapper> {
       '/profile': 5,
     };
 
-    final currentRoute = GoRouter.of(context).routerDelegate.currentConfiguration.last.matchedLocation;
+    final currentRoute = GoRouter.of(context)
+        .routerDelegate
+        .currentConfiguration
+        .last
+        .matchedLocation;
 
     int currentIndex = routeIndexMap.entries
         .firstWhere((entry) => currentRoute.startsWith(entry.key),
@@ -63,12 +67,13 @@ class _MainWrapperState extends State<MainWrapper> {
       '/user/',
       '/saved/posts/',
       '/favorites/projects/',
-      '/social/members-deleted'
+      '/social/members-deleted',
+      '/terms-conditions'
     ];
 
     // determinar si se debe mostrar el AppBar
-    bool showTopbar = !noAppBarRoutes.any((route) => currentRoute.startsWith(route));
-
+    bool showTopbar =
+        !noAppBarRoutes.any((route) => currentRoute.startsWith(route));
     return Scaffold(
       resizeToAvoidBottomInset: true,
       key: scaffoldKey,
@@ -97,7 +102,9 @@ class _MainWrapperState extends State<MainWrapper> {
                   const Text(
                     'AidManager',
                     style: TextStyle(
-                        fontSize: 24.0, color: CustomColors.lightGrey),
+                      fontSize: 22.0,
+                      color: CustomColors.lightGrey,
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(
@@ -123,6 +130,7 @@ class _MainWrapperState extends State<MainWrapper> {
       ),
     );
   }
+  
 }
 
 class _AidNavigationBar extends StatelessWidget {
@@ -134,7 +142,7 @@ class _AidNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 85.0,
+      height: 80.0,
       decoration: BoxDecoration(
         color: CustomColors.white,
         boxShadow: [
@@ -186,7 +194,7 @@ class _AidNavigationBar extends StatelessWidget {
               label,
               style: TextStyle(
                 color: isSelected ? CustomColors.darkGreen : CustomColors.grey,
-                fontSize: 16.0,
+                fontSize: 14,
               ),
             ),
           ],

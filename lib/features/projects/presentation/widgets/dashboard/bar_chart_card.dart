@@ -54,12 +54,13 @@ class BarChartCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    'Weekly progress',
+                    'Weekly Progress',
                     style: TextStyle(
-                      fontSize: 24.0,
+                      fontSize: 20.0,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
                   SizedBox(height: 15.0),
                   RichText(
@@ -74,7 +75,7 @@ class BarChartCard extends StatelessWidget {
                           ),
                         ),
                         TextSpan(
-                          text: '/ 700 goals completed',
+                          text: '/ 700 goals',
                           style: TextStyle(
                               fontSize: 20.0,
                               fontWeight: FontWeight.normal,
@@ -105,13 +106,13 @@ class BarChartCard extends StatelessWidget {
                           Icon(
                             Icons.edit,
                             color: Colors.green,
-                            size: 28.0,
+                            size: 20.0,
                           ),
                           SizedBox(width: 6.0),
                           Text(
                             'Edit',
                             style: TextStyle(
-                              fontSize: 18.0,
+                              fontSize: 16.0,
                               fontWeight: FontWeight.bold,
                               color: Colors.green,
                             ),
@@ -134,13 +135,13 @@ class BarChartCard extends StatelessWidget {
                           Icon(
                             Icons.remove_red_eye,
                             color: Colors.green,
-                            size: 28.0,
+                            size: 20.0,
                           ),
                           SizedBox(width: 6.0),
                           Text(
                             'View',
                             style: TextStyle(
-                              fontSize: 18.0,
+                              fontSize: 16.0,
                               fontWeight: FontWeight.bold,
                               color: Colors.green,
                             ),

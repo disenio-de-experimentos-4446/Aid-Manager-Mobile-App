@@ -6,6 +6,7 @@ import 'package:aidmanager_mobile/features/posts/domain/repositories/post_reposi
 import 'package:aidmanager_mobile/features/posts/shared/exceptions/posts_exception.dart';
 import 'package:aidmanager_mobile/features/projects/shared/helpers/generate_images_project.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PostProvider extends ChangeNotifier {
   final PostsRepository postsRepository;
@@ -58,6 +59,13 @@ class PostProvider extends ChangeNotifier {
       } else {
         selectedPost!.isFavorite = false; // sino no se setea
       }
+
+      // obtenemols likedPosts(array de Id's) de SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      List<String> likedPosts = prefs.getStringList('likedPosts') ?? [];
+
+      // actualizar el campo hasLiked en selectedPost
+      selectedPost!.hasLiked = likedPosts.contains(selectedPost!.id.toString());
     } catch (e) {
       throw ThreadLoadException(
           "Error to display information for post with id: $postId");
@@ -125,8 +133,7 @@ class PostProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final Comment actualComment =
-          await commentRepository.createCommentByPostId(postId, newComment);
+      final Comment actualComment = await commentRepository.createCommentByPostId(postId, newComment);
 
       selectedPost!.commentsList?.add(actualComment);
     } catch (e) {
@@ -152,18 +159,31 @@ class PostProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateRating(int postId, double newRating) async {
+  Future<void> updateRating(int postId) async {
     final loggedUserId = authProvider.user!.id!;
-
-    updateLoading = true;
+    isLoading= true;
 
     try {
-      await postsRepository.updateRatingForPost(
-          postId, loggedUserId, newRating);
+      await postsRepository.updateRatingForPost(postId, loggedUserId);
+
+      // almacenamos los ids de los post likeados en shpres para la persistencia
+      // (no estoy seguro de esto kick)
+      final prefs = await SharedPreferences.getInstance();
+      List<String> likedPosts = prefs.getStringList('likedPosts') ?? [];
+
+      // vericamos si el postId ya está en la lista
+      if (likedPosts.contains(postId.toString())) {
+        likedPosts.remove(postId.toString());
+      } else {
+        likedPosts.add(postId.toString());
+      }
+
+      // guardamos lista actualizada en SharedPreferences
+      await prefs.setStringList('likedPosts', likedPosts);
     } catch (e) {
       throw Exception('Failed to update post with id: $postId');
     } finally {
-      updateLoading = false;
+      isLoading = false;
       notifyListeners();
     }
   }
@@ -188,6 +208,7 @@ class PostProvider extends ChangeNotifier {
     );
 
     initialLoading = true;
+    notifyListeners();
 
     try {
       await postsRepository.updatePost(
@@ -261,6 +282,7 @@ class PostProvider extends ChangeNotifier {
     final userIdLogged = authProvider.user!.id!;
 
     initialLoading = true;
+    notifyListeners();
 
     try {
       await postsRepository.deletePostFromSaves(userIdLogged, postId);

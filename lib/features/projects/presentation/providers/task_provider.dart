@@ -94,7 +94,8 @@ class TaskProvider extends ChangeNotifier {
   }
 
   Future<void> deleteTaskFromCurrentProject(int projectId, int taskId) async {
-    isLoading = true;
+    initialLoading = true;
+    notifyListeners();
 
     try {
       await tasksRepository.deleteTaskById(projectId, taskId);
@@ -109,7 +110,7 @@ class TaskProvider extends ChangeNotifier {
     } catch (e) {
       throw Exception('Error to delete a task from project with id: $taskId');
     } finally {
-      isLoading = false;
+      initialLoading = false;
       notifyListeners();
     }
   }

@@ -44,7 +44,7 @@ class PieChartCard extends StatelessWidget {
                   Text(
                     'Tasks progress',
                     style: TextStyle(
-                      fontSize: 24.0,
+                      fontSize: 22.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),

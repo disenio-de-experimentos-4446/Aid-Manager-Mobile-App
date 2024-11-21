@@ -39,6 +39,7 @@ class ProfileContent extends StatefulWidget {
 }
 
 class _ProfileContentState extends State<ProfileContent> {
+  bool _isPasswordVisible = false;
   // ignore: unused_field
   File? _image;
   final picker = ImagePicker();
@@ -200,7 +201,7 @@ class _ProfileContentState extends State<ProfileContent> {
         children: [
           SingleChildScrollView(
             padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 25.0),
+                const EdgeInsets.only(top: 25.0, right: 20.0, left: 20.0, bottom: 10.0),
             child: Column(
               children: [
                 GestureDetector(
@@ -368,12 +369,12 @@ class _ProfileContentState extends State<ProfileContent> {
                 ),
                 const SizedBox(height: 20),
                 CompanySectionTitle(
-                  title: 'Company Information',
-                  companyName: user?.companyName ?? 'No Company Name',
-                  companyEmail: user?.companyEmail ?? 'No Company Email',
-                  companyUbication:
-                      user?.companyCountry ?? 'No Company Ubication',
-                ),
+                    title: 'Company Information',
+                    companyName: user?.companyName ?? 'No Company Name',
+                    companyEmail: user?.companyEmail ?? 'No Company Email',
+                    companyUbication:
+                        user?.companyCountry ?? 'No Company Ubication',
+                    userRole: user?.role ?? 'No role'),
                 const SizedBox(height: 5),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -444,49 +445,52 @@ class _ProfileContentState extends State<ProfileContent> {
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onDoubleTap: () {
-                          if (_isCodeVisible) {
-                            _copyToClipboard(
-                                user?.teamRegisterCode ?? 'No Code available');
-                          }
-                        },
-                        child: Row(
-                          children: [
-                            Icon(Icons.key, color: Colors.black54),
-                            const SizedBox(width: 12),
-                            Text(
-                              _isCodeVisible
-                                  ? user?.teamRegisterCode ??
-                                      'No Code available'
-                                  : '**********',
-                              style: const TextStyle(
-                                  fontSize: 16, letterSpacing: 0.70),
-                            ),
-                          ],
+                Visibility(
+                  visible: user?.role == 'Manager',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onDoubleTap: () {
+                            if (_isCodeVisible) {
+                              _copyToClipboard(user?.teamRegisterCode ??
+                                  'No Code available');
+                            }
+                          },
+                          child: Row(
+                            children: [
+                              Icon(Icons.key, color: Colors.black54),
+                              const SizedBox(width: 12),
+                              Text(
+                                _isCodeVisible
+                                    ? user?.teamRegisterCode ??
+                                        'No Code available'
+                                    : '**********',
+                                style: const TextStyle(
+                                    fontSize: 16, letterSpacing: 0.70),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          _isCodeVisible
-                              ? Icons.share
-                              : Icons.lock_person_sharp,
-                          color: CustomColors.darkGreen,
+                        IconButton(
+                          icon: Icon(
+                            _isCodeVisible
+                                ? Icons.share
+                                : Icons.lock_person_sharp,
+                            color: CustomColors.darkGreen,
+                          ),
+                          onPressed: () {
+                            if (_isCodeVisible) {
+                              _shareTeamRegisterCode(user!.teamRegisterCode);
+                            } else {
+                              _showAccessCodeDialog();
+                            }
+                          },
                         ),
-                        onPressed: () {
-                          if (_isCodeVisible) {
-                            _shareTeamRegisterCode(user!.teamRegisterCode);
-                          } else {
-                            _showAccessCodeDialog();
-                          }
-                        },
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -514,16 +518,28 @@ class _ProfileContentState extends State<ProfileContent> {
                           Icon(Icons.lock, color: Colors.black54),
                           const SizedBox(width: 12),
                           Text(
-                            user?.password ?? '********',
+                            _isPasswordVisible
+                                ? user?.password ?? ''
+                                : '********',
                             style: const TextStyle(
-                                fontSize: 16, letterSpacing: 0.8),
+                              fontSize: 16,
+                              letterSpacing: 0.8,
+                            ),
                           ),
                         ],
                       ),
                       IconButton(
-                        icon: const Icon(Icons.remove_red_eye,
-                            color: CustomColors.darkGreen),
-                        onPressed: () {},
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: CustomColors.darkGreen,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
                       ),
                     ],
                   ),

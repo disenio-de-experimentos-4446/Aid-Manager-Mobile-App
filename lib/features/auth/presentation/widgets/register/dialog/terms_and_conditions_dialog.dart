@@ -5,7 +5,8 @@ class TermsAndConditionsDialog extends StatefulWidget {
   const TermsAndConditionsDialog({super.key});
 
   @override
-  State<TermsAndConditionsDialog> createState() => _TermsAndConditionsDialogState();
+  State<TermsAndConditionsDialog> createState() =>
+      _TermsAndConditionsDialogState();
 }
 
 class _TermsAndConditionsDialogState extends State<TermsAndConditionsDialog> {
@@ -27,7 +28,8 @@ class _TermsAndConditionsDialogState extends State<TermsAndConditionsDialog> {
               color: CustomColors.darkGreen,
               borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
             child: Row(
               children: [
                 Icon(
@@ -42,19 +44,21 @@ class _TermsAndConditionsDialogState extends State<TermsAndConditionsDialog> {
                     Text(
                       'Terms of Service',
                       style: TextStyle(
-                        fontSize: 22.0,
+                        fontSize: 20.0,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
                     SizedBox(height: 4.0),
                     Text(
-                      'Last updated November 18, 2024',
+                      'November 18, 2024',
                       style: TextStyle(
                         fontSize: 16.0,
                         color: Colors.white70,
                       ),
-                    ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    )
                   ],
                 ),
               ],
@@ -140,7 +144,8 @@ class _TermsAndConditionsDialogState extends State<TermsAndConditionsDialog> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -151,45 +156,55 @@ class _TermsAndConditionsDialogState extends State<TermsAndConditionsDialog> {
                   offset: Offset(0, -5),
                 ),
               ],
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(20.0)),
+              borderRadius:
+                  BorderRadius.vertical(bottom: Radius.circular(20.0)),
             ),
             child: Column(
               children: [
-                Row(
-                  children: [
-                    Checkbox(
-                      value: _agreeToTerms,
-                      onChanged: (value) {
-                        setState(() {
-                          _agreeToTerms = value!;
-                        });
-                      },
-                    ),
-                    Expanded(
-                      child: Text(
-                        'I agree to the Terms and Conditions',
-                        style: TextStyle(fontSize: 16.0),
+                Transform.translate(
+                  offset: Offset(-10, 0),
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: _agreeToTerms,
+                        onChanged: (value) {
+                          setState(() {
+                            _agreeToTerms = value!;
+                          });
+                        },
                       ),
-                    ),
-                  ],
+                      Expanded(
+                        child: Text(
+                          'I agree to the Terms and Conditions',
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: _agreeToPrivacy,
-                      onChanged: (value) {
-                        setState(() {
-                          _agreeToPrivacy = value!;
-                        });
-                      },
-                    ),
-                    Expanded(
-                      child: Text(
-                        'I agree to the Privacy Policy',
-                        style: TextStyle(fontSize: 16.0),
+                SizedBox(
+                  height: 10,
+                ),
+                Transform.translate(
+                  offset: Offset(-10, 0),
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: _agreeToPrivacy,
+                        onChanged: (value) {
+                          setState(() {
+                            _agreeToPrivacy = value!;
+                          });
+                        },
                       ),
-                    ),
-                  ],
+                      Expanded(
+                        child: Text(
+                          'I agree to the Privacy Policy',
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(height: 18.0),
                 Row(

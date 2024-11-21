@@ -8,8 +8,13 @@ import 'package:provider/provider.dart';
 class ProjectsCreatedByUserScreen extends StatefulWidget {
   static const String name = "projects_created_by_user_screen";
   final String userId;
+  final String userName;
 
-  const ProjectsCreatedByUserScreen({super.key, required this.userId});
+  const ProjectsCreatedByUserScreen({
+    super.key,
+    required this.userId,
+    required this.userName,
+  });
 
   @override
   State<ProjectsCreatedByUserScreen> createState() =>
@@ -51,7 +56,7 @@ class _ProjectsCreatedByUserScreenState
             size: 32.0,
           ),
           onPressed: () {
-            context.pop(context);
+            context.go('/projects');
           },
         ),
         title: Text(
@@ -109,7 +114,7 @@ class _ProjectsCreatedByUserScreenState
                         ),
                         children: <TextSpan>[
                           TextSpan(
-                            text: 'Nicolas',
+                            text: widget.userName,
                             style: TextStyle(
                               color: CustomColors.darkGreen,
                               fontWeight: FontWeight.bold,
@@ -137,7 +142,7 @@ class _ProjectsCreatedByUserScreenState
                   ),
                 )
               : Expanded(
-                  child: projectsProvider.projectsUser.isEmpty
+                  child: projectsProvider.projects.isEmpty
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -172,10 +177,9 @@ class _ProjectsCreatedByUserScreenState
                             top: 20.0,
                           ),
                           child: ListView.builder(
-                            itemCount: projectsProvider.projectsUser.length,
+                            itemCount: projectsProvider.projects.length,
                             itemBuilder: (context, index) {
-                              final project =
-                                  projectsProvider.projectsUser[index];
+                              final project = projectsProvider.projects[index];
                               return Column(
                                 children: [
                                   ProjectUserCard(

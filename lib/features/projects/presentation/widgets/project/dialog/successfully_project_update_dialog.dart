@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SuccessfullyProjectUpdateDialog extends StatelessWidget {
   const SuccessfullyProjectUpdateDialog({super.key});
@@ -45,6 +46,7 @@ class SuccessfullyProjectUpdateDialog extends StatelessWidget {
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
+            context.go('/projects');
           },
           child: const Text(
             'OK',

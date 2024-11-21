@@ -169,17 +169,6 @@ class _ProjectPaymentFormScreenState extends State<ProjectPaymentFormScreen> {
             },
           ),
           toolbarHeight: 70.0,
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.more_horiz,
-                color: Colors.white,
-                size: 32.0,
-              ),
-              onPressed: () {
-              },
-            ),
-          ],
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 25.0),
