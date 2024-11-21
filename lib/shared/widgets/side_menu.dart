@@ -275,7 +275,7 @@ class _SideMenuState extends State<SideMenu> {
               child: Divider(),
             ),
             const Padding(
-              padding: EdgeInsets.fromLTRB(18, 5, 16, 10),
+              padding: EdgeInsets.fromLTRB(18, 10, 16, 10),
               child: Row(
                 children: [
                   Align(

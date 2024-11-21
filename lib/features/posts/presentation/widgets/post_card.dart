@@ -122,7 +122,7 @@ class PostCard extends StatelessWidget {
                   title,
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                    fontSize: 20.0,
+                    fontSize: 18.0,
                     fontWeight: FontWeight.bold,
                     height: 1.65,
                   ),
@@ -138,7 +138,7 @@ class PostCard extends StatelessWidget {
                   description,
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                    fontSize: 17.0,
+                    fontSize: 16.0,
                     fontWeight: FontWeight.w500,
                     height: 1.65,
                   ),

@@ -155,7 +155,7 @@ class _AidNavigationBar extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -187,14 +187,14 @@ class _AidNavigationBar extends StatelessWidget {
             Icon(
               icon,
               color: isSelected ? CustomColors.darkGreen : CustomColors.grey,
-              size: 30.0,
+              size: 28.0,
             ),
             const SizedBox(height: 5.0),
             Text(
               label,
               style: TextStyle(
                 color: isSelected ? CustomColors.darkGreen : CustomColors.grey,
-                fontSize: 14,
+                fontSize: 12.5,
               ),
             ),
           ],
