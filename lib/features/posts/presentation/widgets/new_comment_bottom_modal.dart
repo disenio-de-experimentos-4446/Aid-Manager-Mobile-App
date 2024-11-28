@@ -43,7 +43,7 @@ class _NewCommentBottomModalState extends State<NewCommentBottomModal> {
                     widget.onSubmitComment();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red[700], // Color de fondo rojizo
+                    backgroundColor: Colors.red[700],
                   ),
                   child: Text(
                     'Submit',

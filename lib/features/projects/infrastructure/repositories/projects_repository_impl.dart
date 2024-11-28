@@ -33,4 +33,29 @@ class ProjectsRepositoryImpl implements ProjectsRepository {
     return datasource.updateProjectById(id, project);
   }
   
+  @override
+  Future<void> deleteProjectFromFavorites(int userId, int projectId) {
+    return datasource.deleteProjectFromFavorites(userId, projectId);
+  }
+  
+  @override
+  Future<List<Project>> getFavoriteProjectsByUser(int userId) {
+    return datasource.getFavoriteProjectsByUser(userId);
+  }
+  
+  @override
+  Future<List<Project>> getProjectsByUser(int userId) {
+    return datasource.getProjectsByUser(userId);
+  }
+  
+  @override
+  Future<void> saveProjectAsFavorite(int userId, int projectId) {
+    return datasource.saveProjectAsFavorite(userId, projectId);
+  }
+  
+  @override
+  Future<void> updateRatingByPost(int projectId, double rating) {
+    return datasource.updateRatingByPost(projectId, rating);
+  }
+  
 }

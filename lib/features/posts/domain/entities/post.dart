@@ -13,7 +13,9 @@ class Post {
   String? userImage;
   int? rating;
   List<String> images;
-  List<CommentPost>? commentsList;
+  List<Comment>? commentsList;
+  bool isFavorite;
+  bool hasLiked;
 
   Post({
     this.id,
@@ -29,42 +31,41 @@ class Post {
     this.rating,
     required this.images,
     this.commentsList,
-  });
+    bool? isFavorite,
+    bool? hasLiked,
+  })  : isFavorite = isFavorite ?? false,
+        hasLiked = hasLiked ?? false;
 
-}
-
-class CommentPost {
-  final int id;
-  final int userId;
-  final String authorImage;
-  final String authorEmail;
-  final String authorName;
-  final String comment;
-  final int postId;
-  final DateTime timeOfComment;
-
-  CommentPost({
-    required this.id,
-    required this.userId,
-    required this.authorImage,
-    required this.authorEmail,
-    required this.authorName,
-    required this.comment,
-    required this.postId,
-    required this.timeOfComment,
-  });
-
-  // metodo de conversion para commnet to CommentPost
-  factory CommentPost.fromComment(Comment comment) {
-    return CommentPost(
-      id: comment.id ?? 0,
-      userId: comment.userId,
-      authorImage: comment.userImage ?? '',
-      authorEmail: comment.userEmail ?? '',
-      authorName: comment.userName ?? '',
-      comment: comment.comment,
-      postId: comment.postId ?? 0,
-      timeOfComment: comment.commentTime ?? DateTime.now(),
+  // copy to update only necessary fields (pa no mandar toda la wea pa updatear)
+  Post copyWith({
+    int? id,
+    String? title,
+    String? subject,
+    String? description,
+    DateTime? postTime,
+    int? companyId,
+    int? userId,
+    String? userName,
+    String? userImage,
+    String? email,
+    int? rating,
+    List<String>? images,
+    List<Comment>? commentsList,
+  }) {
+    return Post(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      subject: subject ?? this.subject,
+      description: description ?? this.description,
+      postTime: postTime ?? this.postTime,
+      companyId: companyId ?? this.companyId,
+      userId: userId ?? this.userId,
+      userName: userName ?? this.userName,
+      userImage: userImage ?? this.userImage,
+      email: email ?? this.email,
+      rating: rating ?? this.rating,
+      images: images ?? this.images,
+      commentsList: commentsList ?? this.commentsList,
     );
   }
 }

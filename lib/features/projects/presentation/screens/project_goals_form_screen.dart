@@ -71,7 +71,6 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      // mostrar un dialog perzonalizado para cada exception
       final dialog = getDashboardErrorDialog(context, e as Exception);
       showErrorDialog(context, dialog);
     }
@@ -141,21 +140,9 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
             },
           ),
           toolbarHeight: 70.0,
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.more_horiz,
-                color: Colors.white,
-                size: 32.0,
-              ),
-              onPressed: () {
-                // Acción al presionar el ícono de tres puntos
-              },
-            ),
-          ],
         ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 25.0),
+          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 20.0),
           child: Column(
             children: [
               Row(
@@ -163,7 +150,7 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
                   Text(
                     'Expected Payments',
                     style:
-                        TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                   ),
                   Spacer(),
                   ElevatedButton(
@@ -173,16 +160,14 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      foregroundColor:
-                          Colors.white, // Color del texto del botón
-                      backgroundColor: Colors.green, // Color del botón
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.green,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            12.0), // Aumentar el border radius
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
                     ),
                     child: Text(
-                      'Clear Fields',
+                      'Clear',
                       style: TextStyle(fontSize: 18.0),
                     ),
                   ),
@@ -209,8 +194,7 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
                             ],
                           ),
                         ),
-                        if (i + 1 < _controllers.length)
-                          SizedBox(width: 12.0), // Espacio entre las columnas
+                        if (i + 1 < _controllers.length) SizedBox(width: 12.0),
                         if (i + 1 < _controllers.length)
                           Expanded(
                             child: Column(
@@ -223,9 +207,7 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
                                   ),
                                   keyboardType: TextInputType.number,
                                 ),
-                                SizedBox(
-                                    height:
-                                        12.0), // Espacio entre los TextFields
+                                SizedBox(height: 12.0),
                               ],
                             ),
                           ),
@@ -250,11 +232,11 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
                       child: Text(
                         'Preview Graph',
                         style: TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.bold),
+                            fontSize: 16.0, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10), // Espacio entre los botones
+                  SizedBox(width: 10),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: onSubmitUpdateGoalsGraph,
@@ -269,7 +251,7 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
                       child: Text(
                         'Update Graph',
                         style: TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.bold),
+                            fontSize: 16.0, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -333,15 +315,14 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
         // BOLITA 8 (NO BORRAR (NO FUNCIONA LA APP SI BORRAS))
         floatingActionButton: FloatingActionButton(
           onPressed: _generateRandomValues,
-          backgroundColor: const Color.fromARGB(
-              255, 214, 214, 214), // Color del botón flotante
+          backgroundColor: const Color.fromARGB(255, 214, 214, 214),
           child: BounceInUp(
             animate: true,
             duration: Duration(milliseconds: 1500),
             child: SizedBox(
-              width: 45.0, // Ancho deseado
-              height: 45.0, // Alto deseado
-              child: Image.asset('assets/images/bolita8.png'), // Imagen local
+              width: 45.0,
+              height: 45.0,
+              child: Image.asset('assets/images/bolita8.png'),
             ),
           ),
         ),

@@ -100,14 +100,14 @@ class PostCard extends StatelessWidget {
                       onTap: () {
                         context.go('/posts/$postId');
                       },
-                      child: Icon(Icons.open_in_new_rounded, size: 32),
+                      child: Icon(Icons.open_in_new_rounded, size: 28),
                     ),
                     SizedBox(width: 12.0),
                     GestureDetector(
                       onTap: () {
                         // Acción del botón de editar
                       },
-                      child: Icon(Icons.more_vert_sharp, size: 34),
+                      child: Icon(Icons.more_vert_sharp, size: 28),
                     ),
                   ],
                 )
@@ -122,7 +122,7 @@ class PostCard extends StatelessWidget {
                   title,
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                    fontSize: 20.0,
+                    fontSize: 18.0,
                     fontWeight: FontWeight.bold,
                     height: 1.65,
                   ),
@@ -138,7 +138,7 @@ class PostCard extends StatelessWidget {
                   description,
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                    fontSize: 17.0,
+                    fontSize: 16.0,
                     fontWeight: FontWeight.w500,
                     height: 1.65,
                   ),
@@ -150,25 +150,30 @@ class PostCard extends StatelessWidget {
               height: 225,
               child: CarouselView(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                      20.0), // Ajusta el radio del borde según sea necesario
+                  borderRadius: BorderRadius.circular(20.0),
                 ),
                 itemExtent: MediaQuery.sizeOf(context).width - 96,
                 padding: const EdgeInsets.only(right: 10),
                 itemSnapping: true,
                 elevation: 4.0,
                 children: List.generate(
-                  10,
+                  images.length,
                   (int index) => Image.network(
-                    'https://img.freepik.com/premium-photo/woman-with-backpack-stands-mountain-top-looking-beautiful-sunset_188544-54443.jpg',
+                    images[index],
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/images/placeholder-image.webp',
+                        fit: BoxFit.cover,
+                      );
+                    },
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 18),
+            SizedBox(height: 12),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              padding: const EdgeInsets.symmetric(horizontal: 2.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

@@ -3,8 +3,12 @@ import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/projects/domain/entities/task.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class PieChartCard extends StatelessWidget {
+  final String projectId;
+  final String projectName;
+  final bool isManager;
   final List<Task> tasks;
   final List<PieChartSectionData> getSections;
 
@@ -12,6 +16,9 @@ class PieChartCard extends StatelessWidget {
     super.key,
     required this.getSections,
     required this.tasks,
+    required this.projectId,
+    required this.projectName,
+    required this.isManager,
   });
 
   @override
@@ -37,7 +44,7 @@ class PieChartCard extends StatelessWidget {
                   Text(
                     'Tasks progress',
                     style: TextStyle(
-                      fontSize: 24.0,
+                      fontSize: 22.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -77,7 +84,9 @@ class PieChartCard extends StatelessWidget {
                   ),
                   SizedBox(width: 5.0),
                   Text(
-                    '${(tasks.where((task) => task.state == 'Done').length / tasks.length * 100).toStringAsFixed(1)}%',
+                    tasks.isEmpty
+                        ? '0.0%'
+                        : '${(tasks.where((task) => task.state == 'Done').length / tasks.length * 100).toStringAsFixed(1)}%',
                     style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
@@ -93,12 +102,45 @@ class PieChartCard extends StatelessWidget {
             child: SizedBox(
               width: 300.0,
               height: 300.0,
-              child: PieChart(
-                PieChartData(
-                  sections: getSections,
-                  sectionsSpace: 0,
-                ),
-              ),
+              child: tasks.isEmpty
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.assignment_late,
+                            size: 54, color: Colors.grey),
+                        SizedBox(height: 15),
+                        Text(
+                          'No tasks available',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 18,
+                          ),
+                        ),
+                        if (isManager) ...[
+                          SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () {
+                              context.go(
+                                  '/projects/$projectId/tasks?name=${Uri.encodeComponent(projectName)}');
+                            },
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.green,
+                              backgroundColor: CustomColors.lightGreen,
+                            ),
+                            child: Text(
+                              'Create new task',
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                          ),
+                        ],
+                      ],
+                    )
+                  : PieChart(
+                      PieChartData(
+                        sections: getSections,
+                        sectionsSpace: 0,
+                      ),
+                    ),
             ),
           ),
           SizedBox(height: 35.0),

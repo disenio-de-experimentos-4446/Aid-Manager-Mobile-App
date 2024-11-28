@@ -8,8 +8,6 @@ This project focuses on agile project management by leveraging financial metrics
 - **Ramirez Hoffmann, Sebastian** - U202211894
 - **Esteban Garcia, Nicolas Sebastian** - U202217485
 - **Peña Rivera, Manuel Sebastian** - U202210138
-- **Mayta Lopez, Harold Jaime** - U202114851
-- **Barrionuevo Reto, Jean Franco Joel** - U202219284
 
 ## Getting Started
 

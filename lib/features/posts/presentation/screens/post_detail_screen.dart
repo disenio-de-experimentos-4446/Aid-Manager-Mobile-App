@@ -2,6 +2,8 @@ import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/auth/shared/widgets/is_empty_dialog.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/providers/post_provider.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/widgets/comment_card.dart';
+import 'package:aidmanager_mobile/features/posts/presentation/widgets/dialog/successfully_post_submit_saved_dialog.dart';
+import 'package:aidmanager_mobile/features/posts/presentation/widgets/dialog/sucessfull_post_rating_dialog.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/widgets/new_comment_bottom_modal.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/widgets/no_comments_yet.dart';
 import 'package:aidmanager_mobile/features/posts/shared/widgets/custom_error_posts_dialog.dart';
@@ -13,15 +15,23 @@ import 'package:provider/provider.dart';
 
 class PostDetailScreen extends StatefulWidget {
   final String postId;
+  final bool isFavorite;
   static const String name = "posts_detail_screen";
 
-  const PostDetailScreen({super.key, required this.postId});
+  const PostDetailScreen({
+    super.key,
+    required this.postId,
+    required this.isFavorite,
+  });
 
   @override
   State<PostDetailScreen> createState() => _PostDetailScreenState();
 }
 
 class _PostDetailScreenState extends State<PostDetailScreen> {
+  // esto es para simular el efecto de pintado del corazon solo es superficial su efecto
+  bool clickedFavorite = false;
+
   final TextEditingController _commentController = TextEditingController();
 
   @override
@@ -33,6 +43,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   Future<void> _loadThreadInformation() async {
     final postId = int.parse(widget.postId);
     await context.read<PostProvider>().loadThreadByPost(postId);
+  }
+
+  Future<void> onSubmitSaved(int postId) async {
+    final postProvider = context.read<PostProvider>();
+
+    postProvider.addPostAsSaved(postId);
   }
 
   Future<void> onSubmitnewComment() async {
@@ -56,6 +72,18 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     }
   }
 
+  Future<void> onSubmitRating(int postId) async {
+    final postProvider = context.read<PostProvider>();
+
+    try {
+      postProvider.updateRating(postId);
+
+      showCustomizeDialog(context, SucessfullPostRatingDialog());
+    } catch (e) {
+      throw Exception('Error to update rating for post with id: $postId');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final postProvider = Provider.of<PostProvider>(context, listen: true);
@@ -76,17 +104,17 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   height: 80,
                   child: CircularProgressIndicator(
                     strokeWidth: 8,
-                    color:
-                        CustomColors.darkGreen, // Puedes cambiar el color aquí
+                    color: CustomColors.darkGreen,
                   ),
                 ),
               ),
             )
           : Scaffold(
+              backgroundColor: Colors.white,
               appBar: AppBar(
                 toolbarHeight: 70.0,
                 automaticallyImplyLeading: false,
-                backgroundColor: Colors.white,
+                backgroundColor: CustomColors.white,
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -104,25 +132,52 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       children: [
                         IconButton(
                           icon: Icon(
-                            Icons.bookmark_border_outlined,
+                            clickedFavorite ||
+                                    post!.isFavorite ||
+                                    widget.isFavorite
+                                ? Icons.bookmark
+                                : Icons.bookmark_border_outlined,
+                            color: clickedFavorite ||
+                                    post!.isFavorite ||
+                                    widget.isFavorite
+                                ? Colors.black87
+                                : Colors.black87,
                             size: 32.0,
-                            color: Colors.black,
                           ),
-                          onPressed: () {
-                            // Lógica para guardar
-                          },
+                          onPressed: clickedFavorite ||
+                                  post!.isFavorite ||
+                                  widget.isFavorite
+                              ? null
+                              : () {
+                                  setState(() {
+                                    clickedFavorite = true;
+                                  });
+                                  onSubmitSaved(post.id!);
+                                  if (!mounted) return;
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return SuccessfullyPostSubmitSavedDialog();
+                                    },
+                                  );
+                                },
                         ),
                         SizedBox(
                           width: 10,
                         ),
                         IconButton(
                           icon: Icon(
-                            Icons.favorite_border,
+                            post!.hasLiked
+                                ? Icons.favorite
+                                : Icons.favorite_border_outlined,
                             size: 32.0,
-                            color: Colors.black,
+                            color: post.hasLiked ? Colors.red : Colors.black,
                           ),
-                          onPressed: () {
-                            // Lógica para agregar a favoritos
+                          onPressed: () async {
+                            await onSubmitRating(int.parse(widget.postId));
+                            setState(() {
+                              post.hasLiked = !post.hasLiked;
+                            });
                           },
                         ),
                       ],
@@ -138,14 +193,18 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       decoration: BoxDecoration(
                         border: Border(
                           bottom: BorderSide(
-                            color: CustomColors.grey, // Color del borde
-                            width: 1.5, // Ancho del borde
+                            color: const Color.fromARGB(255, 189, 189, 189),
+                            width: 1.5,
                           ),
                         ),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.only(
-                            left: 20.0, right: 20.0, bottom: 30.0, top: 0.0),
+                          left: 20.0,
+                          right: 20.0,
+                          bottom: 30.0,
+                          top: 5.0,
+                        ),
                         child: Column(
                           children: [
                             Column(
@@ -155,7 +214,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     CircleAvatar(
-                                      radius: 30.0,
+                                      radius: 28.0,
                                       child: ClipOval(
                                         child: FadeInImage.assetNetwork(
                                           width: double.infinity,
@@ -178,14 +237,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize
-                                          .min, // Reduce el tamaño del eje principal
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Row(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
-                                          mainAxisSize: MainAxisSize
-                                              .min, // Reduce el tamaño del eje principal del Row
+                                          mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
                                               post?.userName ?? 'No name',
@@ -195,8 +252,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                               ),
                                             ),
                                             const SizedBox(
-                                              width:
-                                                  14, // Ajusta el espacio entre el texto y el icono
+                                              width: 14,
                                             ),
                                             Row(
                                               children: [
@@ -217,7 +273,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                             ),
                                           ],
                                         ),
-                                        const SizedBox(height: 6),
+                                        const SizedBox(height: 4),
                                         Text(
                                           post?.email ?? '',
                                           style: TextStyle(
@@ -229,14 +285,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     )
                                   ],
                                 ),
-                                SizedBox(height: 15),
+                                SizedBox(height: 18),
                                 Align(
                                   alignment: Alignment.topLeft,
                                   child: Text(
                                     post?.title ?? 'No title',
                                     textAlign: TextAlign.start,
                                     style: TextStyle(
-                                      fontSize: 20.0,
+                                      fontSize: 18.0,
                                       fontWeight: FontWeight.bold,
                                       height: 1.65,
                                     ),
@@ -249,7 +305,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     post?.description ?? 'no desc',
                                     textAlign: TextAlign.start,
                                     style: TextStyle(
-                                      fontSize: 18.0,
+                                      fontSize: 16.0,
                                       fontWeight: FontWeight.w500,
                                       height: 1.65,
                                     ),
@@ -259,10 +315,18 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(10.0),
                                   child: Image.network(
-                                    'https://img.europapress.es/fotoweb/fotonoticia_20191014112917_1200.jpg',
+                                    post!.images[0],
                                     width: double.infinity,
                                     height: 200.0,
                                     fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Image.asset(
+                                        'assets/images/placeholder-image.webp',
+                                        width: double.infinity,
+                                        height: 200.0,
+                                        fit: BoxFit.cover,
+                                      );
+                                    },
                                   ),
                                 ),
                                 SizedBox(height: 18),
@@ -276,15 +340,15 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                         Row(
                                           children: [
                                             Icon(Icons.comment,
-                                                size: 22.0,
+                                                size: 20.0,
                                                 color: const Color.fromARGB(
                                                     255, 114, 114, 114)),
                                             SizedBox(width: 5),
                                             Text(
-                                              '${post?.commentsList?.length.toString() ?? ''} reviews',
+                                              '${post.commentsList?.length.toString() ?? ''} reviews',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 16.0,
+                                                fontSize: 14.0,
                                                 color: const Color.fromARGB(
                                                     255, 75, 75, 75),
                                               ),
@@ -297,15 +361,15 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                         Row(
                                           children: [
                                             Icon(Icons.thumb_up_rounded,
-                                                size: 22.0,
+                                                size: 20.0,
                                                 color: const Color.fromARGB(
                                                     255, 114, 114, 114)),
                                             SizedBox(width: 5),
                                             Text(
-                                              '${post?.rating.toString() ?? '0'} likes',
+                                              '${post.rating.toString()} likes',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 16.0,
+                                                fontSize: 14.0,
                                                 color: const Color.fromARGB(
                                                     255, 75, 75, 75),
                                               ),
@@ -329,7 +393,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                           formattedDate,
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 16.0,
+                                            fontSize: 14.0,
                                             color: const Color.fromARGB(
                                                 255, 75, 75, 75),
                                           ),
@@ -344,7 +408,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                         ),
                       ),
                     ),
-                    post?.commentsList?.isEmpty ?? true
+                    post.commentsList?.isEmpty ?? true
                         ? NoCommentsYet(
                             onAddComment: () => showBottomModalComment(context),
                           )
@@ -354,14 +418,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                 decoration: BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
-                                      color: Colors.grey,
+                                      color: CustomColors.grey,
                                       width: 1.0,
                                     ),
                                   ),
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 20.0, vertical: 10.0),
+                                    horizontal: 20.0,
+                                    vertical: 10.0,
+                                  ),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -378,12 +444,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                           showBottomModalComment(context);
                                         },
                                         style: TextButton.styleFrom(
-                                          padding: EdgeInsets
-                                              .zero, // Quitar el padding por defecto
+                                          padding: EdgeInsets.zero,
                                         ),
                                         child: Row(
                                           children: [
-                                            Icon(Icons.add_rounded, color: CustomColors.darkGreen),
+                                            Icon(
+                                              Icons.add_rounded,
+                                              color: CustomColors.darkGreen,
+                                            ),
                                             SizedBox(width: 5),
                                             Text(
                                               'Add new comment',
@@ -402,16 +470,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                               ListView.builder(
                                 shrinkWrap: true,
                                 physics: NeverScrollableScrollPhysics(),
-                                itemCount: post?.commentsList?.length ?? 0,
+                                itemCount: post.commentsList?.length ?? 0,
                                 itemBuilder: (context, index) {
-                                  final comment = post?.commentsList![index];
+                                  final comment = post.commentsList![index];
                                   return CommentCard(
-                                    userImage: comment!.authorImage,
-                                    userEmail: comment.authorEmail,
-                                    userName: comment.authorName,
+                                    userImage: comment.userImage!,
+                                    userEmail: comment.userEmail!,
+                                    userName: comment.userName!,
                                     comment: comment.comment,
-                                    postId: comment.postId,
-                                    timeOfComment: comment.timeOfComment,
+                                    postId: comment.postId!,
+                                    timeOfComment: comment.commentTime!,
                                   );
                                 },
                               ),

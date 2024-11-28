@@ -55,7 +55,6 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
   @override
   Future<void> updateUserInformationById(
       int userId, Map<String, dynamic> userData) async {
-    print(userData);
 
     try {
       final response = await dio.put(
@@ -163,6 +162,25 @@ class UserDatasourceImpl extends HttpService implements UserDatasource {
       throw Exception("Failed to update current company with id: $companyId, $e");
     }
 
+  }
+
+  @override
+  Future<List<User>> getMembersDeletedByCompany(int companyId) async {
+    try {
+      final response = await dio.get(
+        '/users/deleted-users/$companyId'
+      );
+
+      if (response.statusCode == HttpStatus.ok) {
+        final List<dynamic> usersJson = response.data;
+        return usersJson.map((json) => UserMapper.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to get deleted members information by companyId: $companyId: ${response.statusCode}');
+      }
+
+    } catch (e) {
+      throw Exception('Failed to get deleted members information by companyId: $companyId: $e');
+    }
   }
 
   @override

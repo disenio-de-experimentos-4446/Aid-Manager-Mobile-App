@@ -16,9 +16,7 @@ class TasksDatasourceImpl extends HttpService implements TasksDatasource {
         data: jsonEncode(requestBody),
       );
 
-      print(response.data);
-
-        if(response.statusCode != HttpStatus.created) {
+      if(response.statusCode != HttpStatus.ok) {
         throw Exception('Failed to create a new task: ${response.statusCode}');
       }
 
@@ -60,22 +58,16 @@ class TasksDatasourceImpl extends HttpService implements TasksDatasource {
   }
 
   @override
-  Future<void> deleteTaskById(int id) async {
+  Future<void> deleteTaskById(int projectId, int taskId) async {
     try {
-      final taskFounded = await dio.get('/task-items/$id');
+      final deleteResponse = await dio.delete('/projects/$projectId/task-items/$taskId');
 
-      if(taskFounded.statusCode != HttpStatus.ok || taskFounded.data == null || taskFounded.data.isEmpty) {
-        throw Exception('Task with id $id does not exist');
-      }
-
-      final deleteResponse = await dio.delete('/task-items/$id');
-
-      if(deleteResponse.statusCode != HttpStatus.ok) {
-        throw Exception('Failed to delete task with id: $id ${deleteResponse.statusCode}');
+      if(deleteResponse.statusCode != HttpStatus.ok || deleteResponse.data.isEmpty) {
+        throw Exception('Failed to delete task with id: $taskId ${deleteResponse.statusCode}');
       }
 
     } catch (e) {
-      throw Exception('Failed to delete task with id: $id, $e');
+      throw Exception('Failed to delete task with id: $taskId, $e');
     }
   }
 
@@ -118,7 +110,6 @@ class TasksDatasourceImpl extends HttpService implements TasksDatasource {
   @override
   Future<List<Task>> getAllTasksByCompanyId(int companyId) async {
 
-    print('Llegaste a qui toma: $companyId');
     try {
       final response = await dio.get('/company-tasks/$companyId');
 
@@ -137,7 +128,7 @@ class TasksDatasourceImpl extends HttpService implements TasksDatasource {
   }
 
   @override
-  Future<void> updateTaskById(int id, Task task) async {
+  Future<void> updateTaskById(int id, int projectId, Task task) async {
     final requestBody = TaskMapper.toJson(task);
 
     try {
@@ -153,6 +144,28 @@ class TasksDatasourceImpl extends HttpService implements TasksDatasource {
     } catch (e) {
       throw Exception('Failed to update task with id $id for project, $e');
     }
+  }
+  
+  @override
+  Future<List<Task>> getAllTasksAssignedToUser(int companyId, int userId) async {
+    
+    try {
+      final response = await dio.get(
+        '/company-tasks/$companyId/user/$userId',
+      );
+
+      if(response.statusCode == HttpStatus.ok) {
+        final List<dynamic> tasksJson = response.data;
+        return tasksJson.map((json) => TaskMapper.fromJson(json)).toList();
+      }
+      else {
+        throw Exception('Failed to get Tasks for user assignned with id: $userId');
+      }
+
+    } catch (e) {
+      throw Exception('Failed to get Tasks for user assignned with id: $userId, $e');
+    }
+
   }
   
 }

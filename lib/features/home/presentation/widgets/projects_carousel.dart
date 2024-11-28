@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'package:aidmanager_mobile/features/projects/domain/entities/project.dart';
 import 'package:flutter/material.dart';
 
@@ -18,17 +19,23 @@ class ProjectsCarousel extends StatelessWidget {
         children: List.generate(projects.length, (int index) {
           final project = projects[index];
           return ProjectCard(
+            projectId: project.id!,
             projectName: project.name,
             membersCount: project.userList?.length ?? 0,
             imageUrl: project.imageUrl[0],
           );
         }),
+        onTap: (index) {
+          final project = projects[index];
+          context.go('/projects/${project.id}');
+        },
       ),
     );
   }
 }
 
 class ProjectCard extends StatelessWidget {
+  final int projectId;
   final String projectName;
   final int membersCount;
   final String imageUrl;
@@ -38,6 +45,7 @@ class ProjectCard extends StatelessWidget {
     required this.projectName,
     required this.membersCount,
     required this.imageUrl,
+    required this.projectId,
   });
 
   @override
@@ -86,7 +94,7 @@ class ProjectCard extends StatelessWidget {
                       projectName,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 24.0,
+                        fontSize: 20.0,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.05,
                       ),
@@ -97,14 +105,14 @@ class ProjectCard extends StatelessWidget {
                         const Icon(
                           Icons.person,
                           color: Colors.white,
-                          size: 24.0,
+                          size: 22.0,
                         ),
                         const SizedBox(width: 8.0),
                         Text(
                           '$membersCount members',
                           style: const TextStyle(
                             color: Color.fromARGB(255, 214, 214, 214),
-                            fontSize: 18.0,
+                            fontSize: 14.0,
                           ),
                         ),
                       ],

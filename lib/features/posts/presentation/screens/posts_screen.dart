@@ -54,7 +54,6 @@ class _PostsContentState extends State<PostsContent> {
     final subject = _subjectController.text;
     final description = _descriptionController.text;
 
-    //print({title, subject, description});
     final postProvider = context.read<PostProvider>();
 
     try {
@@ -71,12 +70,21 @@ class _PostsContentState extends State<PostsContent> {
   }
 
   @override
+  void dispose() {
+    _titleController.dispose();
+    _subjectController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final postsProvider = Provider.of<PostProvider>(context, listen: true);
 
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
+        backgroundColor: CustomColors.lightGrey,
         resizeToAvoidBottomInset: false,
         body: Column(
           children: [
@@ -90,8 +98,7 @@ class _PostsContentState extends State<PostsContent> {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.only(
-                    top: 25.0, left: 20.0, right: 20.0, bottom: 25.0),
+                padding: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 25.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -116,52 +123,34 @@ class _PostsContentState extends State<PostsContent> {
                     ),
                     SizedBox(width: 12.0),
                     Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white, // Fondo blanco para el TextField
-                          borderRadius: BorderRadius.circular(30.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              spreadRadius: 1,
-                              blurRadius: 5,
-                              offset: Offset(
-                                  0, 3), // Cambia la posición de la sombra
-                            ),
-                          ],
-                        ),
-                        child: GestureDetector(
-                          onTap: () {
-                            showBottomModalPost(context);
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(
-                                  255, 244, 252, 242), // Color de fondo verde
-                              borderRadius: BorderRadius.circular(30.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.02),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                  offset: Offset(
-                                      0, 3), // Cambia la posición de la sombra
-                                ),
-                              ],
-                            ),
-                            child: IgnorePointer(
-                              child: TextField(
-                                readOnly:
-                                    true, // Hacer el TextField de solo lectura
-                                textAlignVertical: TextAlignVertical.center,
-                                decoration: InputDecoration(
-                                  hintText: 'Write something incredible...',
-                                  suffixIcon: Icon(Icons.add, size: 28.0),
-                                  border: InputBorder.none,
-                                  contentPadding:
-                                      EdgeInsets.symmetric(vertical: 5.0)
-                                          .copyWith(left: 20.0),
-                                ),
+                      child: GestureDetector(
+                        onTap: () {
+                          showBottomModalPost(context);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: CustomColors.fieldGrey,
+                            borderRadius: BorderRadius.circular(20.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                spreadRadius: 1,
+                                blurRadius: 1,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: IgnorePointer(
+                            child: TextField(
+                              readOnly: true,
+                              textAlignVertical: TextAlignVertical.center,
+                              decoration: InputDecoration(
+                                hintText: 'Write something incredible...',
+                                suffixIcon: Icon(Icons.add, size: 28.0),
+                                border: InputBorder.none,
+                                contentPadding:
+                                    EdgeInsets.symmetric(vertical: 5.0)
+                                        .copyWith(left: 20.0),
                               ),
                             ),
                           ),
@@ -171,7 +160,7 @@ class _PostsContentState extends State<PostsContent> {
                     SizedBox(width: 16.0),
                     Container(
                       decoration: BoxDecoration(
-                        color: CustomColors.fieldGrey,
+                        color: CustomColors.lightGreen,
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
@@ -187,26 +176,62 @@ class _PostsContentState extends State<PostsContent> {
                 ),
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: postsProvider.posts.length,
-                itemBuilder: (context, index) {
-                  final post = postsProvider.posts[index];
-                  return PostCard(
-                    username: post.userName!,
-                    email: post.email!,
-                    profileImg: post.userImage!,
-                    images: post.images,
-                    rating: post.rating!,
-                    numComments: post.commentsList!.length,
-                    postTime: post.postTime!,
-                    postId: post.id!,
-                    title: post.title,
-                    description: post.description,
-                  );
-                },
-              ),
-            ),
+            postsProvider.initialLoading
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30.0),
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : Expanded(
+                    child: postsProvider.posts.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.comments_disabled_outlined,
+                                    size: 48, color: Colors.grey),
+                                SizedBox(height: 12),
+                                Text(
+                                  'No posts available',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                SizedBox(height: 20),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    // Navegar a la pantalla de creación de publicaciones
+                                    showBottomModalPost(context);
+                                  },
+                                  child: Text(
+                                    'Be the first to create a post!',
+                                    style: TextStyle(fontSize: 16.0),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: postsProvider.posts.length,
+                            itemBuilder: (context, index) {
+                              final post = postsProvider.posts[index];
+                              return PostCard(
+                                username: post.userName!,
+                                email: post.email!,
+                                profileImg: post.userImage!,
+                                images: post.images,
+                                rating: post.rating!,
+                                numComments: post.commentsList!.length,
+                                postTime: post.postTime!,
+                                postId: post.id!,
+                                title: post.title,
+                                description: post.description,
+                              );
+                            },
+                          ),
+                  ),
           ],
         ),
       ),

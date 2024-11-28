@@ -10,7 +10,6 @@ class ProjectsDatasourceImpl extends HttpService implements ProjectsDatasource {
   @override
   Future<void> createProject(Project project) async {
     final requestBody = ProjectMapper.toJson(project);
-    print(requestBody);
 
     try {
       final response = await dio.post(
@@ -34,14 +33,7 @@ class ProjectsDatasourceImpl extends HttpService implements ProjectsDatasource {
   @override
   Future<void> deleteProjectById(int id) async {
     try {
-      // validamos en primeras si existe un project con ese id
-      final projectFounded = await dio.get('/projects/$id');
-
-      if (projectFounded.statusCode != HttpStatus.ok || projectFounded.data == null || projectFounded.data.isEmpty) {
-        throw Exception('Project with id $id does not exist');
-      }
-
-      // eliminacion del proyecto en base al ir
+      // eliminacion del proyecto en base al id
       final deleteResponse = await dio.delete('/projects/$id');
 
       if (deleteResponse.statusCode != HttpStatus.ok) {
@@ -63,7 +55,7 @@ class ProjectsDatasourceImpl extends HttpService implements ProjectsDatasource {
         final dynamic projectJson = response.data;
         return ProjectMapper.fromJson(projectJson);
       }
-      else{ 
+      else{
         throw Exception('Failed to fetch project with id: $id');
       }
 
@@ -107,6 +99,107 @@ class ProjectsDatasourceImpl extends HttpService implements ProjectsDatasource {
     } catch (e) {
       //print('Error: $e');
       throw Exception('Failed to update project witt id $id: $e');
+    }
+  }
+
+  @override
+  Future<List<Project>> getProjectsByUser(int userId) async {
+    try {
+      final response = await dio.get('/projects/user/$userId');
+
+      if(response.statusCode == HttpStatus.ok) {
+         final List<dynamic> projectsJson = response.data;
+        return projectsJson.map((json) => ProjectMapper.fromJson(json)).toList();
+      }
+      else{ 
+        throw Exception('Failed to fetch projects by user id: $userId');
+      }
+
+    } catch (e) {
+      throw Exception('Failed to fetch project by $userId ID user: $e');
+    }
+  }
+
+  @override
+  Future<void> saveProjectAsFavorite(int userId, int projectId) async {
+    final requestBody = jsonEncode({
+      'userId': userId,
+      'projectId': projectId,
+    });
+
+    try {
+      final response = await dio.post(
+        '/projects/favorite',
+        data: requestBody,  
+      );
+
+      if(response.statusCode != HttpStatus.ok) {
+        throw Exception('Failed to save project as a favorite: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to save project as a favorite: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteProjectFromFavorites(int userId, int projectId) async {
+
+    final requestBody = jsonEncode({
+      'userId': userId,
+      'projectId': projectId,
+    });
+
+    try {
+      final response = await dio.delete(
+        '/projects/favorite',
+        data: requestBody,  
+      );
+
+      if(response.statusCode != HttpStatus.ok) {
+        throw Exception('Failed to delete a project: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to create delete project: $e');
+    }
+  }
+
+  @override
+  Future<List<Project>> getFavoriteProjectsByUser(int userId) async {
+    try {
+      final response = await dio.get('/projects/favorite/$userId');
+
+      if(response.statusCode == HttpStatus.ok) {
+         final List<dynamic> projectsJson = response.data;
+        return projectsJson.map((json) => ProjectMapper.fromJson(json)).toList();
+      }
+      else{ 
+        throw Exception('Failed to fetch favorites projects by user id: $userId');
+      }
+
+    } catch (e) {
+      throw Exception('Failed to fetch favorites projects by $userId ID user: $e');
+    }
+  }
+
+  @override
+  Future<void> updateRatingByPost(int projectId, double rating) async {
+    
+    final requestBody = jsonEncode({
+      'rating': rating,
+    });
+
+    try {
+      final response = await dio.patch(
+        '/projects/$projectId',
+        data: requestBody
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        throw Exception('Failed to update rating in project with id $projectId: ${response.statusCode}');
+      }
+
+    } catch (e) {
+      throw Exception('Failed to update rating in project with id $projectId: $e');
     }
   }
   

@@ -39,8 +39,6 @@ class _MainWrapperState extends State<MainWrapper> {
   @override
   Widget build(BuildContext context) {
     final scaffoldKey = GlobalKey<ScaffoldState>();
-    final currentRoute =
-        GoRouter.of(context).routeInformationProvider.value.uri.path;
 
     final routeIndexMap = {
       '/home': 0,
@@ -51,19 +49,33 @@ class _MainWrapperState extends State<MainWrapper> {
       '/profile': 5,
     };
 
+    final currentRoute = GoRouter.of(context)
+        .routerDelegate
+        .currentConfiguration
+        .last
+        .matchedLocation;
+
     int currentIndex = routeIndexMap.entries
         .firstWhere((entry) => currentRoute.startsWith(entry.key),
             orElse: () => MapEntry('', 0))
         .value;
 
     // lista de rutas donde no se debe mostrar el AppBar
-    final noAppBarRoutes = ['/projects/', '/posts/'];
+    final noAppBarRoutes = [
+      '/projects/',
+      '/posts/',
+      '/user/',
+      '/saved/posts/',
+      '/favorites/projects/',
+      '/social/members-deleted',
+      '/terms-conditions'
+    ];
 
     // determinar si se debe mostrar el AppBar
-    bool showTopbar = !noAppBarRoutes.any((route) => currentRoute.startsWith(route));
-
+    bool showTopbar =
+        !noAppBarRoutes.any((route) => currentRoute.startsWith(route));
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       key: scaffoldKey,
       appBar: showTopbar
           ? AppBar(
@@ -90,7 +102,9 @@ class _MainWrapperState extends State<MainWrapper> {
                   const Text(
                     'AidManager',
                     style: TextStyle(
-                        fontSize: 24.0, color: CustomColors.lightGrey),
+                      fontSize: 22.0,
+                      color: CustomColors.lightGrey,
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(
@@ -116,6 +130,7 @@ class _MainWrapperState extends State<MainWrapper> {
       ),
     );
   }
+  
 }
 
 class _AidNavigationBar extends StatelessWidget {
@@ -127,6 +142,7 @@ class _AidNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 80.0,
       decoration: BoxDecoration(
         color: CustomColors.white,
         boxShadow: [
@@ -139,9 +155,10 @@ class _AidNavigationBar extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _buildNavItem(Icons.home_rounded, 'Home', 0),
             _buildNavItem(Icons.work_rounded, 'Projects', 1),
@@ -159,22 +176,29 @@ class _AidNavigationBar extends StatelessWidget {
 
     return GestureDetector(
       onTap: () => onIndexSelected(itemIndex),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? CustomColors.darkGreen : CustomColors.grey,
-            size: 30.0,
-          ),
-          const SizedBox(height: 5.0),
-          Text(
-            label,
-            style: TextStyle(
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? CustomColors.darkGreen : CustomColors.grey,
+              size: 28.0,
+            ),
+            const SizedBox(height: 5.0),
+            Text(
+              label,
+              style: TextStyle(
                 color: isSelected ? CustomColors.darkGreen : CustomColors.grey,
-                fontSize: 16.0),
-          ),
-        ],
+                fontSize: 12.5,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -169,18 +169,6 @@ class _ProjectPaymentFormScreenState extends State<ProjectPaymentFormScreen> {
             },
           ),
           toolbarHeight: 70.0,
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.more_horiz,
-                color: Colors.white,
-                size: 32.0,
-              ),
-              onPressed: () {
-                // Acción al presionar el ícono de tres puntos
-              },
-            ),
-          ],
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 25.0),
@@ -202,12 +190,10 @@ class _ProjectPaymentFormScreenState extends State<ProjectPaymentFormScreen> {
                       _updatePoints();
                     },
                     style: ElevatedButton.styleFrom(
-                      foregroundColor:
-                          Colors.white, // Color del texto del botón
-                      backgroundColor: Colors.green, // Color del botón
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.green,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            12.0), // Aumentar el border radius
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
                     ),
                     child: Text(
@@ -238,8 +224,7 @@ class _ProjectPaymentFormScreenState extends State<ProjectPaymentFormScreen> {
                             ],
                           ),
                         ),
-                        if (i + 1 < _points.length)
-                          SizedBox(width: 12.0), // Espacio entre las columnas
+                        if (i + 1 < _points.length) SizedBox(width: 12.0),
                         if (i + 1 < _points.length)
                           Expanded(
                             child: Column(
@@ -252,9 +237,7 @@ class _ProjectPaymentFormScreenState extends State<ProjectPaymentFormScreen> {
                                   ),
                                   keyboardType: TextInputType.number,
                                 ),
-                                SizedBox(
-                                    height:
-                                        12.0), // Espacio entre los TextFields
+                                SizedBox(height: 12.0),
                               ],
                             ),
                           ),
@@ -286,7 +269,7 @@ class _ProjectPaymentFormScreenState extends State<ProjectPaymentFormScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10), // Espacio entre los botones
+                  SizedBox(width: 10),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: onSubmitUpdatePaymentGraph,
@@ -360,14 +343,14 @@ class _ProjectPaymentFormScreenState extends State<ProjectPaymentFormScreen> {
           onPressed: () {
             _generatePoints();
           },
-          backgroundColor: CustomColors.fieldGrey, // Color del botón flotante
+          backgroundColor: CustomColors.fieldGrey,
           child: BounceInUp(
             animate: true,
             duration: Duration(milliseconds: 1500),
             child: SizedBox(
               width: 45.0, // Ancho deseado
               height: 45.0, // Alto deseado
-              child: Image.asset('assets/images/bolita8.png'), // Imagen local
+              child: Image.asset('assets/images/bolita8.png'),
             ),
           ),
         ),

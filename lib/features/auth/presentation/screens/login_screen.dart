@@ -1,16 +1,17 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/widgets/register/dialog/terms_and_conditions_dialog.dart';
 import 'package:aidmanager_mobile/features/auth/shared/widgets/custom_dialog_error.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/checkbox_remember.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/email_field.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/login_banner.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/login/password_field.dart';
 import 'package:aidmanager_mobile/features/auth/shared/widgets/text_divider.dart';
+import 'package:aidmanager_mobile/shared/helpers/show_customize_dialog.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
 
 class LoginScreen extends StatefulWidget {
   static const String name = "login_screen";
@@ -40,7 +41,6 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       context.go('/home');
-
     } catch (e) {
       if (!mounted) return;
       // mostrar un dialog perzonalizado para cada exception
@@ -64,8 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Scaffold(
             resizeToAvoidBottomInset: false,
-            backgroundColor:
-                CustomColors.lightGrey, // Usando el color lightGreen
+            backgroundColor: CustomColors.lightGrey,
             body: Column(
               children: [
                 LoginBanner(
@@ -90,21 +89,23 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 30),
                         EmailField(
                           emailController: _emailController,
-                        ), // widget for email field
+                        ),
                         const SizedBox(height: 25),
                         PasswordField(
                             passwordController:
-                                _passwordController), // widget for password field
+                                _passwordController),
                         const SizedBox(height: 10),
                         const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             RememberCheckbox(),
-                            Text("Forgot password?",
-                                style: TextStyle(
-                                    fontSize: 17,
-                                    fontStyle: FontStyle.normal,
-                                    color: CustomColors.darkGreen))
+                            Text(
+                              "Forgot password?",
+                              style: TextStyle(
+                                  fontSize: 14.5,
+                                  fontStyle: FontStyle.normal,
+                                  color: CustomColors.darkGreen),
+                            )
                           ],
                         ),
                         const SizedBox(height: 30),
@@ -130,60 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 letterSpacing: 1.8),
                           ),
                         ),
-                        const SizedBox(height: 25),
-                        const TextDivider(text: 'or continue with'),
                         const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () {
-                                  // hacer algo aqui (nekomensaje)
-                                },
-                                icon: const Icon(Icons.facebook,
-                                    color: Colors.blue),
-                                label: const Text(
-                                  'Facebook',
-                                  style: TextStyle(
-                                      color: Colors.blue, fontSize: 18),
-                                ),
-                                style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: Colors.blue),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0, horizontal: 16.0),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16.0),
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () {
-                                  // Acción a realizar cuando se presiona el botón de Google
-                                },
-                                icon: Image.asset(
-                                  'assets/images/google-icon.webp', // Ruta de la imagen del logo de Google
-                                  height: 24.0,
-                                ),
-                                label: const Text(
-                                  'Google',
-                                  style: TextStyle(
-                                      color: Colors.red, fontSize: 18),
-                                ),
-                                style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: Colors.red),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0, horizontal: 16.0),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                         Expanded(
                           child: Container(color: Colors.transparent),
                         ),

@@ -19,13 +19,13 @@ class CalendarProvider extends ChangeNotifier {
     final companyId = authProvider.user!.companyId!;
 
     try {
-      final allTasks = await tasksRepository.getAllTasksByCompanyId(3);
+      final allTasks = await tasksRepository.getAllTasksByCompanyId(companyId);
+      tasks = allTasks;
 
       if (allTasks.isEmpty) {
         throw NoTasksInCompanyException("");
       }
 
-      tasks = allTasks;
     } on NoTasksInCompanyException {
       rethrow;
     } catch (e) {

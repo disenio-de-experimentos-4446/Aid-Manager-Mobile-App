@@ -91,7 +91,6 @@ class _ProfileSectionTitleState extends State<ProfileSectionTitle> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to update information: $e')),
       );
-
     }
   }
 
@@ -126,8 +125,7 @@ class _ProfileSectionTitleState extends State<ProfileSectionTitle> {
                         onSubmitUpdateInformation();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Colors.red[700], // Color de fondo rojizo
+                        backgroundColor: Colors.red[700],
                       ),
                       child: Text(
                         'Update',
@@ -223,9 +221,9 @@ class _ProfileSectionTitleState extends State<ProfileSectionTitle> {
           },
           label: Text(
             'Edit Info',
-            style: TextStyle(color: CustomColors.darkGreen, fontSize: 17.0),
+            style: TextStyle(color: CustomColors.darkGreen, fontSize: 16.0),
           ),
-          icon: Icon(Icons.edit, color: CustomColors.darkGreen),
+          icon: Icon(Icons.edit, color: CustomColors.darkGreen, size: 24.0,),
         ),
       ],
     );

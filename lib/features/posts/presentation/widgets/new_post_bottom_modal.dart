@@ -20,7 +20,6 @@ class NewPostBottomModal extends StatefulWidget {
 }
 
 class _NewPostBottomModalState extends State<NewPostBottomModal> {
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -49,7 +48,7 @@ class _NewPostBottomModalState extends State<NewPostBottomModal> {
                     widget.onSubmitPost();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red[700], // Color de fondo rojizo
+                    backgroundColor: Colors.red[700],
                   ),
                   child: Text(
                     'Submit',

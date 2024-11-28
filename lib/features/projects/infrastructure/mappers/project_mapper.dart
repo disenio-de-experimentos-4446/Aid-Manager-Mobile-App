@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ProjectMapper {
-  // Método para convertir JSON a un objeto Project
   static Project fromJson(Map<String, dynamic> json) {
     return Project(
       id: json['id'],
@@ -19,10 +18,10 @@ class ProjectMapper {
       ),
       projectLocation: json['projectLocation'],
       userList: List<dynamic>.from(json['userList']),
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
     );
   }
 
-  // Método para convertir un objeto Project a JSON
   static Map<String, dynamic> toJson(Project project) {
     final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
     final DateFormat timeFormat = DateFormat('HH:mm:ss');

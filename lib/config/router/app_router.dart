@@ -5,18 +5,27 @@ import 'package:aidmanager_mobile/features/auth/presentation/screens/register_sc
 import 'package:aidmanager_mobile/features/auth/presentation/screens/tutorial_screen.dart';
 import 'package:aidmanager_mobile/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:aidmanager_mobile/features/home/presentation/screens/home_screen.dart';
+import 'package:aidmanager_mobile/features/posts/presentation/screens/saved_posts_screen.dart';
+import 'package:aidmanager_mobile/features/posts/presentation/screens/post_created_by_user_screen.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/screens/post_detail_screen.dart';
 import 'package:aidmanager_mobile/features/posts/presentation/screens/posts_screen.dart';
 import 'package:aidmanager_mobile/features/profile/presentation/screens/profile_screen.dart';
+import 'package:aidmanager_mobile/features/projects/domain/entities/project.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/screens/favorite_projects_screen.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/screens/project_create_form_screen.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/screens/project_dashboard_screen.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/screens/project_detail_screen.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/screens/project_edit_screen.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/screens/project_goals_form_screen.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/screens/project_payment_form_screen.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/screens/project_task_form_screen.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/screens/project_tasks_screen.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/screens/projects_created_by_user_screen.dart';
 import 'package:aidmanager_mobile/features/projects/presentation/screens/projects_screen.dart';
+import 'package:aidmanager_mobile/features/projects/presentation/screens/tasks_assigned_by_user_screen.dart';
+import 'package:aidmanager_mobile/features/social/presentation/screens/members_deleted_screen.dart';
 import 'package:aidmanager_mobile/features/social/presentation/screens/social_screen.dart';
+import 'package:aidmanager_mobile/features/social/presentation/screens/terms_conditions_screen.dart';
 import 'package:aidmanager_mobile/shared/main_wrapper.dart';
 import 'package:go_router/go_router.dart';
 
@@ -84,13 +93,30 @@ final appRouter = GoRouter(
           ),
         ),
         GoRoute(
+          path: '/projects/edit/:projectId',
+          name: ProjectEditScreen.name,
+          pageBuilder: (context, state) {
+            final projectId = state.pathParameters['projectId']!;
+            final project = state.extra as Project;
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: ProjectEditScreen(projectId: projectId, project: project),
+            );
+          },
+        ),
+        GoRoute(
           path: '/projects/:projectId',
           name: ProjectDetailScreen.name,
           pageBuilder: (context, state) {
             final projectId = state.pathParameters['projectId']!;
+            final isFavorite =
+                state.uri.queryParameters['isFavorite'] == 'true';
             return NoTransitionPage(
               key: state.pageKey,
-              child: ProjectDetailScreen(projectId: projectId),
+              child: ProjectDetailScreen(
+                projectId: projectId,
+                isFavorite: isFavorite,
+              ),
             );
           },
         ),
@@ -199,9 +225,14 @@ final appRouter = GoRouter(
           name: PostDetailScreen.name,
           pageBuilder: (context, state) {
             final postId = state.pathParameters['postId']!;
+            final isFavorite =
+                state.uri.queryParameters['isFavorite'] == 'true';
             return NoTransitionPage(
               key: state.pageKey,
-              child: PostDetailScreen(postId: postId),
+              child: PostDetailScreen(
+                postId: postId,
+                isFavorite: isFavorite,
+              ),
             );
           },
         ),
@@ -212,6 +243,113 @@ final appRouter = GoRouter(
             key: state.pageKey,
             child: const ProfileScreen(),
           ),
+        ),
+        GoRoute(
+          path: '/projects/user/:userId/tasks',
+          name: TasksAssignedByUserScreen.name,
+          pageBuilder: (context, state) {
+            final userId = state.pathParameters['userId']!;
+            final userName =
+                state.uri.queryParameters['userName'] ?? 'DefaultUser';
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: TasksAssignedByUserScreen(
+                userId: userId,
+                userName: userName,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/posts/user/:userId',
+          name: PostCreatedByUserScreen.name,
+          pageBuilder: (context, state) {
+            final userId = state.pathParameters['userId']!;
+            final userName =
+                state.uri.queryParameters['userName'] ?? 'DefaultUser';
+
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: PostCreatedByUserScreen(
+                userId: userId,
+                userName: userName,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/projects/user/:userId',
+          name: ProjectsCreatedByUserScreen.name,
+          pageBuilder: (context, state) {
+            final userId = state.pathParameters['userId']!;
+            final userName =
+                state.uri.queryParameters['userName'] ?? 'DefaultUser';
+
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: ProjectsCreatedByUserScreen(
+                userId: userId,
+                userName: userName,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/posts/saved/user/:userId',
+          name: SavedPostsScreen.name,
+          pageBuilder: (context, state) {
+            final userId = state.pathParameters['userId']!;
+            final userName =
+                state.uri.queryParameters['userName'] ?? 'DefaultUser';
+
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SavedPostsScreen(
+                userId: userId,
+                userName: userName,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/projects/favorites/user/:userId',
+          name: FavoriteProjectsScreen.name,
+          pageBuilder: (context, state) {
+            final userId = state.pathParameters['userId']!;
+            final userName =
+                state.uri.queryParameters['userName'] ?? 'DefaultUser';
+
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: FavoriteProjectsScreen(
+                userId: userId,
+                userName: userName,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/social/members-deleted',
+          name: MembersDeletedScreen.name,
+          pageBuilder: (context, state) {
+            final userName =
+                state.uri.queryParameters['userName'] ?? 'DefaultUser';
+
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: MembersDeletedScreen(userName: userName),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/terms-conditions',
+          name: TermsConditionsScreen.name,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: TermsConditionsScreen(),
+            );
+          },
         ),
       ],
     ),

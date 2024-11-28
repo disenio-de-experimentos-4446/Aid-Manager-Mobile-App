@@ -55,7 +55,6 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
         : TimeOfDay(hour: 0, minute: 0);
     final projectLocation = _projectLocation.text.trim();
 
-    // llamamos al provider para acceder almetodo submit
     final projectProvider = context.read<ProjectProvider>();
 
     try {
@@ -67,7 +66,6 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
       showCustomizeDialog(context, const SuccessfullyCreateProject());
     } catch (e) {
       if (!mounted) return;
-      // mostrar un dialog perzonalizado para cada exception
       final dialog = getProjectErrorDialog(context, e as Exception);
       showErrorDialog(context, dialog);
     }
@@ -78,382 +76,372 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: AppBar(
-            backgroundColor: CustomColors.darkGreen,
-            centerTitle: false,
-            title: Text(
-              'Create new project',
-              style: TextStyle(
-                fontSize: 22.0,
-                color: const Color.fromARGB(255, 255, 255, 255),
-                letterSpacing: 0.55,
-              ),
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          backgroundColor: CustomColors.darkGreen,
+          centerTitle: false,
+          title: Text(
+            'Create new project',
+            style: TextStyle(
+              fontSize: 20.0,
+              color: const Color.fromARGB(255, 255, 255, 255),
+              letterSpacing: 0.55,
             ),
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+          ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+            onPressed: () {
+              context.go('/projects');
+            },
+          ),
+          toolbarHeight: 70.0,
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.more_horiz,
+                color: Colors.white,
+                size: 32.0,
+              ),
               onPressed: () {
-                context.go('/projects');
               },
             ),
-            toolbarHeight: 70.0,
-            actions: [
-              IconButton(
-                icon: Icon(
-                  Icons.more_horiz,
-                  color: Colors.white,
-                  size: 32.0,
-                ),
-                onPressed: () {
-                  // Acción al presionar el ícono de tres puntos
-                },
+          ],
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20.0),
+          child: Column(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Name',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0,
+                        letterSpacing: 0.60,
+                        color: CustomColors.darkGreen,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  TextFormField(
+                    controller: _projectNameController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide(
+                          color: CustomColors.darkGreen,
+                          width: 2.0,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      suffixIcon: Icon(Icons.title),
+                    ),
+                  ),
+                  SizedBox(height: 20.0),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Description',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0,
+                        color: CustomColors.darkGreen,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  TextFormField(
+                    controller: _descriptionController,
+                    maxLines: 4, // Campo de descripción
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide(
+                          color: CustomColors.darkGreen,
+                          width: 2.0,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 20.0),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Number of Images',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0,
+                        color: CustomColors.darkGreen,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  TextFormField(
+                    controller: _numberImagesController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide(
+                          color: CustomColors.darkGreen,
+                          width: 2.0,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      suffixIcon: Icon(Icons.image),
+                    ),
+                  ),
+                  SizedBox(height: 20.0),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Project Location',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0,
+                        color: CustomColors.darkGreen,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  TextFormField(
+                    controller: _projectLocation,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide(
+                          color: CustomColors.darkGreen,
+                          width: 2.0,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      suffixIcon: Icon(Icons.location_on),
+                    ),
+                  ),
+                  SizedBox(height: 20.0),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Project Date',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18.0,
+                                  color: CustomColors.darkGreen,
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 8.0),
+                            TextFormField(
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey,
+                                    width: 1.5,
+                                    style: BorderStyle.solid,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey,
+                                    width: 1.5,
+                                    style: BorderStyle.solid,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderSide: BorderSide(
+                                    color: CustomColors.darkGreen,
+                                    width: 2.0,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                                suffixIcon: Icon(Icons.calendar_today),
+                              ),
+                              readOnly: true,
+                              onTap: () async {
+                                DateTime? pickedDate = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(2000),
+                                  lastDate: DateTime(2101),
+                                );
+                                if (pickedDate != null) {
+                                  String formattedDate =
+                                      DateFormat('yyyy-MM-dd')
+                                          .format(pickedDate);
+                                  setState(() {
+                                    _projectDateController.text = formattedDate;
+                                  });
+                                }
+                              },
+                              controller: _projectDateController,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 15.0),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Project Time',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18.0,
+                                  color: CustomColors.darkGreen,
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 8.0),
+                            TextFormField(
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey,
+                                    width: 1.5,
+                                    style: BorderStyle.solid,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey,
+                                    width: 1.5,
+                                    style: BorderStyle.solid,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderSide: BorderSide(
+                                    color: CustomColors.darkGreen,
+                                    width: 2.0,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                                suffixIcon: Icon(Icons.access_time),
+                              ),
+                              readOnly: true,
+                              onTap: () async {
+                                TimeOfDay? pickedTime = await showTimePicker(
+                                  context: context,
+                                  initialTime: TimeOfDay.now(),
+                                );
+                                if (pickedTime != null) {
+                                  String formattedTime =
+                                      pickedTime.format(context);
+                                  setState(() {
+                                    // Actualiza el controlador del campo de texto con la hora seleccionada
+                                    _projectTimeController.text = formattedTime;
+                                  });
+                                }
+                              },
+                              controller: _projectTimeController,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
+              SizedBox(height: 35),
+              Column(
+                children: [
+                  SizedBox(
+                    height: 60,
+                    width: double.infinity,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: CustomColors.darkGreen, // Color de fondo
+                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                      ),
+                      child: TextButton(
+                        onPressed: () {
+                          onSubmitNewProject();
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white, // Color del texto
+                          textStyle: TextStyle(
+                            fontSize: 20.0,
+                          ),
+                        ),
+                        child: Text(
+                          'Create a project',
+                          style: TextStyle(
+                              fontSize: 20.0, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.0),
+                  SizedBox(
+                    height: 50,
+                    width: double.infinity,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.red, // Color de fondo
+                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                      ),
+                      child: TextButton(
+                        onPressed: () {
+                          // Lógica para cancelar
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          textStyle: TextStyle(
+                            fontSize: 20.0,
+                          ),
+                        ),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                              fontSize: 22.0, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
             ],
           ),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25.0),
-            child: Column(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Name',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18.0,
-                          letterSpacing: 0.60,
-                          color: CustomColors.darkGreen,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 8.0), // Espacio entre el texto y el input
-                    TextFormField(
-                      controller: _projectNameController,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(
-                            color: CustomColors.darkGreen,
-                            width: 2.0,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        suffixIcon: Icon(Icons.title),
-                      ),
-                    ),
-                    SizedBox(height: 20.0), // Espacio entre inputs
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Description',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18.0,
-                          color: CustomColors.darkGreen,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 8.0), // Espacio entre el texto y el input
-                    TextFormField(
-                      controller: _descriptionController,
-                      maxLines: 4, // Campo de descripción
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(
-                            color: CustomColors.darkGreen,
-                            width: 2.0,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: 20.0),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Number of Images',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18.0,
-                          color: CustomColors.darkGreen,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 8.0), // Espacio entre el texto y el input
-                    TextFormField(
-                      controller: _numberImagesController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(
-                            color: CustomColors.darkGreen,
-                            width: 2.0,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        suffixIcon: Icon(Icons
-                            .image), // Ícono a la derecha del campo de texto
-                      ),
-                    ),
-                    SizedBox(height: 20.0),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Project Location',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18.0,
-                          color: CustomColors.darkGreen,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 8.0), // Espacio entre el texto y el input
-                    TextFormField(
-                      controller: _projectLocation,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(
-                            color: CustomColors.darkGreen,
-                            width: 2.0,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        suffixIcon: Icon(Icons
-                            .location_on), // Ícono a la derecha del campo de texto
-                      ),
-                    ),
-                    SizedBox(height: 20.0),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  'Project Date',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.0,
-                                    color: CustomColors.darkGreen,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 8.0),
-                              TextFormField(
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    borderSide: BorderSide(
-                                      color: Colors.grey,
-                                      width: 1.5,
-                                      style: BorderStyle.solid,
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    borderSide: BorderSide(
-                                      color: Colors.grey,
-                                      width: 1.5,
-                                      style: BorderStyle.solid,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    borderSide: BorderSide(
-                                      color: CustomColors.darkGreen,
-                                      width: 2.0,
-                                    ),
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  suffixIcon: Icon(Icons.calendar_today),
-                                ),
-                                readOnly:
-                                    true, // Hace que el campo sea de solo lectura
-                                onTap: () async {
-                                  DateTime? pickedDate = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime(2000),
-                                    lastDate: DateTime(2101),
-                                  );
-                                  if (pickedDate != null) {
-                                    String formattedDate =
-                                        DateFormat('yyyy-MM-dd')
-                                            .format(pickedDate);
-                                    setState(() {
-                                      // actualiza el controlador del campo de texto con la fecha seleccionada
-                                      _projectDateController.text =
-                                          formattedDate;
-                                    });
-                                  }
-                                },
-                                controller: _projectDateController,
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: 15.0), // Espacio entre los dos campos
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  'Project Time',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.0,
-                                    color: CustomColors.darkGreen,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                  height:
-                                      8.0), // Espacio entre el texto y el input
-                              TextFormField(
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    borderSide: BorderSide(
-                                      color: Colors.grey,
-                                      width: 1.5,
-                                      style: BorderStyle.solid,
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    borderSide: BorderSide(
-                                      color: Colors.grey,
-                                      width: 1.5,
-                                      style: BorderStyle.solid,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    borderSide: BorderSide(
-                                      color: CustomColors.darkGreen,
-                                      width: 2.0,
-                                    ),
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  suffixIcon: Icon(Icons.access_time),
-                                ),
-                                readOnly:
-                                    true, // Hace que el campo sea de solo lectura
-                                onTap: () async {
-                                  TimeOfDay? pickedTime = await showTimePicker(
-                                    context: context,
-                                    initialTime: TimeOfDay.now(),
-                                  );
-                                  if (pickedTime != null) {
-                                    String formattedTime =
-                                        pickedTime.format(context);
-                                    setState(() {
-                                      // Actualiza el controlador del campo de texto con la hora seleccionada
-                                      _projectTimeController.text =
-                                          formattedTime;
-                                    });
-                                  }
-                                },
-                                controller:
-                                    _projectTimeController, // Controlador para el campo de hora
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 35),
-                Column(
-                  children: [
-                    SizedBox(
-                      height: 60,
-                      width: double.infinity, // Ocupa todo el ancho disponible
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: CustomColors.darkGreen, // Color de fondo
-                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                        ),
-                        child: TextButton(
-                          onPressed: () {
-                            onSubmitNewProject();
-                          },
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.white, // Color del texto
-                            textStyle: TextStyle(
-                              fontSize: 20.0, // Aumenta el tamaño de la letra
-                            ),
-                          ),
-                          child: Text(
-                            'Create a project',
-                            style: TextStyle(
-                                fontSize: 22.0, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16.0), // Espacio entre los botones
-                    SizedBox(
-                      height: 60,
-                      width: double.infinity, // Ocupa todo el ancho disponible
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.red, // Color de fondo
-                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                        ),
-                        child: TextButton(
-                          onPressed: () {
-                            // Lógica para cancelar
-                          },
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.white, // Color del texto
-                            textStyle: TextStyle(
-                              fontSize: 20.0, // Aumenta el tamaño de la letra
-                            ),
-                          ),
-                          child: Text(
-                            'Cancel',
-                            style: TextStyle(
-                                fontSize: 22.0, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-              ],
-            ),
-          )),
+        ),
+      ),
     );
   }
 }

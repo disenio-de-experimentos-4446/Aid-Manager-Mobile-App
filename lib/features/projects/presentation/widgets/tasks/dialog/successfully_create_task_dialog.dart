@@ -36,7 +36,8 @@ class SuccessfullyCreateTaskDialog extends StatelessWidget {
           SizedBox(height: 20),
           Text(
             'Task Created Successfully',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 24, height: 1.5, fontWeight: FontWeight.bold),
           ),
         ],
       ),
