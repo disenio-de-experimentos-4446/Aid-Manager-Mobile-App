@@ -120,18 +120,6 @@ class _ProjectDashboardScreenState extends State<ProjectDashboardScreen> {
           },
         ),
         toolbarHeight: 70.0,
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.more_horiz,
-              color: Colors.white,
-              size: 32.0,
-            ),
-            onPressed: () {
-              // Acción al presionar el ícono de tres puntos
-            },
-          ),
-        ],
       ),
       body: dashboardRepository.initialLoading
           ? Container(

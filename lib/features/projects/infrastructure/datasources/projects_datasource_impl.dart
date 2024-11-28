@@ -55,7 +55,7 @@ class ProjectsDatasourceImpl extends HttpService implements ProjectsDatasource {
         final dynamic projectJson = response.data;
         return ProjectMapper.fromJson(projectJson);
       }
-      else{ 
+      else{
         throw Exception('Failed to fetch project with id: $id');
       }
 

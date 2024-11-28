@@ -10,6 +10,7 @@ class CompanySectionTitle extends StatefulWidget {
   final String companyName;
   final String companyEmail;
   final String companyUbication;
+  final String userRole;
 
   const CompanySectionTitle({
     super.key,
@@ -17,6 +18,7 @@ class CompanySectionTitle extends StatefulWidget {
     required this.companyEmail,
     required this.companyUbication,
     required this.title,
+    required this.userRole,
   });
 
   @override
@@ -170,15 +172,22 @@ class _CompanySectionTitleState extends State<CompanySectionTitle> {
             color: Colors.green[900],
           ),
         ),
-        TextButton.icon(
-          onPressed: () {
-            _showEditCompanyModal(context);
-          },
-          label: Text(
-            'Edit Info',
-            style: TextStyle(color: CustomColors.darkGreen, fontSize: 17.0),
+        Visibility(
+          visible: widget.userRole == 'Manager',
+          child: TextButton.icon(
+            onPressed: () {
+              _showEditCompanyModal(context);
+            },
+            label: Text(
+              'Edit Info',
+              style: TextStyle(color: CustomColors.darkGreen, fontSize: 16.0),
+            ),
+            icon: Icon(
+              Icons.edit,
+              color: CustomColors.darkGreen,
+              size: 24.0,
+            ),
           ),
-          icon: Icon(Icons.edit, color: CustomColors.darkGreen),
         ),
       ],
     );

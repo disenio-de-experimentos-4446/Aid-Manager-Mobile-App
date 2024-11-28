@@ -8,8 +8,10 @@ import 'package:provider/provider.dart';
 class FavoriteProjectsScreen extends StatefulWidget {
   static const String name = "favorite_projects_screen";
   final String userId;
+  final String userName;
 
-  const FavoriteProjectsScreen({super.key, required this.userId});
+  const FavoriteProjectsScreen(
+      {super.key, required this.userId, required this.userName});
 
   @override
   State<FavoriteProjectsScreen> createState() => _FavoriteProjectsScreenState();
@@ -52,7 +54,7 @@ class _FavoriteProjectsScreenState extends State<FavoriteProjectsScreen> {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             } else {
-              context.go('/home');
+              context.go('/projects');
             }
           },
         ),
@@ -111,7 +113,7 @@ class _FavoriteProjectsScreenState extends State<FavoriteProjectsScreen> {
                         ),
                         children: <TextSpan>[
                           TextSpan(
-                            text: 'Nicolas',
+                            text: widget.userName,
                             style: TextStyle(
                               color: CustomColors.darkGreen,
                               fontWeight: FontWeight.bold,
@@ -176,7 +178,8 @@ class _FavoriteProjectsScreenState extends State<FavoriteProjectsScreen> {
                           child: ListView.builder(
                             itemCount: projectsProvider.favProjects.length,
                             itemBuilder: (context, index) {
-                              final project = projectsProvider.favProjects[index];
+                              final project =
+                                  projectsProvider.favProjects[index];
                               return Column(
                                 children: [
                                   ProjectFavoriteCard(

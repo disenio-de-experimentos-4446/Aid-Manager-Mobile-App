@@ -38,8 +38,8 @@ class CommentCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  width: 60.0,
-                  height: 60.0,
+                  width: 50.0,
+                  height: 50.0,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                   ),
@@ -57,7 +57,7 @@ class CommentCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 16.0),
+                SizedBox(width: 12.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -67,7 +67,7 @@ class CommentCard extends StatelessWidget {
                         Text(
                           userName,
                           style: TextStyle(
-                            fontSize: 18.0,
+                            fontSize: 16.0,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -84,14 +84,14 @@ class CommentCard extends StatelessWidget {
                         Text(
                           DateFormat('dd MMM yyyy').format(timeOfComment),
                           style: TextStyle(
-                            fontSize: 16.0,
+                            fontSize: 14.0,
                             fontWeight: FontWeight.bold,
                             color: const Color.fromARGB(255, 82, 82, 82),
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 6),
+                    SizedBox(height: 4),
                     Text(
                       userEmail,
                       style: TextStyle(

@@ -182,28 +182,6 @@ class TaskPageView extends StatelessWidget {
                                           padding: EdgeInsets.symmetric(
                                               horizontal: 15, vertical: 6),
                                           decoration: BoxDecoration(
-                                            color: const Color.fromARGB(
-                                                255,
-                                                41,
-                                                41,
-                                                41), // Color de fondo del contenedor
-                                            borderRadius: BorderRadius.circular(
-                                                20), // Bordes redondeados
-                                          ),
-                                          child: Text(
-                                            'Risk',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(width: 8),
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 15, vertical: 6),
-                                          decoration: BoxDecoration(
                                             color: color,
                                             borderRadius:
                                                 BorderRadius.circular(20),

@@ -100,14 +100,14 @@ class PostCard extends StatelessWidget {
                       onTap: () {
                         context.go('/posts/$postId');
                       },
-                      child: Icon(Icons.open_in_new_rounded, size: 32),
+                      child: Icon(Icons.open_in_new_rounded, size: 28),
                     ),
                     SizedBox(width: 12.0),
                     GestureDetector(
                       onTap: () {
                         // Acción del botón de editar
                       },
-                      child: Icon(Icons.more_vert_sharp, size: 34),
+                      child: Icon(Icons.more_vert_sharp, size: 28),
                     ),
                   ],
                 )
@@ -122,7 +122,7 @@ class PostCard extends StatelessWidget {
                   title,
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                    fontSize: 20.0,
+                    fontSize: 18.0,
                     fontWeight: FontWeight.bold,
                     height: 1.65,
                   ),
@@ -138,7 +138,7 @@ class PostCard extends StatelessWidget {
                   description,
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                    fontSize: 17.0,
+                    fontSize: 16.0,
                     fontWeight: FontWeight.w500,
                     height: 1.65,
                   ),
@@ -171,9 +171,9 @@ class PostCard extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 18),
+            SizedBox(height: 12),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              padding: const EdgeInsets.symmetric(horizontal: 2.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

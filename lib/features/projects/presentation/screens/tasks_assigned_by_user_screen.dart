@@ -8,8 +8,9 @@ import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 class TasksAssignedByUserScreen extends StatefulWidget {
   static const String name = "tasks_assigned_by_user_screen";
   final String userId;
+  final String userName;
 
-  const TasksAssignedByUserScreen({super.key, required this.userId});
+  const TasksAssignedByUserScreen({super.key, required this.userId, required this.userName});
 
   @override
   State<TasksAssignedByUserScreen> createState() =>
@@ -102,7 +103,7 @@ class _TasksAssignedByUserScreenState extends State<TasksAssignedByUserScreen> {
                         ),
                         children: <TextSpan>[
                           TextSpan(
-                            text: 'Nicolas',
+                            text: widget.userName,
                             style: TextStyle(
                               color: CustomColors.darkGreen,
                               fontWeight: FontWeight.bold,

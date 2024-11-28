@@ -221,9 +221,9 @@ class _ProfileSectionTitleState extends State<ProfileSectionTitle> {
           },
           label: Text(
             'Edit Info',
-            style: TextStyle(color: CustomColors.darkGreen, fontSize: 17.0),
+            style: TextStyle(color: CustomColors.darkGreen, fontSize: 16.0),
           ),
-          icon: Icon(Icons.edit, color: CustomColors.darkGreen),
+          icon: Icon(Icons.edit, color: CustomColors.darkGreen, size: 24.0,),
         ),
       ],
     );

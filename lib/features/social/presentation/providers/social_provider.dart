@@ -55,8 +55,6 @@ class SocialProvider extends ChangeNotifier {
 
     final loggedCompanyId = authProvider.user!.companyId!;
     isLoading = true;
-    notifyListeners();
-
 
     try {
       final deletedMembers = await userRepository.getMembersDeletedByCompany(loggedCompanyId);

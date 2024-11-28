@@ -70,6 +70,14 @@ class _PostsContentState extends State<PostsContent> {
   }
 
   @override
+  void dispose() {
+    _titleController.dispose();
+    _subjectController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final postsProvider = Provider.of<PostProvider>(context, listen: true);
 
@@ -90,8 +98,7 @@ class _PostsContentState extends State<PostsContent> {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.only(
-                    top: 25.0, left: 20.0, right: 20.0, bottom: 25.0),
+                padding: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 25.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,

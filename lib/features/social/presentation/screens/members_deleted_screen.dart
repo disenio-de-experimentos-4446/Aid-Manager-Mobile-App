@@ -7,9 +7,11 @@ import 'package:go_router/go_router.dart';
 
 class MembersDeletedScreen extends StatefulWidget {
   static const String name = "members_deleted_screen";
+  final String userName;
 
   const MembersDeletedScreen({
     super.key,
+    required this.userName,
   });
 
   @override
@@ -31,10 +33,9 @@ class _MembersDeletedScreenState extends State<MembersDeletedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final socialProvider = Provider.of<SocialProvider>(context, listen: false);
-    final teamMembers = socialProvider.users
-        .where((user) => user.role == "1")
-        .toList();
+    final socialProvider = Provider.of<SocialProvider>(context, listen: true);
+    final teamMembers =
+        socialProvider.users.where((user) => user.role == "1").toList();
 
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -81,57 +82,57 @@ class _MembersDeletedScreenState extends State<MembersDeletedScreen> {
         body: Column(
           children: [
             Container(
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(22, 72, 255, 21),
-              border: Border(
-                bottom: BorderSide(
-                  color: const Color.fromARGB(255, 172, 169, 169),
-                  width: 1.0,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(22, 72, 255, 21),
+                border: Border(
+                  bottom: BorderSide(
+                    color: const Color.fromARGB(255, 172, 169, 169),
+                    width: 1.0,
+                  ),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 25.0,
+                  left: 20.0,
+                  right: 20.0,
+                  bottom: 25.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: RichText(
+                        text: TextSpan(
+                          text: '',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87,
+                          ),
+                          children: <TextSpan>[
+                            TextSpan(
+                              text: widget.userName,
+                              style: TextStyle(
+                                color: CustomColors.darkGreen,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text: ', see the past members in the company!',
+                              style: TextStyle(
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            child: Padding(
-              padding: const EdgeInsets.only(
-                top: 25.0,
-                left: 20.0,
-                right: 20.0,
-                bottom: 25.0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        text: '',
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black87,
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: 'Nicolas',
-                            style: TextStyle(
-                              color: CustomColors.darkGreen,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(
-                            text: ', see the past members in the company!',
-                            style: TextStyle(
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
             socialProvider.isLoading
                 ? Padding(
                     padding: const EdgeInsets.symmetric(vertical: 30.0),
@@ -151,7 +152,8 @@ class _MembersDeletedScreenState extends State<MembersDeletedScreen> {
                                 Text(
                                   'No users in the company',
                                   style: TextStyle(
-                                    color: const Color.fromARGB(255, 143, 118, 118),
+                                    color: const Color.fromARGB(
+                                        255, 143, 118, 118),
                                     fontSize: 18,
                                   ),
                                 ),

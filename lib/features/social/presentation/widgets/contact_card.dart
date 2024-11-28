@@ -33,6 +33,8 @@ class ContactCard extends StatefulWidget {
 }
 
 class _ContactCardState extends State<ContactCard> {
+  bool _isDismissed = false;
+
   Future<void> _sendMessageToMember(String number) async {
     final countryCode = '+51';
     final formattedNumber =
@@ -53,142 +55,175 @@ class _ContactCardState extends State<ContactCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Dismissible(
-      key: Key(widget.userId.toString()),
-      direction: widget.isDirector
-          ? DismissDirection.none
-          : DismissDirection.endToStart,
-      confirmDismiss: (direction) async {
-        return await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return DeleteMemberDialog(
-              onConfirm: () {
-                Navigator.of(context).pop(true);
-              },
-            );
-          },
-        );
-      },
-      onDismissed: (direction) {
-        widget.onDelete?.call();
-      },
-      background: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: EdgeInsets.symmetric(horizontal: 20.0),
-        child: Icon(
-          Icons.delete,
-          color: Colors.white,
-          size: 30.0,
-        ),
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(20.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            bottom: BorderSide(
-              color: const Color.fromARGB(255, 201, 200, 200),
-              width: 1.0, // Ancho del borde inferior
+    return _isDismissed
+        ? Container()
+        : Dismissible(
+            key: Key(widget.userId.toString()),
+            direction: widget.isDirector
+                ? DismissDirection.none
+                : DismissDirection.endToStart,
+            confirmDismiss: (direction) async {
+              final result = await showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) {
+                  return DeleteMemberDialog(
+                    onConfirm: () {
+                      Navigator.of(context).pop(true);
+                    },
+                  );
+                },
+              );
+              return result;
+            },
+            onDismissed: (direction) {
+              setState(() {
+                _isDismissed = true;
+              });
+              widget.onDelete?.call();
+            },
+            background: Container(
+              color: Colors.red,
+              alignment: Alignment.centerRight,
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+                size: 28.0,
+              ),
             ),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 52.0,
-                  height: 52.0,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                  ),
-                  child: ClipOval(
-                    child: FadeInImage(
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                      placeholder:
-                          AssetImage('assets/images/profile-placeholder.jpg'),
-                      image: NetworkImage(widget.imageUrl),
-                      imageErrorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          'assets/images/profile-placeholder.jpg',
-                          fit: BoxFit.cover,
-                        );
-                      },
-                    ),
+            child: Container(
+              padding: const EdgeInsets.all(20.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  bottom: BorderSide(
+                    color: const Color.fromARGB(255, 201, 200, 200),
+                    width: 1.0, // Ancho del borde inferior
                   ),
                 ),
-                SizedBox(width: 15.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          '${widget.firstName} ${widget.lastName}',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (widget.isDirector)
-                          Container(
-                            margin: EdgeInsets.only(left: 8.0),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 4.0),
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
-                            child: Text(
-                              'Director',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                      ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 50.0,
+                    height: 50.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
                     ),
-                    SizedBox(height: 2),
-                    Text(
-                      widget.email,
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.grey,
+                    child: ClipOval(
+                      child: FadeInImage(
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                        placeholder: AssetImage(
+                          'assets/images/profile-placeholder.jpg',
+                        ),
+                        image: NetworkImage(widget.imageUrl),
+                        imageErrorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'assets/images/profile-placeholder.jpg',
+                            fit: BoxFit.cover,
+                          );
+                        },
                       ),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  SizedBox(width: 12.0),
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '${widget.firstName} ${widget.lastName}',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                softWrap: false,
+                              ),
+                            ),
+                            if (widget.isDirector)
+                              Container(
+                                margin: EdgeInsets.only(left: 8.0),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8.0, vertical: 4.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                child: Text(
+                                  'Director',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          widget.email,
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.grey,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          softWrap: false,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 12.0,),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          _sendMessageToMember(widget.phone);
+                        },
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Padding(
+                            padding: const EdgeInsets.all(6.0),
+                            child: FaIcon(
+                              FontAwesomeIcons.whatsapp,
+                              color: Colors.green,
+                              size: 27.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 3.0,),
+                      GestureDetector(
+                        onTap: () => _showUserDetails(context),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Padding(
+                            padding: const EdgeInsets.all(6.0),
+                            child: Icon(
+                              Icons.info_outline_rounded,
+                              color: Colors.blue,
+                              size: 27.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            Row(
-              children: [
-                IconButton(
-                  icon: FaIcon(FontAwesomeIcons.whatsapp,
-                      color: Colors.green, size: 30.0),
-                  onPressed: () {
-                    _sendMessageToMember(widget.phone);
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.info_outline_rounded,
-                      color: Colors.blue, size: 32.0),
-                  onPressed: () => _showUserDetails(context),
-                )
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   void _showUserDetails(BuildContext context) {
@@ -220,14 +255,14 @@ class _ContactCardState extends State<ContactCard> {
                       Text(
                         '${widget.firstName} ${widget.lastName}',
                         style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold),
+                            fontSize: 22, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 8.0),
                       Text(
                         widget.email,
                         style: TextStyle(fontSize: 16),
                       ),
-                      SizedBox(height: 18.0),
+                      SizedBox(height: 16.0),
                       RichText(
                         text: TextSpan(
                           children: [
@@ -236,7 +271,7 @@ class _ContactCardState extends State<ContactCard> {
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
-                                  fontSize: 18.0),
+                                  fontSize: 16.0),
                             ),
                             TextSpan(
                               text: widget.phone == 'string'
@@ -244,7 +279,7 @@ class _ContactCardState extends State<ContactCard> {
                                   : widget.phone,
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 18.0,
+                                fontSize: 16.0,
                               ),
                             ),
                           ],

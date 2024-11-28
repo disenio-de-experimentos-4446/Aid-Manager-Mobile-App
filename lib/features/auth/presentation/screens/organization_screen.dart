@@ -1,6 +1,7 @@
 import 'package:aidmanager_mobile/config/theme/app_theme.dart';
 import 'package:aidmanager_mobile/features/auth/domain/entities/login_response.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/providers/auth_provider.dart';
+import 'package:aidmanager_mobile/features/auth/presentation/widgets/register/dialog/terms_and_conditions_dialog.dart';
 import 'package:aidmanager_mobile/features/auth/shared/widgets/custom_dialog_error.dart';
 import 'package:aidmanager_mobile/features/auth/presentation/widgets/register/dialog/organization_created_dialog.dart';
 import 'package:aidmanager_mobile/shared/helpers/show_customize_dialog.dart';
@@ -32,6 +33,24 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
     final organizationEmail = _companyEmail.text;
 
     final authProvider = context.read<AuthProvider>();
+
+    if (!mounted) return;
+
+    final response = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => const TermsAndConditionsDialog(),
+    );
+
+    if (response != true) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'No se puede hacer el registro sin aceptar los términos y condiciones.'),
+        ),
+      );
+      return;
+    }
 
     try {
       await authProvider.submitRegisterUser(
@@ -84,7 +103,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                                   text: const TextSpan(
                                     style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 28.0,
+                                        fontSize: 22.0,
                                         height: 1.5,
                                         letterSpacing: 0.85),
                                     children: <TextSpan>[
@@ -102,7 +121,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                             ),
                             Image.asset(
                               'assets/images/create-team.png',
-                              width: 160.0,
+                              width: 130.0,
                             ),
                           ],
                         ),
@@ -130,7 +149,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(
-                                    "Organizing your customers helps you create quicker quotes and keep track",
+                                    "Organizing your customers helps you create quicker quotes",
                                     style: TextStyle(
                                       fontSize: 22.0,
                                       fontWeight: FontWeight.w500,
@@ -166,7 +185,9 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                                           const TextStyle(fontSize: 18.0),
                                       contentPadding:
                                           const EdgeInsets.symmetric(
-                                              vertical: 20.0, horizontal: 18.0),
+                                        vertical: 20.0,
+                                        horizontal: 18.0,
+                                      ),
                                       suffixIcon: const Padding(
                                         padding: EdgeInsets.only(right: 18.0),
                                         child: Icon(Icons.business, size: 28.0),
@@ -242,9 +263,10 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                                       ),
                                     ),
                                   ),
-                                  Spacer(),
+                                  SizedBox(height: 30,),
                                   ElevatedButton(
                                     onPressed: () {
+                                      FocusScope.of(context).unfocus();
                                       onSubmitOrganization();
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -268,37 +290,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                                           letterSpacing: 1.8),
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      //TODO: Mostrar Dialogo de cancelacion
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 255, 60, 46), // Color de fondo
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 15),
-                                      minimumSize:
-                                          const Size(double.infinity, 0),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(12.0),
-                                      ),
-                                    ),
-                                    child: const Text(
-                                      'Cancel registration',
-                                      style: TextStyle(
-                                          fontSize: 20.0,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1.8),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 25,
-                                  ),
+                                  Spacer(),
                                   Center(
                                     child: _HaveAccountText(),
                                   ),

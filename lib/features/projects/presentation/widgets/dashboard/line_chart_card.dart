@@ -32,10 +32,10 @@ class LineChartCard extends StatelessWidget {
       end: Alignment.bottomRight,
     );
 
-    // Calcula el total de amountSummary
+    // calcula el total de amountSummary
     final double totalAmount = amountSummary.reduce((a, b) => a + b);
 
-    // Formatea el total como una cadena con el formato de moneda
+    // formatea el total como una cadena con el formato de moneda
     final String formatedAmount =
         NumberFormat.currency(symbol: '\$', decimalDigits: 0)
             .format(totalAmount * 1000);
@@ -59,12 +59,13 @@ class LineChartCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    'Expected payments',
+                    'Weekly Payments',
                     style: TextStyle(
-                      fontSize: 24.0,
+                      fontSize: 20.0,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
                   SizedBox(height: 15.0),
                   RichText(
@@ -103,7 +104,7 @@ class LineChartCard extends StatelessWidget {
                       },
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.symmetric(
-                            horizontal: 15.0, vertical: 8.0),
+                            horizontal: 10.0, vertical: 8.0),
                         foregroundColor: Colors.green,
                         backgroundColor: CustomColors.fieldGrey,
                       ),
@@ -112,13 +113,13 @@ class LineChartCard extends StatelessWidget {
                           Icon(
                             Icons.edit,
                             color: Colors.green,
-                            size: 28.0,
+                            size: 20.0,
                           ),
                           SizedBox(width: 6.0),
                           Text(
                             'Edit',
                             style: TextStyle(
-                              fontSize: 18.0,
+                              fontSize: 16.0,
                               fontWeight: FontWeight.bold,
                               color: Colors.green,
                             ),
@@ -141,13 +142,13 @@ class LineChartCard extends StatelessWidget {
                           Icon(
                             Icons.remove_red_eye,
                             color: Colors.green,
-                            size: 28.0,
+                            size: 20.0,
                           ),
                           SizedBox(width: 6.0),
                           Text(
                             'View',
                             style: TextStyle(
-                              fontSize: 18.0,
+                              fontSize: 16.0,
                               fontWeight: FontWeight.bold,
                               color: Colors.green,
                             ),

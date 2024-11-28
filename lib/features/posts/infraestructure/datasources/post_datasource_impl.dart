@@ -84,10 +84,10 @@ class PostDatasourceImpl extends HttpService implements PostsDatasource{
   }
 
   @override //This updates the rating of a post
-  Future<void> updateRatingForPost(int postId, int userId, double rating) async{
+  Future<void> updateRatingForPost(int postId, int userId) async{
     try
     {
-      final response = await dio.patch('/posts/$postId/rating');
+      final response = await dio.patch('/posts/$postId/rating/$userId');
       if(response.statusCode != HttpStatus.ok)
       {
         throw Exception('Failed to update posts');

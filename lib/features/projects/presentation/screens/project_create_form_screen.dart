@@ -83,7 +83,7 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
           title: Text(
             'Create new project',
             style: TextStyle(
-              fontSize: 22.0,
+              fontSize: 20.0,
               color: const Color.fromARGB(255, 255, 255, 255),
               letterSpacing: 0.55,
             ),
@@ -108,7 +108,7 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
           ],
         ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25.0),
+          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20.0),
           child: Column(
             children: [
               Column(
@@ -403,14 +403,14 @@ class _ProjectCreateFormScreenState extends State<ProjectCreateFormScreen> {
                         child: Text(
                           'Create a project',
                           style: TextStyle(
-                              fontSize: 22.0, fontWeight: FontWeight.bold),
+                              fontSize: 20.0, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
                   ),
                   SizedBox(height: 16.0),
                   SizedBox(
-                    height: 60,
+                    height: 50,
                     width: double.infinity,
                     child: Container(
                       decoration: BoxDecoration(

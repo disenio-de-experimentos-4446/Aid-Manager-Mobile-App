@@ -8,8 +8,10 @@ import 'package:provider/provider.dart';
 class SavedPostsScreen extends StatefulWidget {
   static const String name = "favorite_posts_screen";
   final String userId;
+  final String userName;
 
-  const SavedPostsScreen({super.key, required this.userId});
+  const SavedPostsScreen(
+      {super.key, required this.userId, required this.userName});
 
   @override
   State<SavedPostsScreen> createState() => _SavedPostsScreenState();
@@ -51,7 +53,7 @@ class _SavedPostsScreenState extends State<SavedPostsScreen> {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             } else {
-              context.go('/home');
+              context.go('/posts');
             }
           },
         ),
@@ -110,7 +112,7 @@ class _SavedPostsScreenState extends State<SavedPostsScreen> {
                         ),
                         children: <TextSpan>[
                           TextSpan(
-                            text: 'Nicolas',
+                            text: widget.userName,
                             style: TextStyle(
                               color: CustomColors.darkGreen,
                               fontWeight: FontWeight.bold,

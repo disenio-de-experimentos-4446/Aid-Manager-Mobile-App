@@ -140,21 +140,9 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
             },
           ),
           toolbarHeight: 70.0,
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.more_horiz,
-                color: Colors.white,
-                size: 32.0,
-              ),
-              onPressed: () {
-                // Acción al presionar el ícono de tres puntos
-              },
-            ),
-          ],
         ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 25.0),
+          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 20.0),
           child: Column(
             children: [
               Row(
@@ -162,7 +150,7 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
                   Text(
                     'Expected Payments',
                     style:
-                        TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                   ),
                   Spacer(),
                   ElevatedButton(
@@ -179,7 +167,7 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
                       ),
                     ),
                     child: Text(
-                      'Clear Fields',
+                      'Clear',
                       style: TextStyle(fontSize: 18.0),
                     ),
                   ),
@@ -244,7 +232,7 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
                       child: Text(
                         'Preview Graph',
                         style: TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.bold),
+                            fontSize: 16.0, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -263,7 +251,7 @@ class _ProjectGoalsFormScreenState extends State<ProjectGoalsFormScreen> {
                       child: Text(
                         'Update Graph',
                         style: TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.bold),
+                            fontSize: 16.0, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),

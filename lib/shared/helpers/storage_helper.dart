@@ -29,7 +29,7 @@ class StorageHelper {
     final prefs = await SharedPreferences.getInstance();
     final userString = prefs.getString(_userKey);
     if (userString != null) {
-      print("GET USERS: ${jsonDecode(userString)}");
+      //print("GET USERS: ${jsonDecode(userString)}");
       return UserMapper.fromJson(jsonDecode(userString));
     }
     return null;

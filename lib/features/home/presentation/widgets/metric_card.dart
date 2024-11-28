@@ -35,7 +35,7 @@ class MetricCard extends StatelessWidget {
         child: SizedBox(
           width: double.infinity,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,7 +47,7 @@ class MetricCard extends StatelessWidget {
                       caption,
                       style: TextStyle(
                         color: Colors.green[800],
-                        fontSize: 32.0,
+                        fontSize: 24.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -59,16 +59,16 @@ class MetricCard extends StatelessWidget {
                         color: Color.fromARGB(255, 231, 231, 231),
                         shape: BoxShape.circle,
                       ),
-                      padding: const EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Icon(
                         icon, // Ícono de dinero
                         color: const Color.fromARGB(255, 42, 104, 44),
-                        size: 36.0,
+                        size: 32.0,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
                 Text(
                   title,
                   style: const TextStyle(fontSize: 18.0, color: Colors.black87),

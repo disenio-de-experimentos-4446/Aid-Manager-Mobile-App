@@ -82,7 +82,7 @@ class _HomeContentState extends State<HomeContent> {
                           Text(
                             'Recent members',
                             style: TextStyle(
-                              fontSize: 20.0,
+                              fontSize: 18.0,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -95,7 +95,7 @@ class _HomeContentState extends State<HomeContent> {
                                 Text(
                                   'See All',
                                   style: TextStyle(
-                                      fontSize: 20.0,
+                                      fontSize: 18.0,
                                       color: CustomColors.darkGreen,
                                       fontWeight: FontWeight.w600),
                                 ),
@@ -103,7 +103,7 @@ class _HomeContentState extends State<HomeContent> {
                                 Icon(
                                   Icons.arrow_forward_rounded,
                                   color: CustomColors.darkGreen,
-                                  size: 24.0,
+                                  size: 22.0,
                                 ),
                               ],
                             ),
@@ -142,7 +142,7 @@ class _HomeContentState extends State<HomeContent> {
                           Text(
                             'Popular Projects',
                             style: TextStyle(
-                              fontSize: 20.0,
+                              fontSize: 18.0,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -155,7 +155,7 @@ class _HomeContentState extends State<HomeContent> {
                                 Text(
                                   'See All',
                                   style: TextStyle(
-                                      fontSize: 20.0,
+                                      fontSize: 18.0,
                                       color: CustomColors.darkGreen,
                                       fontWeight: FontWeight.w600),
                                 ),
@@ -165,7 +165,7 @@ class _HomeContentState extends State<HomeContent> {
                                 Icon(
                                   Icons.arrow_forward_rounded,
                                   color: CustomColors.darkGreen,
-                                  size: 24.0,
+                                  size: 22.0,
                                 ),
                               ],
                             ),
@@ -175,22 +175,22 @@ class _HomeContentState extends State<HomeContent> {
                       const SizedBox(height: 25),
                       homeProvider.projects.isEmpty
                           ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.folder_open,
-                                    size: 40, color: Colors.grey),
-                                SizedBox(height: 8),
-                                Text(
-                                  'No projects available',
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 16,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.folder_open,
+                                      size: 40, color: Colors.grey),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'No projects available',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 16,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          )
+                                ],
+                              ),
+                            )
                           : ProjectsCarousel(projects: homeProvider.projects),
                     ],
                   ),
@@ -203,7 +203,7 @@ class _HomeContentState extends State<HomeContent> {
                           Text(
                             'Organization metrics',
                             style: TextStyle(
-                              fontSize: 20.0,
+                              fontSize: 18.0,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -212,7 +212,7 @@ class _HomeContentState extends State<HomeContent> {
                               Text(
                                 'See All',
                                 style: TextStyle(
-                                    fontSize: 20.0,
+                                    fontSize: 18.0,
                                     color: CustomColors.darkGreen,
                                     fontWeight: FontWeight.w600),
                               ),
@@ -220,57 +220,64 @@ class _HomeContentState extends State<HomeContent> {
                               Icon(
                                 Icons.arrow_forward_rounded,
                                 color: CustomColors.darkGreen,
-                                size: 24.0,
+                                size: 22.0,
                               ),
                             ],
                           ),
                         ],
                       ),
                       const SizedBox(height: 20),
-                      SizedBox(
-                        height: 340,
-                        child: GridView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 20.0,
-                            mainAxisSpacing: 20.0,
-                            childAspectRatio: 1.5,
-                          ),
-                          itemCount: 4,
-                          itemBuilder: (context, index) {
-                            switch (index) {
-                              case 0:
-                                return MetricCard(
+                      GridView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap:
+                            true, // Permite que el GridView se ajuste a su contenido
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 15.0,
+                          mainAxisSpacing: 15.0,
+                          childAspectRatio: 1,
+                        ),
+                        itemCount: 4,
+                        itemBuilder: (context, index) {
+                          switch (index) {
+                            case 0:
+                              return IntrinsicHeight(
+                                child: MetricCard(
                                   icon: Icons.grading_outlined,
                                   title: 'Tasks Completed',
                                   caption: doneTasksCount.toString(),
-                                );
-                              case 1:
-                                return MetricCard(
+                                ),
+                              );
+                            case 1:
+                              return IntrinsicHeight(
+                                child: MetricCard(
                                   icon: Icons.addchart_sharp,
                                   title: 'Total Projects',
                                   caption:
                                       homeProvider.projects.length.toString(),
-                                );
-                              case 2:
-                                return MetricCard(
+                                ),
+                              );
+                            case 2:
+                              return IntrinsicHeight(
+                                child: MetricCard(
                                   icon: Icons.people,
                                   title: 'Total Members',
                                   caption: homeProvider.users.length.toString(),
-                                );
-                              case 3:
-                                return MetricCard(
+                                ),
+                              );
+                            case 3:
+                              return IntrinsicHeight(
+                                child: MetricCard(
                                   icon: Icons.star_rounded,
                                   title: 'Average Rating',
                                   caption: '4.5',
-                                );
-                              default:
-                                return Container();
-                            }
-                          },
-                        ),
+                                ),
+                              );
+                            default:
+                              return Container();
+                          }
+                        },
                       )
                     ],
                   )
@@ -306,7 +313,7 @@ class _BannerHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 270.0,
+      height: 260.0,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
@@ -363,7 +370,7 @@ class _BannerHome extends StatelessWidget {
                           'Experience the thrill of Risk-free trading',
                           style: TextStyle(
                               color: Colors.white,
-                              fontSize: 26.0,
+                              fontSize: 22.0,
                               letterSpacing: 0.65,
                               fontWeight: FontWeight.bold,
                               height: 1.65),
@@ -373,7 +380,7 @@ class _BannerHome extends StatelessWidget {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            context.go('/posts');
+                            context.go('/projects');
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
@@ -391,12 +398,9 @@ class _BannerHome extends StatelessWidget {
                               Text(
                                 'Get Started',
                                 style: TextStyle(
-                                    color: Colors.white, fontSize: 20.0),
-                              ),
-                              SizedBox(width: 8.0),
-                              Icon(
-                                Icons.arrow_forward,
-                                color: Colors.white,
+                                  color: Colors.white,
+                                  fontSize: 18.0,
+                                ),
                               ),
                             ],
                           ),
@@ -404,11 +408,10 @@ class _BannerHome extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(width: 10.0),
+                  const SizedBox(width: 0),
                   Expanded(
                     child: Center(
-                      child:
-                          Container(), // Contenedor vacío para mantener el espacio
+                      child: Container(),
                     ),
                   ),
                 ],

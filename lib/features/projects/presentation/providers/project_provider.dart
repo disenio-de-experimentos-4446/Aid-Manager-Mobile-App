@@ -117,6 +117,7 @@ class ProjectProvider extends ChangeNotifier {
         projectLocation: projectLocation);
 
     initialLoading = true;
+    notifyListeners();
 
     try {
       await projectsRepository.updateProjectById(projectId, postToUpdate);
@@ -131,6 +132,7 @@ class ProjectProvider extends ChangeNotifier {
 
   Future<void> deleteProjectById(int projectId) async {
     initialLoading = true;
+    notifyListeners();
 
     try {
       await projectsRepository.deleteProjectById(projectId);
@@ -157,10 +159,11 @@ class ProjectProvider extends ChangeNotifier {
   }
 
   Future<void> loadProjectsByUser(int userId) async {
+    final companyIdLogged = authProvider.user!.companyId!;
     initialLoading = true;
 
     try {
-      final projectsList = await projectsRepository.getProjectsByUser(userId);
+      final projectsList = await projectsRepository.getProjectsByCompanyId(companyIdLogged);
 
       projectsUser = projectsList;
     } catch (e) {
