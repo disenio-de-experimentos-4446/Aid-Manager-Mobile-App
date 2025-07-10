@@ -1,4 +1,4 @@
 class Environment {
   static const bool production = false;
-  static const String baseUrl = 'http://10.0.2.2:5082/api/v1';
+  static const String baseUrl = 'https://aid-manager-general-backend.onrender.com/api/v1';
 }
