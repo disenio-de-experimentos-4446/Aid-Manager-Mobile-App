@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "615009490882",
+    "project_id": "aid-manager-mobile",
+    "storage_bucket": "aid-manager-mobile.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:615009490882:android:71a94f2cd521580841685b",
+        "android_client_info": {
+          "package_name": "com.aidmanager.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEX9I-tVErpIhxDQnrOo_g0Eg8ckO7RKk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
