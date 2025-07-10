@@ -35,7 +35,7 @@ class MetricCard extends StatelessWidget {
         child: SizedBox(
           width: double.infinity,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 20.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,

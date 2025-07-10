@@ -227,58 +227,46 @@ class _HomeContentState extends State<HomeContent> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      GridView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap:
-                            true, // Permite que el GridView se ajuste a su contenido
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 15.0,
-                          mainAxisSpacing: 15.0,
-                          childAspectRatio: 1,
-                        ),
-                        itemCount: 4,
-                        itemBuilder: (context, index) {
-                          switch (index) {
-                            case 0:
-                              return IntrinsicHeight(
-                                child: MetricCard(
-                                  icon: Icons.grading_outlined,
-                                  title: 'Tasks Completed',
-                                  caption: doneTasksCount.toString(),
-                                ),
-                              );
-                            case 1:
-                              return IntrinsicHeight(
-                                child: MetricCard(
-                                  icon: Icons.addchart_sharp,
-                                  title: 'Total Projects',
-                                  caption:
-                                      homeProvider.projects.length.toString(),
-                                ),
-                              );
-                            case 2:
-                              return IntrinsicHeight(
-                                child: MetricCard(
-                                  icon: Icons.people,
-                                  title: 'Total Members',
-                                  caption: homeProvider.users.length.toString(),
-                                ),
-                              );
-                            case 3:
-                              return IntrinsicHeight(
-                                child: MetricCard(
-                                  icon: Icons.star_rounded,
-                                  title: 'Average Rating',
-                                  caption: '4.5',
-                                ),
-                              );
-                            default:
-                              return Container();
-                          }
-                        },
+                      Wrap(
+                        spacing: 15.0,
+                        runSpacing: 15.0,
+                        children: [
+                          SizedBox(
+                            width: (MediaQuery.of(context).size.width - 65) /
+                                2, // Ancho fijo para 2 columnas
+                            child: MetricCard(
+                              icon: Icons.grading_outlined,
+                              title: 'Tasks Completed',
+                              caption: doneTasksCount.toString(),
+                            ),
+                          ),
+                          SizedBox(
+                            width: (MediaQuery.of(context).size.width - 65) / 2,
+                            child: MetricCard(
+                              icon: Icons.addchart_sharp,
+                              title: 'Total Projects',
+                              caption: homeProvider.projects.length.toString(),
+                            ),
+                          ),
+                          SizedBox(
+                            width: (MediaQuery.of(context).size.width - 65) / 2,
+                            child: MetricCard(
+                              icon: Icons.people,
+                              title: 'Total Members',
+                              caption: homeProvider.users.length.toString(),
+                            ),
+                          ),
+                          SizedBox(
+                            width: (MediaQuery.of(context).size.width - 65) / 2,
+                            child: MetricCard(
+                              icon: Icons.star_rounded,
+                              title: 'Average Rating',
+                              caption: '4.5',
+                            ),
+                          ),
+                        ],
                       )
+// ...existing code...
                     ],
                   )
                 ],
